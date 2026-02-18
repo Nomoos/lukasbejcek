@@ -1,0 +1,383 @@
+
+/*
+Theme Name: TJ Slavoj Mýto
+Theme URI: http://example.com/
+Author: Lukáš Bejček
+Author URI: http://example.com/
+Description: 
+Version: 1.0
+*/  
+
+
+
+
+
+
+
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  font-family: Arial, sans-serif;
+  color: #000;
+}
+
+/* KONTEJNER */
+.container {
+  width: 1140px;
+  margin: 0 auto;
+}
+
+/* HLAVIČKA */
+header {
+  background-color: #E6E6E6;
+  border-bottom: 2px solid #ccc;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 50px;
+  margin-right: 10px;
+}
+
+.logo h1 {
+  font-size: 22px;
+  margin: 0;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav li {
+  margin-left: 25px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #000;
+  font-size: 15px;
+}
+
+nav a.active,
+nav a:hover {
+  color: #233D97;
+  font-weight: bold;
+}
+
+/* BANNER */
+.banner {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+}
+
+.banner img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  filter: brightness(70%);
+}
+
+.banner-text {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  text-align: center;
+}
+
+.banner-text h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+/* KARTY SE ZÁPASY */
+
+.h3{
+  text-align: center;
+}
+.zapasy-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card {
+  width: 22%;
+  background: #E6E6E6;
+  border-radius:0 40px 0 0;
+  
+  padding: 15px 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.card h3 {
+  margin: 5px 0;
+  color: #233D97;
+  font-size: 16px;
+}
+
+.card p {
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+/* MODRÝ A ŠEDÝ PRUH */
+.blue-bar-p {
+  width: 100%;
+  height: 60px;
+  background-color: #233D97;
+  border-radius:0 20px 0 0;
+}
+
+.blue-bar-l {
+  width: 100%;
+  height: 60px;
+  background-color: #233D97;
+  border-radius:20px 0 0 0;
+}
+
+
+
+.gray-bar {
+  width: 100%;
+  height: 60px;
+  background-color: #E6E6E6;
+  border-radius:20px 0 0 0;
+}
+
+/* AKTUÁLNÍ ZPRÁVY */
+.aktuality {
+  background: #fff;
+  padding: 50px 0;
+}
+
+.aktuality h2 {
+  margin-bottom: 30px;
+  font-size: 22px;
+  color: #000;
+}
+
+.aktuality-box {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.aktualita {
+  background: #E6E6E6;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+.aktualita h4 {
+  margin-top: 0;
+  color: #233D97;
+  font-size: 17px;
+}
+
+.aktualita p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* DRUHÁ ZPRÁVA S OBRÁZKEM */
+.aktualita.druhy {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.aktualita.druhy .text {
+  width: 65%;
+}
+
+.aktualita.druhy img {
+  width: 260px;
+  border-radius: 8px;
+}
+
+
+
+
+
+/* Týmy */
+
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  color: #000;
+}
+
+/* NAV */
+.nav-link {
+  color: #000 !important;
+  font-weight: 500;
+}
+.nav-link.active,
+.nav-link:hover {
+  color: #233D97 !important;
+}
+
+/* FORM SELECTS */
+.form-select {
+  border: none;
+  box-shadow: none;
+  border-radius: 10px;
+  padding: 0.4rem 1rem;
+  font-size: 15px;
+  background-color: #E6E6E6;
+}
+
+/* BOXY */
+.border {
+  border-color: #000 !important;
+}
+
+.rounded-3 {
+  border-radius: 10px !important;
+}
+
+h2, h4, h5 {
+  color: #000;
+  font-weight: bold;
+}
+
+
+
+
+
+
+
+
+
+
+/*galerie */
+
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  color: #000;
+}
+
+
+/* FORM SELECTS */
+.form-select {
+  border: none;
+  box-shadow: none;
+  border-radius: 10px;
+  padding: 0.4rem 1rem;
+  font-size: 15px;
+  background-color: #E6E6E6;
+}
+
+
+
+/* LOGO */
+.gallery-logo {
+  width: 120px;
+  z-index: 2;
+  background-color: #fff;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+/* GALERIE KARTY */
+.gallery-card {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background-color: #E6E6E6;
+  border-radius: 0 20px 0 0;
+}
+
+
+/* GALERIE KARTY */
+.fotky {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background-color: #E6E6E6;
+}
+
+
+
+
+.match-card {
+  background-color: #fff;
+  border: 1px solid #00000030;
+  border-radius: 15px;
+  transition: 0.2s;
+}
+.match-card:hover {
+  background-color: #E6E6E6;
+}
+
+
+
+
+/* ----- KOMISE KARTY ----- */
+
+.committee-card {
+  background: #fff;
+  border: 2px solid #dcdcdc;
+  border-radius: 15px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.05);
+  height: 400px;
+}
+
+.committee-img {
+  width: 120px;
+  height: auto;
+}
+
+/* Nadpisy */
+h2 {
+  font-family: Arial, sans-serif;
+}
+
+/* ŠEDÝ KRUH ZA LOGEM */
+.committee-img-wrapper {
+  width: 160px;
+  height: 160px;
+  background: #E6E6E6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px auto;
+}
+
+
+
+.gallery-img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+.gallery-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #E6E6E6;
+  border-radius: 15px;
+}
