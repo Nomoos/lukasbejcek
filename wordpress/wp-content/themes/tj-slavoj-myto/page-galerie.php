@@ -29,7 +29,7 @@ $sezony_nazvy = array(
 
     <!-- FILTRY -->
     <form method="get" class="d-flex gap-3 mb-4">
-      <select name="tym" class="form-select bg-light" style="width: 11%;" onchange="this.form.submit()">
+      <select name="tym" class="form-select bg-light filter-select-team-sm" onchange="this.form.submit()">
         <option value="">Všechny týmy</option>
         <?php foreach ($tymy_nazvy as $slug => $nazev) : ?>
           <option value="<?php echo esc_attr($slug); ?>" <?php selected($filtr_tym, $slug); ?>>
@@ -38,7 +38,7 @@ $sezony_nazvy = array(
         <?php endforeach; ?>
       </select>
 
-      <select name="sezona" class="form-select bg-light" style="width: 15%;" onchange="this.form.submit()">
+      <select name="sezona" class="form-select bg-light filter-select-season-sm" onchange="this.form.submit()">
         <option value="">Všechny sezóny</option>
         <?php foreach ($sezony_nazvy as $slug => $nazev) : ?>
           <option value="<?php echo esc_attr($slug); ?>" <?php selected($filtr_sezona, $slug); ?>>

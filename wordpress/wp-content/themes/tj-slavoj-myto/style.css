@@ -18,11 +18,29 @@ body {
   color: #000;
 }
 
-/* ===== KONTEJNER ===== */
-.container {
-  width: 1140px;
-  max-width: 100%;
-  margin: 0 auto;
+/* ===== FILTROVÉ SELEKTY ===== */
+.filter-select-team {
+  width: 20%;
+  background-color: #233D97;
+  color: white;
+}
+
+.filter-select-season {
+  width: 20%;
+}
+
+.filter-select-status {
+  width: 20%;
+  background-color: #233D97;
+  color: white;
+}
+
+.filter-select-team-sm {
+  width: 11%;
+}
+
+.filter-select-season-sm {
+  width: 15%;
 }
 
 /* ===== HLAVIČKA ===== */

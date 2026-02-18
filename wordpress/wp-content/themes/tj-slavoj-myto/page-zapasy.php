@@ -18,7 +18,7 @@ $filtr_stav = isset($_GET['stav']) ? sanitize_text_field(wp_unslash($_GET['stav'
 
     <!-- FILTRY -->
     <form method="get" class="d-flex gap-3 mb-4">
-      <select name="tym" class="form-select" style="width: 20%; background-color: #233D97; color: white;" onchange="this.form.submit()">
+      <select name="tym" class="form-select filter-select-team" onchange="this.form.submit()">
         <option value="">Všechny týmy</option>
         <option value="muzi-a" <?php selected($filtr_tym, 'muzi-a'); ?>>Muži A</option>
         <option value="muzi-b" <?php selected($filtr_tym, 'muzi-b'); ?>>Muži B</option>
@@ -26,13 +26,13 @@ $filtr_stav = isset($_GET['stav']) ? sanitize_text_field(wp_unslash($_GET['stav'
         <option value="starsi-zaci" <?php selected($filtr_tym, 'starsi-zaci'); ?>>Starší žáci</option>
       </select>
 
-      <select name="sezona" class="form-select bg-light" style="width: 20%;" onchange="this.form.submit()">
+      <select name="sezona" class="form-select bg-light filter-select-season" onchange="this.form.submit()">
         <option value="">Všechny sezóny</option>
         <option value="2025-26" <?php selected($filtr_sezona, '2025-26'); ?>>Sezóna 2025/26</option>
         <option value="2024-25" <?php selected($filtr_sezona, '2024-25'); ?>>Sezóna 2024/25</option>
       </select>
 
-      <select name="stav" class="form-select" style="width: 20%; background-color: #233D97; color: white;" onchange="this.form.submit()">
+      <select name="stav" class="form-select filter-select-status" onchange="this.form.submit()">
         <option value="vse" <?php selected($filtr_stav, 'vse'); ?>>Všechny zápasy</option>
         <option value="odehrane" <?php selected($filtr_stav, 'odehrane'); ?>>Odehrané zápasy</option>
         <option value="neodehrane" <?php selected($filtr_stav, 'neodehrane'); ?>>Budoucí zápasy</option>

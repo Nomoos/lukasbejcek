@@ -21,11 +21,26 @@ add_action('after_setup_theme', 'slavoj_theme_support');
 
 // Načtení stylů a skriptů
 function slavoj_enqueue_scripts() {
-    wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css');
-    wp_enqueue_style('slavoj-style', get_stylesheet_uri());
-    wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array(), null, true);
+    wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3');
+    wp_enqueue_style('slavoj-style', get_stylesheet_uri(), array('bootstrap'), '1.0');
+    wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array(), '5.3.3', true);
 }
 add_action('wp_enqueue_scripts', 'slavoj_enqueue_scripts');
+
+/**
+ * Záložní menu pokud není nastaveno v administraci
+ */
+function slavoj_fallback_menu() {
+    echo '<ul class="nav">';
+    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/')) . '">Domů</a></li>';
+    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/zapasy/')) . '">Zápasy</a></li>';
+    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/tymy/')) . '">Týmy</a></li>';
+    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/galerie/')) . '">Galerie</a></li>';
+    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/historie/')) . '">Historie</a></li>';
+    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/sponzori/')) . '">Sponzoři</a></li>';
+    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/kontakty/')) . '">Kontakty</a></li>';
+    echo '</ul>';
+}
 
 /**
  * Výpis soupisky hráčů podle kategorie

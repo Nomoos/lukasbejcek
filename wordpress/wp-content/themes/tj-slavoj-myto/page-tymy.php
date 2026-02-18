@@ -33,7 +33,7 @@ $nazev_sezony = isset($sezony_nazvy[$filtr_sezona]) ? $sezony_nazvy[$filtr_sezon
 
     <!-- FILTRY -->
     <form method="get" class="d-flex gap-3 mb-4">
-      <select name="tym" class="form-select bg-light" style="width: 11%;" onchange="this.form.submit()">
+      <select name="tym" class="form-select bg-light filter-select-team-sm" onchange="this.form.submit()">
         <?php foreach ($tymy_nazvy as $slug => $nazev) : ?>
           <option value="<?php echo esc_attr($slug); ?>" <?php selected($filtr_tym, $slug); ?>>
             <?php echo esc_html($nazev); ?>
@@ -41,7 +41,7 @@ $nazev_sezony = isset($sezony_nazvy[$filtr_sezona]) ? $sezony_nazvy[$filtr_sezon
         <?php endforeach; ?>
       </select>
 
-      <select name="sezona" class="form-select bg-light" style="width: 15%;" onchange="this.form.submit()">
+      <select name="sezona" class="form-select bg-light filter-select-season-sm" onchange="this.form.submit()">
         <?php foreach ($sezony_nazvy as $slug => $nazev) : ?>
           <option value="<?php echo esc_attr($slug); ?>" <?php selected($filtr_sezona, $slug); ?>>
             <?php echo esc_html($nazev); ?>
