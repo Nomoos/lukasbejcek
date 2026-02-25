@@ -6,11 +6,21 @@ Tento repository obsahuje dokumentaci a návrh pro web fotbalového klubu TJ Sla
 
 ```
 lukasbejcek/
-├── original/              # Složka s aktuálním WordPress tématem (částečně implementované)
+├── original/              # Složka s původním WordPress tématem (referenční, neměnit)
 │   ├── *.php             # WordPress šablonové soubory
 │   ├── style.css         # CSS styly tématu
 │   ├── function.php      # WordPress funkce
 │   └── html/             # Původní statické HTML soubory (reference)
+├── wordpress/             # WordPress core soubory
+├── web/                   # 🆕 Nový web – portované WordPress téma
+│   ├── theme/            # WordPress téma (PHP šablony, CSS, JS)
+│   ├── plugins/          # Vlastní pluginy
+│   └── assets/           # Statické soubory (obrázky, fonty)
+├── docs/                  # 🆕 Průběžná dokumentace portování
+│   ├── 01-uvod.md        # Úvod a přehled projektu
+│   ├── 02-analyza-original.md  # Analýza původního kódu
+│   └── 03-nova-struktura.md    # Nová adresářová a datová struktura
+├── notes/                 # 🆕 Pracovní poznámky a nápady
 ├── DOKUMENTACE-KOD.md    # ✅ Vysvětlení jak funguje současný kód
 └── PLAN-PORTOVANI-WORDPRESS.md  # ✅ Plán kompletní migrace do WordPress
 ```
@@ -57,6 +67,13 @@ Tento dokument obsahuje:
 8. Testování (2-3 dny)
 9. Launch (1 den)
 10. Školení a údržba (průběžné)
+
+### 3. [docs/](./docs/)
+**Průběžná dokumentace portování (krok po kroku)**
+
+- [01-uvod.md](./docs/01-uvod.md) – Úvod a přehled projektu
+- [02-analyza-original.md](./docs/02-analyza-original.md) – Analýza původního kódu
+- [03-nova-struktura.md](./docs/03-nova-struktura.md) – Nová adresářová a datová struktura
 
 ## 🎯 Současný stav projektu
 
