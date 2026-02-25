@@ -22,18 +22,18 @@ Před instalací se ujistěte, že máte nainstalováno:
 
 ### Krok 2 – Naklonujte repozitář
 
-Naklonujte repozitář přímo do složky `htdocs` pod názvem `lukasbejcek`:
+Naklonujte repozitář přímo do složky `htdocs` pod názvem `fotbal_club`:
 
 ```bash
 # Windows
-git clone https://github.com/Nomoos/lukasbejcek.git C:\xampp\htdocs\lukasbejcek
+git clone https://github.com/Nomoos/lukasbejcek.git C:\xampp\htdocs\fotbal_club
 
 # macOS / Linux
-git clone https://github.com/Nomoos/lukasbejcek.git /Applications/XAMPP/htdocs/lukasbejcek
+git clone https://github.com/Nomoos/lukasbejcek.git /Applications/XAMPP/htdocs/fotbal_club
 ```
 
 WordPress core soubory se nacházejí v podsložce `wordpress/` repozitáře.  
-Lokální URL webu bude: **`http://localhost/lukasbejcek/wordpress/`**
+Lokální URL webu bude: **`http://localhost/fotbal_club/wordpress/`**
 
 ### Krok 3 – Vytvořte databázi
 
@@ -49,8 +49,8 @@ Ujistěte se, že v souboru jsou správně nastaveny hodnoty:
 define( 'DB_NAME', 'slavoj_myto' );
 define( 'DB_USER', 'root' );
 define( 'DB_PASSWORD', '' );          // v XAMPP prázdné
-define( 'WP_HOME',    'http://localhost/lukasbejcek/wordpress' );
-define( 'WP_SITEURL', 'http://localhost/lukasbejcek/wordpress' );
+define( 'WP_HOME',    'http://localhost/fotbal_club/wordpress' );
+define( 'WP_SITEURL', 'http://localhost/fotbal_club/wordpress' );
 ```
 
 Dále nahraďte zástupné fráze `'put your unique phrase here'` vlastními hodnotami  
@@ -58,7 +58,7 @@ vygenerovanými na https://api.wordpress.org/secret-key/1.1/salt/
 
 ### Krok 5 – Nainstalujte WordPress
 
-1. V prohlížeči otevřete `http://localhost/lukasbejcek/wordpress/`.
+1. V prohlížeči otevřete `http://localhost/fotbal_club/wordpress/`.
 2. Projděte instalačním průvodcem WordPress a vyplňte název webu a admin přihlašovací údaje.
 
 ### Krok 6 – Aktivujte téma
@@ -107,8 +107,8 @@ Přejděte na **Nastavení → Trvalé odkazy** a zvolte **Název příspěvku**
 
 Po instalaci zkontrolujte:
 
-- [ ] Web se zobrazuje na `http://localhost/lukasbejcek/wordpress/`
-- [ ] WordPress admin je dostupný na `http://localhost/lukasbejcek/wordpress/wp-admin`
+- [ ] Web se zobrazuje na `http://localhost/fotbal_club/wordpress/`
+- [ ] WordPress admin je dostupný na `http://localhost/fotbal_club/wordpress/wp-admin`
 - [ ] Téma je aktivní
 - [ ] Plugin **Slavoj Custom Fields** (`slavoj-custom-fields`) je aktivní
 - [ ] Permalink struktura je nastavena na **Název příspěvku**
