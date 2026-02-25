@@ -19,11 +19,10 @@ Obsahuje úplný seznam všech implementovaných typů obsahu, jejich skutečné
 |------|-----------|-----|-------|
 | Domácí tým | `domaci` | text | Název domácího týmu (např. „TJ Slavoj Mýto") |
 | Hostující tým | `hoste` | text | Název hostujícího týmu |
-| Skóre | `skore` | text | Výsledek ve formátu „3:1"; prázdné = zápas nebyl odehrán |
+| Skóre | `skore` | text | Výsledek ve formátu „3:1"; NULL = VS |
 | Datum zápasu | `datum_zapasu` | date (Y-m-d) | Datum konání zápasu – slouží i pro filtrování |
 | Čas výkopu | `cas_zapasu` | time (HH:MM) | Čas zahájení zápasu |
 | Střelci | `strelci` | text | Střelci gólů, např. „2× Novák, Bejček" |
-| Místo konání | `misto_konani` | text | Název hřiště nebo adresa |
 | Kategorie týmu | taxonomie `kategorie-tymu` | taxonomie | Muži A, Muži B, Dorost, Starší žáci… |
 | Sezóna | taxonomie `sezona` | taxonomie | 2024/25, 2025/26… |
 | Stav zápasu | taxonomie `stav-zapasu` | taxonomie | Nadcházející, Odehraný, Zrušený |

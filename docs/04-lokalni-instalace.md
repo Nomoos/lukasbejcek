@@ -20,41 +20,70 @@ Před instalací se ujistěte, že máte nainstalováno:
 1. Stáhněte a nainstalujte [XAMPP](https://www.apachefriends.org/).
 2. Spusťte **Apache** a **MySQL** v XAMPP Control Panel.
 
-### Krok 2 – Stáhněte WordPress
+### Krok 2 – Naklonujte repozitář
 
-1. Stáhněte nejnovější WordPress z [wordpress.org/download](https://wordpress.org/download/).
-2. Rozbalte do složky `C:\xampp\htdocs\tj-slavoj-myto\` (Windows)  
-   nebo `/Applications/XAMPP/htdocs/tj-slavoj-myto/` (macOS).
+Naklonujte repozitář přímo do složky `htdocs` pod názvem `lukasbejcek`:
+
+```bash
+# Windows
+git clone https://github.com/Nomoos/lukasbejcek.git C:\xampp\htdocs\lukasbejcek
+
+# macOS / Linux
+git clone https://github.com/Nomoos/lukasbejcek.git /Applications/XAMPP/htdocs/lukasbejcek
+```
+
+WordPress core soubory se nacházejí v podsložce `wordpress/` repozitáře.  
+Lokální URL webu bude: **`http://localhost/lukasbejcek/wordpress/`**
 
 ### Krok 3 – Vytvořte databázi
 
 1. Otevřete prohlížeč na `http://localhost/phpmyadmin`.
 2. Klikněte **Nová databáze**, pojmenujte ji `slavoj_myto` a klikněte **Vytvořit**.
 
-### Krok 4 – Nainstalujte WordPress
+### Krok 4 – Nastavte wp-config.php
 
-1. V prohlížeči otevřete `http://localhost/tj-slavoj-myto/`.
-2. Projděte instalačním průvodcem WordPress:
-   - Databáze: `slavoj_myto`
-   - Uživatel DB: `root`
-   - Heslo DB: *(prázdné v XAMPP)*
-   - Host DB: `localhost`
-3. Vyplňte název webu a admin přihlašovací údaje.
+Repozitář obsahuje připravený soubor `wordpress/wp-config.php` s lokální konfigurací.  
+Ujistěte se, že v souboru jsou správně nastaveny hodnoty:
 
-### Krok 5 – Zkopírujte téma
+```php
+define( 'DB_NAME', 'slavoj_myto' );
+define( 'DB_USER', 'root' );
+define( 'DB_PASSWORD', '' );          // v XAMPP prázdné
+define( 'WP_HOME',    'http://localhost/lukasbejcek/wordpress' );
+define( 'WP_SITEURL', 'http://localhost/lukasbejcek/wordpress' );
+```
 
-1. Klonujte tento repozitář (pokud ještě není stažený):
-   ```bash
-   git clone https://github.com/Nomoos/lukasbejcek.git
-   ```
-2. Zkopírujte obsah složky `web/theme/` do:
-   ```
-   C:\xampp\htdocs\tj-slavoj-myto\wp-content\themes\slavoj-myto\
-   ```
+Dále nahraďte zástupné fráze `'put your unique phrase here'` vlastními hodnotami  
+vygenerovanými na https://api.wordpress.org/secret-key/1.1/salt/
+
+### Krok 5 – Nainstalujte WordPress
+
+1. V prohlížeči otevřete `http://localhost/lukasbejcek/wordpress/`.
+2. Projděte instalačním průvodcem WordPress a vyplňte název webu a admin přihlašovací údaje.
+
+### Krok 6 – Aktivujte téma
+
+Zkopírujte obsah složky `web/theme/tj-slavoj-myto/` do:
+```
+wordpress/wp-content/themes/tj-slavoj-myto/
+```
 
 Aktivujte téma v admin rozhraní (**Vzhled → Témata**).
 
-### Krok 6 – Nainstalujte potřebné pluginy
+### Krok 7 – Nainstalujte potřebné pluginy
+
+#### 6a – Vlastní plugin (povinné)
+
+Zkopírujte složku `web/plugins/slavoj-custom-fields` do adresáře:
+```
+wp-content/plugins/slavoj-custom-fields/
+```
+*(Při použití složky `wordpress/` z tohoto repozitáře je plugin již na správném místě: `wordpress/wp-content/plugins/slavoj-custom-fields/`.)*
+
+Poté v sekci **Pluginy** aktivujte plugin **Slavoj Custom Fields** (`slavoj-custom-fields`).  
+Plugin zastupuje funkce Advanced Custom Fields a Custom Post Type UI – registruje všechny vlastní typy obsahu (CPT), taxonomie, meta boxy a administrační nástrojovou stránku.
+
+#### 6b – Doporučené pluginy (volitelné)
 
 V sekci **Pluginy → Přidat nový** nainstalujte následující pluginy. Každý z nich plní specifickou roli, která není pokryta vlastním kódem projektu:
 
@@ -68,7 +97,7 @@ V sekci **Pluginy → Přidat nový** nainstalujte následující pluginy. Každ
 
 > **Poznámka:** Pluginy **Advanced Custom Fields (ACF)** a **Custom Post Type UI** není nutné instalovat – vlastní typy obsahu (CPT) i meta pole jsou implementovány přímo v kódu tématu v souboru `functions.php`. Podrobný přehled všech pluginů a vlastního kódu najdete v [07-pluginy.md](./07-pluginy.md).
 
-### Krok 7 – Nastavte permalink strukturu
+### Krok 8 – Nastavte permalink strukturu
 
 Přejděte na **Nastavení → Trvalé odkazy** a zvolte **Název příspěvku** (`/%postname%/`). Uložte.
 
@@ -78,10 +107,10 @@ Přejděte na **Nastavení → Trvalé odkazy** a zvolte **Název příspěvku**
 
 Po instalaci zkontrolujte:
 
-- [ ] Web se zobrazuje na `http://localhost/...`
-- [ ] WordPress admin je dostupný na `.../wp-admin`
+- [ ] Web se zobrazuje na `http://localhost/lukasbejcek/wordpress/`
+- [ ] WordPress admin je dostupný na `http://localhost/lukasbejcek/wordpress/wp-admin`
 - [ ] Téma je aktivní
-- [ ] Pluginy jsou aktivní
+- [ ] Plugin **Slavoj Custom Fields** (`slavoj-custom-fields`) je aktivní
 - [ ] Permalink struktura je nastavena na **Název příspěvku**
 
 ---
