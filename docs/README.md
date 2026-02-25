@@ -12,6 +12,9 @@ Tato složka obsahuje průběžnou dokumentaci portování WordPress webu TJ Sla
 | [04-lokalni-instalace.md](./04-lokalni-instalace.md) | Jak rozchodit projekt lokálně (Local, XAMPP, Docker) |
 | [05-deployment-ftp.md](./05-deployment-ftp.md) | Deployment na hosting přes FTP |
 | [06-inventar-obsahu.md](./06-inventar-obsahu.md) | Inventář všech typů obsahu (CPT) s poli – Fáze 1 |
+| [07-pluginy.md](./07-pluginy.md) | Přehled pluginů použitých v projektu |
+| [08-datovy-model.md](./08-datovy-model.md) | Formální datový model – entity, atributy, ER diagram |
+| [09-ukazková-data.md](./09-ukazková-data.md) | Ukázková data z `original/` pro testování webu |
 
 ## Jak přispívat
 
