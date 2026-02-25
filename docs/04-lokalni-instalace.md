@@ -72,12 +72,23 @@ Aktivujte téma v admin rozhraní (**Vzhled → Témata**).
 
 ### Krok 7 – Nainstalujte potřebné pluginy
 
-V sekci **Pluginy → Přidat nový** nainstalujte:
+#### 6a – Vlastní plugin (povinné)
+
+Zkopírujte složku `web/plugins/slavoj-custom-fields` do adresáře:
+```
+wp-content/plugins/slavoj-custom-fields/
+```
+*(Při použití složky `wordpress/` z tohoto repozitáře je plugin již na správném místě: `wordpress/wp-content/plugins/slavoj-custom-fields/`.)*
+
+Poté v sekci **Pluginy** aktivujte plugin **Slavoj Custom Fields** (`slavoj-custom-fields`).  
+Plugin zastupuje funkce Advanced Custom Fields a Custom Post Type UI – registruje všechny vlastní typy obsahu (CPT), taxonomie, meta boxy a administrační nástrojovou stránku.
+
+#### 6b – Doporučené pluginy (volitelné)
+
+V sekci **Pluginy → Přidat nový** nainstalujte dle potřeby:
 
 | Plugin | Účel |
 |--------|------|
-| Advanced Custom Fields (ACF) | Správa custom polí |
-| Custom Post Type UI | Snadné vytvoření CPT |
 | Contact Form 7 | Kontaktní formulář |
 | Yoast SEO | SEO optimalizace |
 
@@ -94,7 +105,7 @@ Po instalaci zkontrolujte:
 - [ ] Web se zobrazuje na `http://localhost/lukasbejcek/wordpress/`
 - [ ] WordPress admin je dostupný na `http://localhost/lukasbejcek/wordpress/wp-admin`
 - [ ] Téma je aktivní
-- [ ] Pluginy jsou aktivní
+- [ ] Plugin **Slavoj Custom Fields** (`slavoj-custom-fields`) je aktivní
 - [ ] Permalink struktura je nastavena na **Název příspěvku**
 
 ---
