@@ -1,20 +1,10 @@
 # BEGIN WordPress
-# Tato část je generována WordPressem. Neupravujte ručně – bude přepsána.
+# The directives (lines) between "BEGIN WordPress" and "END WordPress" are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteBase /fotbal_club/
-
-# Přesměrování WP jádrových cest do podsložky wordpress/
-# (WP_SITEURL = WP_HOME = http://localhost/fotbal_club, ale soubory jsou ve wordpress/)
-RewriteRule ^wp-admin(/.*)?$ wordpress/wp-admin$1 [L]
-RewriteRule ^wp-login\.php$ wordpress/wp-login.php [L]
-RewriteRule ^wp-includes/(.*)$ wordpress/wp-includes/$1 [L]
-RewriteRule ^wp-content/(.*)$ wordpress/wp-content/$1 [L]
-RewriteRule ^wp-cron\.php$ wordpress/wp-cron.php [L]
-RewriteRule ^wp-signup\.php$ wordpress/wp-signup.php [L]
-RewriteRule ^xmlrpc\.php$ wordpress/xmlrpc.php [L]
-
-# Standardní WordPress permalink rewrite
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

@@ -33,16 +33,13 @@ define( 'DB_CHARSET', 'utf8mb4' );
 define( 'DB_COLLATE', '' );
 
 /**
- * Lokální URL projektu (WordPress v podsložce)
+ * Lokální URL projektu
  *
- * Obě konstanty jsou záměrně nastaveny na stejnou hodnotu – veřejnou adresu
- * webu bez /wordpress/ v URL. Stránky jako /kontakty/ jsou dostupné přímo na
- * http://localhost/fotbal_club/kontakty/.
+ * Obě konstanty jsou nastaveny na kořenovou adresu složky fotbal_club,
+ * protože WordPress je lokálně nainstalován přímo v htdocs/fotbal_club/
+ * (ne v žádné podsložce).
  *
- * Fyzické soubory WordPressu jsou v podsložce wordpress/, ale Apache je
- * přesměruje pomocí rewrite pravidel v kořenovém .htaccess.
- *
- * @link https://developer.wordpress.org/advanced-administration/server/wordpress-in-directory/
+ * @link https://developer.wordpress.org/advanced-administration/wordpress-in-directory/
  */
 define( 'WP_HOME',    'http://localhost/fotbal_club' );
 define( 'WP_SITEURL', 'http://localhost/fotbal_club' );

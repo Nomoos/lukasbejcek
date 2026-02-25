@@ -20,76 +20,71 @@ Před instalací se ujistěte, že máte nainstalováno:
 1. Stáhněte a nainstalujte [XAMPP](https://www.apachefriends.org/).
 2. Spusťte **Apache** a **MySQL** v XAMPP Control Panel.
 
-### Krok 2 – Naklonujte repozitář
+### Krok 2 – Stáhněte WordPress
 
-Naklonujte repozitář přímo do složky `htdocs` pod názvem `fotbal_club`:
+Stáhněte nejnovější verzi WordPressu z [wordpress.org/download](https://wordpress.org/download/) a rozbalte jej do složky:
 
-```bash
-# Windows
-git clone https://github.com/Nomoos/lukasbejcek.git C:\xampp\htdocs\fotbal_club
-
-# macOS / Linux
-git clone https://github.com/Nomoos/lukasbejcek.git /Applications/XAMPP/htdocs/fotbal_club
+```
+C:\xampp\htdocs\fotbal_club\        (Windows)
+/Applications/XAMPP/htdocs/fotbal_club/  (macOS)
 ```
 
-WordPress core soubory se nacházejí v podsložce `wordpress/` repozitáře, ale veřejná adresa webu **neobsahuje `/wordpress/`** v URL.  
-Stránky (např. Kontakty) budou dostupné na: **`http://localhost/fotbal_club/kontakty/`**
+Tím vznikne standardní WordPress instalace přímo ve složce `fotbal_club/` (tj. soubory `wp-admin/`, `wp-includes/`, `wp-login.php`, `index.php` atd. jsou přímo v `fotbal_club/`).
 
-> Toto je standardní technika „[WordPress in its own directory](https://developer.wordpress.org/advanced-administration/server/wordpress-in-directory/)":
-> kořenový `index.php` přesměruje požadavky do `wordpress/`, zatímco Apache přepisuje URL pomocí `.htaccess` v kořeni repozitáře.
+### Krok 3 – Naklonujte repozitář
 
-### Krok 3 – Vytvořte databázi
+Naklonujte repozitář do **dočasné složky** mimo `htdocs`, např.:
+
+```bash
+git clone https://github.com/Nomoos/lukasbejcek.git C:\Users\<jmeno>\lukasbejcek
+```
+
+> **Poznámka:** Složka `wordpress/` v repozitáři slouží pouze jako **referenční dokumentace** – ukazuje, jaké soubory WordPress používá a jak jsou nakonfigurovány. Do lokální instalace se nekopíruje.
+
+### Krok 4 – Zkopírujte téma a plugin
+
+Ze složky repozitáře zkopírujte vlastní téma a plugin do WordPress instalace:
+
+```
+web/theme/tj-slavoj-myto/  →  C:\xampp\htdocs\fotbal_club\wp-content\themes\tj-slavoj-myto\
+web/plugins/slavoj-custom-fields/  →  C:\xampp\htdocs\fotbal_club\wp-content\plugins\slavoj-custom-fields\
+```
+
+### Krok 5 – Vytvořte databázi
 
 1. Otevřete prohlížeč na `http://localhost/phpmyadmin`.
 2. Klikněte **Nová databáze**, pojmenujte ji `slavoj_myto` a klikněte **Vytvořit**.
 
-### Krok 4 – Nastavte wp-config.php
+### Krok 6 – Nastavte wp-config.php
 
-Repozitář obsahuje připravený soubor `wordpress/wp-config.php` s lokální konfigurací.  
-Ujistěte se, že v souboru jsou správně nastaveny hodnoty:
+Spusťte instalační průvodce WordPress na adrese `http://localhost/fotbal_club/wp-admin/install.php` a vyplňte:
+
+- **Název databáze:** `slavoj_myto`
+- **Uživatelské jméno:** `root`
+- **Heslo:** *(prázdné – výchozí v XAMPP)*
+- **Server databáze:** `localhost`
+
+Průvodce vygeneruje soubor `wp-config.php`. Po vygenerování do něj přidejte (nebo zkontrolujte) hodnoty URL konstant:
 
 ```php
-define( 'DB_NAME', 'slavoj_myto' );
-define( 'DB_USER', 'root' );
-define( 'DB_PASSWORD', '' );          // v XAMPP prázdné
 define( 'WP_HOME',    'http://localhost/fotbal_club' );
 define( 'WP_SITEURL', 'http://localhost/fotbal_club' );
 ```
 
-Dále nahraďte zástupné fráze `'put your unique phrase here'` vlastními hodnotami  
-vygenerovanými na https://api.wordpress.org/secret-key/1.1/salt/
+### Krok 7 – Dokončete instalaci WordPress
 
-### Krok 5 – Nainstalujte WordPress
+1. Pokračujte v průvodci: vyplňte název webu a admin přihlašovací údaje.
+2. Po instalaci bude web dostupný na `http://localhost/fotbal_club/`.
 
-1. V prohlížeči otevřete `http://localhost/fotbal_club/wp-admin/install.php` a projděte instalačním průvodcem.
-2. Vyplňte název webu a admin přihlašovací údaje.
-3. Po instalaci bude web dostupný na `http://localhost/fotbal_club/`.
+### Krok 8 – Aktivujte téma a plugin
 
-### Krok 6 – Aktivujte téma
+1. Přihlaste se do admin rozhraní na `http://localhost/fotbal_club/wp-admin`.
+2. Přejděte na **Vzhled → Témata** a aktivujte téma **TJ Slavoj Mýto**.
+3. Přejděte na **Pluginy** a aktivujte plugin **Slavoj Custom Fields** (`slavoj-custom-fields`).
 
-Zkopírujte obsah složky `web/theme/tj-slavoj-myto/` do:
-```
-wordpress/wp-content/themes/tj-slavoj-myto/
-```
+### Krok 9 – Doporučené pluginy (volitelné)
 
-Aktivujte téma v admin rozhraní (**Vzhled → Témata**).
-
-### Krok 7 – Nainstalujte potřebné pluginy
-
-#### 6a – Vlastní plugin (povinné)
-
-Zkopírujte složku `web/plugins/slavoj-custom-fields` do adresáře:
-```
-wp-content/plugins/slavoj-custom-fields/
-```
-*(Při použití složky `wordpress/` z tohoto repozitáře je plugin již na správném místě: `wordpress/wp-content/plugins/slavoj-custom-fields/`.)*
-
-Poté v sekci **Pluginy** aktivujte plugin **Slavoj Custom Fields** (`slavoj-custom-fields`).  
-Plugin zastupuje funkce Advanced Custom Fields a Custom Post Type UI – registruje všechny vlastní typy obsahu (CPT), taxonomie, meta boxy a administrační nástrojovou stránku.
-
-#### 6b – Doporučené pluginy (volitelné)
-
-V sekci **Pluginy → Přidat nový** nainstalujte následující pluginy. Každý z nich plní specifickou roli, která není pokryta vlastním kódem projektu:
+V sekci **Pluginy → Přidat nový** nainstalujte následující pluginy:
 
 | Plugin | Odkaz | Proč ho potřebujeme |
 |--------|-------|---------------------|
@@ -101,7 +96,7 @@ V sekci **Pluginy → Přidat nový** nainstalujte následující pluginy. Každ
 
 > **Poznámka:** Pluginy **Advanced Custom Fields (ACF)** a **Custom Post Type UI** není nutné instalovat – vlastní typy obsahu (CPT) i meta pole jsou implementovány přímo v kódu tématu v souboru `functions.php`. Podrobný přehled všech pluginů a vlastního kódu najdete v [07-pluginy.md](./07-pluginy.md).
 
-### Krok 8 – Nastavte permalink strukturu
+### Krok 10 – Nastavte permalink strukturu
 
 Přejděte na **Nastavení → Trvalé odkazy** a zvolte **Název příspěvku** (`/%postname%/`). Uložte.
 

@@ -1,16 +1,12 @@
 <?php
 /**
- * Front to the WordPress application.
+ * Front to the WordPress application. This file doesn't do anything, but
+ * loads the WordPress environment and template.
  *
- * WordPress core files are in the `wordpress/` subdirectory.
- * This file bootstraps WordPress from there so that the public site
- * runs at http://localhost/fotbal_club/ (not /fotbal_club/wordpress/).
- *
- * @link https://developer.wordpress.org/advanced-administration/server/wordpress-in-directory/
  * @package WordPress
  */
 
 define( 'WP_USE_THEMES', true );
 
 /** Loads the WordPress Environment and Template */
-require __DIR__ . '/wordpress/wp-blog-header.php';
+require __DIR__ . '/wp-blog-header.php';
