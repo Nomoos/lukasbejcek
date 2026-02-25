@@ -2,7 +2,7 @@
 /**
  * WordPress konfigurace pro lokální vývoj
  *
- * Lokální URL: http://localhost/lukasbejcek/
+ * Lokální URL: http://localhost/fotbal_club/kontakty/ (příklad stránky)
  *
  * Tento soubor je konfigurací pro lokální prostředí (XAMPP).
  * Při nasazení na produkční server nahraďte přihlašovací údaje k databázi
@@ -35,11 +35,14 @@ define( 'DB_COLLATE', '' );
 /**
  * Lokální URL projektu
  *
- * Přepisuje URL uloženou v databázi, takže WordPress funguje
- * i po přejmenování složky nebo přenosu na jiný server.
+ * Obě konstanty jsou nastaveny na kořenovou adresu složky fotbal_club,
+ * protože WordPress je lokálně nainstalován přímo v htdocs/fotbal_club/
+ * (ne v žádné podsložce).
+ *
+ * @link https://developer.wordpress.org/advanced-administration/wordpress-in-directory/
  */
-define( 'WP_HOME',    'http://localhost/lukasbejcek/wordpress' );
-define( 'WP_SITEURL', 'http://localhost/lukasbejcek/wordpress' );
+define( 'WP_HOME',    'http://localhost/fotbal_club' );
+define( 'WP_SITEURL', 'http://localhost/fotbal_club' );
 
 /**#@+
  * Autentizační klíče a soli.
