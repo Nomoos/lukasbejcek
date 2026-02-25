@@ -21,6 +21,7 @@ lukasbejcek/
 │   ├── 02-analyza-original.md  # Analýza původního kódu
 │   └── 03-nova-struktura.md    # Nová adresářová a datová struktura
 ├── notes/                 # 🆕 Pracovní poznámky a nápady
+├── ZADANI-MATURITNI-PRACE.md    # ✅ Zadání maturitní práce
 ├── DOKUMENTACE-KOD.md    # ✅ Vysvětlení jak funguje současný kód
 └── PLAN-PORTOVANI-WORDPRESS.md  # ✅ Plán kompletní migrace do WordPress
 ```

@@ -79,8 +79,8 @@ Obsahuje úplný seznam všech implementovaných typů obsahu, jejich skutečné
 | Název alba | *(titulek příspěvku)* | title | Název fotoalba nebo události |
 | Náhledová fotografie | *(obrázek příspěvku)* | image | Přes funkci Obrázek příspěvku |
 | Tým (popis) | `tym` | text | Textový popis týmu (záložní pole) |
-| Sezóna (popis) | `sezona` | text | Textový popis sezóny (záložní pole) |
-| Kategorie týmu | taxonomie `kategorie-tymu` | taxonomie | Pro filtrování galerie |
+| Sezóna | taxonomie `sezona` | taxonomie | 2024/25, 2025/26… |
+| Kategorie týmu | taxonomie `kategorie-tymu` | taxonomie | Muži A, Muži B, Dorost… |
 | Sezóna | taxonomie `sezona` | taxonomie | Pro filtrování galerie |
 | Fotografie v albu | *(obsah příspěvku)* | gallery block | Vkládání fotek přes WordPress editor nebo ACF |
 
