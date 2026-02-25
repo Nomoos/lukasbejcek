@@ -74,6 +74,8 @@ Tento dokument obsahuje:
 - [01-uvod.md](./docs/01-uvod.md) – Úvod a přehled projektu
 - [02-analyza-original.md](./docs/02-analyza-original.md) – Analýza původního kódu
 - [03-nova-struktura.md](./docs/03-nova-struktura.md) – Nová adresářová a datová struktura
+- [04-lokalni-instalace.md](./docs/04-lokalni-instalace.md) – Jak rozchodit projekt lokálně
+- [05-deployment-ftp.md](./docs/05-deployment-ftp.md) – Deployment na hosting přes FTP
 
 ## 🎯 Současný stav projektu
 
@@ -95,8 +97,9 @@ Tento dokument obsahuje:
 
 1. **Přečtěte si dokumentaci**: Začněte s [DOKUMENTACE-KOD.md](./DOKUMENTACE-KOD.md) pro pochopení současného stavu
 2. **Prostudujte plán**: Pokračujte s [PLAN-PORTOVANI-WORDPRESS.md](./PLAN-PORTOVANI-WORDPRESS.md)
-3. **Nastavte vývojové prostředí**: Nainstalujte lokální WordPress
+3. **Nastavte vývojové prostředí**: Viz [docs/04-lokalni-instalace.md](./docs/04-lokalni-instalace.md)
 4. **Následujte fáze**: Postupujte podle 10 fází v plánu portování
+5. **Nasazení na hosting**: Viz [docs/05-deployment-ftp.md](./docs/05-deployment-ftp.md)
 
 ## 💡 Doporučení
 

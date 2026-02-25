@@ -9,6 +9,8 @@ Tato složka obsahuje průběžnou dokumentaci portování WordPress webu TJ Sla
 | [01-uvod.md](./01-uvod.md) | Úvod a přehled projektu |
 | [02-analyza-original.md](./02-analyza-original.md) | Analýza původního kódu ve složce `original/` |
 | [03-nova-struktura.md](./03-nova-struktura.md) | Nová adresářová a datová struktura |
+| [04-lokalni-instalace.md](./04-lokalni-instalace.md) | Jak rozchodit projekt lokálně (Local, XAMPP, Docker) |
+| [05-deployment-ftp.md](./05-deployment-ftp.md) | Deployment na hosting přes FTP |
 
 ## Jak přispívat
 
