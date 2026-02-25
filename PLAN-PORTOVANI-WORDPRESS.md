@@ -86,7 +86,7 @@ Pole:
 - Popis (editor)
 - Tým (taxonomie)
 - Sezóna (taxonomie)
-- Fotografie (galerie - ACF Gallery nebo WordPress galerie)
+- Fotografie (galerie - WordPress galerie, vestavěná)
 ```
 
 **5. Kontakty (Contact)**
@@ -122,7 +122,7 @@ Pole:
 #### 2.3 Plugin recommendations
 
 **Nutné:**
-1. **Advanced Custom Fields (ACF) PRO** - pro custom fields a flexible content
+1. **Advanced Custom Fields (ACF)** - pro custom fields (zdarma, dostupný na wordpress.org)
 2. **Custom Post Type UI** - pro snadné vytvoření custom post types (nebo kódovat do functions.php)
 
 **Doporučené:**
@@ -132,8 +132,8 @@ Pole:
 6. **Regenerate Thumbnails** - pro optimalizaci obrázků
 
 **Volitelné:**
-7. **WPML** nebo **Polylang** - pokud plánujete vícejazyčnost
-8. **WP Rocket** - pro cachování a rychlost
+7. **Polylang** - pokud plánujete vícejazyčnost (zdarma)
+8. **W3 Total Cache** nebo **WP Super Cache** - pro cachování a rychlost (zdarma)
 9. **Yoast SEO** - pro SEO optimalizaci
 
 ### Fáze 3: Implementace šablon (3-4 dny)
@@ -309,7 +309,7 @@ Funkce:
 - [ ] Minifikace CSS a JavaScript
 - [ ] Lazy loading obrázků
 - [ ] Optimalizace databázových queries
-- [ ] Caching (WP Rocket nebo W3 Total Cache)
+- [ ] Caching (W3 Total Cache nebo WP Super Cache)
 - [ ] CDN pro statické soubory
 - [ ] Optimalizace obrázků (WebP format)
 
