@@ -20,7 +20,7 @@ Tento dokument navrhuje kompletní postup pro dokončení migrace webu TJ Slavoj
 ### Fáze 1: Analýza a příprava (1-2 dny)
 
 #### 1.1 Inventarizace obsahu
-- [ ] Sepsat seznam všech typů obsahu (zápasy, týmy, hráči, galerie, kontakty)
+- [x] Sepsat seznam všech typů obsahu (zápasy, týmy, hráči, galerie, kontakty)
 - [ ] Identifikovat všechna potřebná pole pro každý typ
 - [ ] Vytvořit datový model
 - [ ] Připravit ukázková data pro testování

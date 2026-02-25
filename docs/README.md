@@ -11,6 +11,7 @@ Tato složka obsahuje průběžnou dokumentaci portování WordPress webu TJ Sla
 | [03-nova-struktura.md](./03-nova-struktura.md) | Nová adresářová a datová struktura |
 | [04-lokalni-instalace.md](./04-lokalni-instalace.md) | Jak rozchodit projekt lokálně (Local, XAMPP, Docker) |
 | [05-deployment-ftp.md](./05-deployment-ftp.md) | Deployment na hosting přes FTP |
+| [06-inventar-obsahu.md](./06-inventar-obsahu.md) | Inventář všech typů obsahu (CPT) s poli – Fáze 1 |
 
 ## Jak přispívat
 
