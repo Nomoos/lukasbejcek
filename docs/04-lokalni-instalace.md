@@ -18,6 +18,15 @@ Před instalací se ujistěte, že máte nainstalováno:
 
 ## Možnost A – Local (by WP Engine) – nejjednodušší
 
+> **⚠️ Kompatibilita s klasickými webhostingy**
+>
+> **Local (by WP Engine)** je výhradně **nástroj pro lokální vývoj** – nejedná se o hosting ani o žádný cloudový produkt.  
+> Slouží jen k tomu, aby WordPress běžel na vašem počítači.  
+> Výsledné soubory tématu a pluginů jsou **standardní WordPress soubory** kompatibilní s jakýmkoliv hostingem
+> (sdílený hosting, VPS, Wedos, Active24, SiteGround apod.).  
+> Neexistuje žádná vazba na WP Engine jako hosting providera – po dokončení vývoje nahrajete soubory
+> na libovolný hosting přes FTP dle návodu v [05-deployment-ftp.md](./05-deployment-ftp.md).
+
 ### Krok 1 – Nainstalujte Local
 
 1. Stáhněte [Local](https://localwp.com/) a nainstalujte na svůj systém.
