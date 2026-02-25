@@ -52,8 +52,8 @@ Ujistěte se, že v souboru jsou správně nastaveny hodnoty:
 define( 'DB_NAME', 'slavoj_myto' );
 define( 'DB_USER', 'root' );
 define( 'DB_PASSWORD', '' );          // v XAMPP prázdné
-define( 'WP_HOME',    'http://localhost/fotbal_club' );           // veřejná URL webu
-define( 'WP_SITEURL', 'http://localhost/fotbal_club/wordpress' ); // kde jsou soubory WP
+define( 'WP_HOME',    'http://localhost/fotbal_club' );
+define( 'WP_SITEURL', 'http://localhost/fotbal_club' );
 ```
 
 Dále nahraďte zástupné fráze `'put your unique phrase here'` vlastními hodnotami  
@@ -61,8 +61,8 @@ vygenerovanými na https://api.wordpress.org/secret-key/1.1/salt/
 
 ### Krok 5 – Nainstalujte WordPress
 
-1. V prohlížeči otevřete `http://localhost/fotbal_club/wordpress/` (instalační průvodce funguje přes adresu SITEURL).
-2. Projděte instalačním průvodcem WordPress a vyplňte název webu a admin přihlašovací údaje.
+1. V prohlížeči otevřete `http://localhost/fotbal_club/wp-admin/install.php` a projděte instalačním průvodcem.
+2. Vyplňte název webu a admin přihlašovací údaje.
 3. Po instalaci bude web dostupný na `http://localhost/fotbal_club/`.
 
 ### Krok 6 – Aktivujte téma
@@ -113,7 +113,7 @@ Po instalaci zkontrolujte:
 
 - [ ] Web se zobrazuje na `http://localhost/fotbal_club/`
 - [ ] Stránka Kontakty je dostupná na `http://localhost/fotbal_club/kontakty/`
-- [ ] WordPress admin je dostupný na `http://localhost/fotbal_club/wordpress/wp-admin`
+- [ ] WordPress admin je dostupný na `http://localhost/fotbal_club/wp-admin`
 - [ ] Téma je aktivní
 - [ ] Plugin **Slavoj Custom Fields** (`slavoj-custom-fields`) je aktivní
 - [ ] Permalink struktura je nastavena na **Název příspěvku**

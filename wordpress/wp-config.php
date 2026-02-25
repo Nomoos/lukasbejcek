@@ -35,16 +35,17 @@ define( 'DB_COLLATE', '' );
 /**
  * Lokální URL projektu (WordPress v podsložce)
  *
- * WP_HOME    – veřejná adresa webu (žádná /wordpress/ v URL)
- * WP_SITEURL – adresa, kde jsou fyzicky uloženy soubory WordPressu
+ * Obě konstanty jsou záměrně nastaveny na stejnou hodnotu – veřejnou adresu
+ * webu bez /wordpress/ v URL. Stránky jako /kontakty/ jsou dostupné přímo na
+ * http://localhost/fotbal_club/kontakty/.
  *
- * Toto rozdělení umožňuje, aby stránky jako /kontakty/ byly dostupné
- * přímo na http://localhost/fotbal_club/kontakty/ bez /wordpress/ v URL.
+ * Fyzické soubory WordPressu jsou v podsložce wordpress/, ale Apache je
+ * přesměruje pomocí rewrite pravidel v kořenovém .htaccess.
  *
  * @link https://developer.wordpress.org/advanced-administration/server/wordpress-in-directory/
  */
 define( 'WP_HOME',    'http://localhost/fotbal_club' );
-define( 'WP_SITEURL', 'http://localhost/fotbal_club/wordpress' );
+define( 'WP_SITEURL', 'http://localhost/fotbal_club' );
 
 /**#@+
  * Autentizační klíče a soli.
