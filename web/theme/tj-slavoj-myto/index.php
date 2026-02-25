@@ -20,7 +20,7 @@ get_header();
   <div class="container zapasy-container">
     <?php
     $args = array(
-        'category_name'  => 'zapasy',
+        'post_type'      => 'zapas',
         'posts_per_page' => 4,
         'meta_key'       => 'datum_zapasu',
         'orderby'        => 'meta_value',

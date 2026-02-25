@@ -13,8 +13,11 @@ get_header();
   <div class="row g-4 justify-content-center">
     <?php
     $args = array(
-        'category_name'  => 'kontakty',
+        'post_type'      => 'kontakt',
         'posts_per_page' => -1,
+        'orderby'        => 'meta_value_num',
+        'meta_key'       => 'poradi',
+        'order'          => 'ASC',
     );
     $kontakty_query = new WP_Query($args);
 

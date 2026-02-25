@@ -57,15 +57,15 @@ $nazev_sezony = isset($sezony_nazvy[$filtr_sezona]) ? $sezony_nazvy[$filtr_sezon
 
         <!-- INFO BOX -->
         <?php
-        // Získání metadat o týmu z příspěvku kategorie 'tymy'
+        // Získání metadat o týmu z CPT 'tym'
         $team_args = array(
-            'category_name'  => 'tymy',
+            'post_type'      => 'tym',
             'posts_per_page' => 1,
-            'meta_query'     => array(
+            'tax_query'      => array(
                 array(
-                    'key'     => 'tym_slug',
-                    'value'   => $filtr_tym,
-                    'compare' => '=',
+                    'taxonomy' => 'kategorie-tymu',
+                    'field'    => 'slug',
+                    'terms'    => $filtr_tym,
                 ),
             ),
         );
