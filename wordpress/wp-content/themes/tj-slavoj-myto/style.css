@@ -1,0 +1,455 @@
+/*
+Theme Name: TJ Slavoj Mýto
+Theme URI: https://github.com/Nomoos/lukasbejcek
+Author: Lukáš Bejček
+Author URI: https://github.com/Nomoos/lukasbejcek
+Description: Vlastní WordPress šablona pro fotbalový klub TJ Slavoj Mýto
+Version: 1.0
+License: GNU General Public License v2 or later
+Text Domain: tj-slavoj-myto
+*/
+
+/* ===== ZÁKLAD ===== */
+body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  font-family: Arial, sans-serif;
+  color: #000;
+}
+
+/* ===== FILTROVÉ SELEKTY ===== */
+.filter-select-team {
+  width: 20%;
+  background-color: #233D97;
+  color: white;
+}
+
+.filter-select-season {
+  width: 20%;
+}
+
+.filter-select-status {
+  width: 20%;
+  background-color: #233D97;
+  color: white;
+}
+
+.filter-select-team-sm {
+  width: 11%;
+}
+
+.filter-select-season-sm {
+  width: 15%;
+}
+
+/* ===== HLAVIČKA ===== */
+header {
+  background-color: #E6E6E6;
+  border-bottom: 2px solid #ccc;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 50px;
+  margin-right: 10px;
+}
+
+.logo h1 {
+  font-size: 22px;
+  margin: 0;
+}
+
+/* ===== NAVIGACE ===== */
+nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav li {
+  margin-left: 25px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #000;
+  font-size: 15px;
+}
+
+nav a.active,
+nav a:hover {
+  color: #233D97;
+  font-weight: bold;
+}
+
+.nav-link {
+  color: #000 !important;
+  font-weight: 500;
+}
+
+.nav-link.active,
+.nav-link:hover {
+  color: #233D97 !important;
+}
+
+/* ===== BANNER ===== */
+.banner {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+}
+
+.banner img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  filter: brightness(70%);
+}
+
+.banner-text {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  text-align: center;
+}
+
+.banner-text h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+/* ===== KARTY SE ZÁPASY ===== */
+.h3 {
+  text-align: center;
+}
+
+.zapasy-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card {
+  width: 22%;
+  background: #E6E6E6;
+  border-radius: 0 40px 0 0;
+  padding: 15px 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.card h3 {
+  margin: 5px 0;
+  color: #233D97;
+  font-size: 16px;
+}
+
+.card p {
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+/* ===== MODRÝ A ŠEDÝ PRUH ===== */
+.blue-bar-p {
+  width: 100%;
+  height: 60px;
+  background-color: #233D97;
+  border-radius: 0 20px 0 0;
+}
+
+.blue-bar-l {
+  width: 100%;
+  height: 60px;
+  background-color: #233D97;
+  border-radius: 20px 0 0 0;
+}
+
+.gray-bar {
+  width: 100%;
+  height: 60px;
+  background-color: #E6E6E6;
+  border-radius: 20px 0 0 0;
+}
+
+/* ===== AKTUÁLNÍ ZPRÁVY ===== */
+.aktuality {
+  background: #fff;
+  padding: 50px 0;
+}
+
+.aktuality h2 {
+  margin-bottom: 30px;
+  font-size: 22px;
+  color: #000;
+}
+
+.aktuality-box {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.aktualita {
+  background: #E6E6E6;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+.aktualita h4 {
+  margin-top: 0;
+  color: #233D97;
+  font-size: 17px;
+}
+
+.aktualita p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.aktualita.druhy {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.aktualita.druhy .text {
+  width: 65%;
+}
+
+.aktualita.druhy img {
+  width: 260px;
+  border-radius: 8px;
+}
+
+/* ===== FORMULÁŘOVÉ SELEKTY ===== */
+.form-select {
+  border: none;
+  box-shadow: none;
+  border-radius: 10px;
+  padding: 0.4rem 1rem;
+  font-size: 15px;
+  background-color: #E6E6E6;
+}
+
+/* ===== BOXY ===== */
+.border {
+  border-color: #000 !important;
+}
+
+.rounded-3 {
+  border-radius: 10px !important;
+}
+
+h2, h4, h5 {
+  color: #000;
+  font-weight: bold;
+}
+
+/* ===== GALERIE ===== */
+.gallery-logo {
+  width: 120px;
+  z-index: 2;
+  background-color: #fff;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.gallery-card {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background-color: #E6E6E6;
+  border-radius: 0 20px 0 0;
+}
+
+.fotky {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background-color: #E6E6E6;
+}
+
+.gallery-img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+.gallery-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #E6E6E6;
+  border-radius: 15px;
+}
+
+/* ===== ZÁPASY KARTY ===== */
+.match-card {
+  background-color: #fff;
+  border: 1px solid #00000030;
+  border-radius: 15px;
+  transition: 0.2s;
+}
+
+.match-card:hover {
+  background-color: #E6E6E6;
+}
+
+/* ===== KOMISE KARTY (KONTAKTY) ===== */
+.committee-card {
+  background: #fff;
+  border: 2px solid #dcdcdc;
+  border-radius: 15px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.05);
+  height: 400px;
+}
+
+.committee-img {
+  width: 120px;
+  height: auto;
+}
+
+.committee-img-wrapper {
+  width: 160px;
+  height: 160px;
+  background: #E6E6E6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px auto;
+}
+
+/* ===== SPONZOŘI ===== */
+.sponsor-card {
+  background: #fff;
+  border: 2px solid #dcdcdc;
+  border-radius: 15px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.05);
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 250px;
+  transition: 0.2s;
+}
+
+.sponsor-card:hover {
+  background-color: #f5f5f5;
+  color: #233D97;
+}
+
+.sponsor-card img {
+  max-width: 120px;
+  max-height: 120px;
+  object-fit: contain;
+  margin-bottom: 15px;
+}
+
+.sponsor-card h5 {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* ===== KONTAKTY ODKAZY ===== */
+.committee-card a {
+  color: #000;
+  text-decoration: none;
+}
+
+.committee-card a:hover {
+  color: #233D97;
+}
+
+/* ===== HISTORIE ===== */
+.club-logo {
+  max-width: 250px;
+}
+
+/* ===== LIGHTBOX ===== */
+.lightbox-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.lightbox-overlay.active {
+  display: flex;
+}
+
+.lightbox-overlay img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  color: #fff;
+  font-size: 40px;
+  cursor: pointer;
+  z-index: 10000;
+  line-height: 1;
+}
+
+.lightbox-prev,
+.lightbox-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  font-size: 50px;
+  cursor: pointer;
+  z-index: 10000;
+  user-select: none;
+  line-height: 1;
+  padding: 10px;
+}
+
+.lightbox-prev {
+  left: 20px;
+}
+
+.lightbox-next {
+  right: 20px;
+}
+
+/* ===== MAPA ===== */
+.map-container {
+  width: 100%;
+  height: 400px;
+  margin-top: 40px;
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 15px;
+}
