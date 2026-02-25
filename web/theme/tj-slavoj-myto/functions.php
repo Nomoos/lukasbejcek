@@ -738,3 +738,45 @@ function slavoj_add_lazy_loading($content) {
 }
 add_filter('the_content', 'slavoj_add_lazy_loading');
 add_filter('post_thumbnail_html', 'slavoj_add_lazy_loading');
+
+// =====================================================================
+// FRONTEND AKCE – ULOŽENÍ SKÓRE A STŘELCŮ (admin-post.php handler)
+// =====================================================================
+
+/**
+ * Zpracuje formulář pro zápis skóre a střelců z frontendu (single-zapas.php).
+ * Dostupné pouze pro přihlášené uživatele s oprávněním edit_post.
+ */
+function slavoj_handle_update_zapas() {
+    if (!isset($_POST['slavoj_zapas_update_nonce'])) {
+        wp_die('Neplatný požadavek.', 403);
+    }
+
+    $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
+
+    if (!$post_id || !wp_verify_nonce(
+        sanitize_text_field(wp_unslash($_POST['slavoj_zapas_update_nonce'])),
+        'slavoj_update_zapas_' . $post_id
+    )) {
+        wp_die('Neplatný bezpečnostní token.', 403);
+    }
+
+    if (!current_user_can('edit_post', $post_id)) {
+        wp_die('Nemáte oprávnění upravovat tento příspěvek.', 403);
+    }
+
+    $skore   = isset($_POST['skore'])   ? sanitize_text_field(wp_unslash($_POST['skore']))   : '';
+    $strelci = isset($_POST['strelci']) ? sanitize_text_field(wp_unslash($_POST['strelci'])) : '';
+
+    update_post_meta($post_id, 'skore', $skore);
+    update_post_meta($post_id, 'strelci', $strelci);
+
+    wp_redirect(add_query_arg('slavoj_saved', '1', get_permalink($post_id)));
+    exit;
+}
+add_action('admin_post_slavoj_update_zapas', 'slavoj_handle_update_zapas');
+
+// Nepřihlášení uživatelé nemohou odeslat formulář
+add_action('admin_post_nopriv_slavoj_update_zapas', function () {
+    wp_die('Pro tuto akci se musíte přihlásit.', 403);
+});

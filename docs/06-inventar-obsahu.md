@@ -1,190 +1,158 @@
 # 06 – Inventář typů obsahu (Content Types)
 
 Tento dokument je výstupem **Fáze 1 – Analýza a příprava** (krok 1.1).  
-Obsahuje seznam všech identifikovaných typů obsahu, jejich pole a prostor pro doplnění uživatelem.
+Obsahuje úplný seznam všech implementovaných typů obsahu, jejich skutečné meta klíče a taxonomie.
+
+> **Stav:** Aktualizováno po implementaci – všechny CPT a pole jsou funkční v `functions.php` tématu a v pluginu `slavoj-custom-fields`.
 
 ---
 
-## Identifikované typy obsahu
+## Implementované typy obsahu
 
 ### 1. Zápasy (`zapas`)
 
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| Domácí tým | text | název domácího týmu |
-| Hostující tým | text | název hostujícího týmu |
-| Skóre domácí | číslo | prázdné u nadcházejících zápasů |
-| Skóre hosté | číslo | prázdné u nadcházejících zápasů |
-| Datum a čas | datetime | datum a čas výkopu |
-| Střelci | textarea | volný text, např. „2× Schmid, Bejček" |
-| Tým (kategorie) | taxonomie | Muži A, Muži B, Dorost, Žáci… |
-| Sezóna | taxonomie | 2024/25, 2025/26… |
-| Stav zápasu | taxonomie | Nadcházející / Odehraný / Zrušený |
+**Archivní URL:** `/zapasy/`  
+**Šablona archivu:** `archive-zapas.php`  
+**Šablona detailu:** `single-zapas.php`
 
-**Doplnění od uživatele:**
+| Pole | Meta klíč | Typ | Popis |
+|------|-----------|-----|-------|
+| Domácí tým | `domaci` | text | Název domácího týmu (např. „TJ Slavoj Mýto") |
+| Hostující tým | `hoste` | text | Název hostujícího týmu |
+| Skóre | `skore` | text | Výsledek ve formátu „3:1"; prázdné = zápas nebyl odehrán |
+| Datum zápasu | `datum_zapasu` | date (Y-m-d) | Datum konání zápasu – slouží i pro filtrování |
+| Čas výkopu | `cas_zapasu` | time (HH:MM) | Čas zahájení zápasu |
+| Střelci | `strelci` | text | Střelci gólů, např. „2× Novák, Bejček" |
+| Místo konání | `misto_konani` | text | Název hřiště nebo adresa |
+| Kategorie týmu | taxonomie `kategorie-tymu` | taxonomie | Muži A, Muži B, Dorost, Starší žáci… |
+| Sezóna | taxonomie `sezona` | taxonomie | 2024/25, 2025/26… |
+| Stav zápasu | taxonomie `stav-zapasu` | taxonomie | Nadcházející, Odehraný, Zrušený |
 
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| | | |
-| | | |
-| | | |
+**Správa z frontendu:** Na stránce detailu zápasu (`single-zapas.php`) mohou přihlášení správci obsahu přímo zapsat skóre a střelce pomocí inline formuláře. Hráče lze přidávat rychlým výběrem ze soupisky týmu.
 
 ---
 
 ### 2. Týmy (`tym`)
 
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| Název týmu | title | automaticky jako název příspěvku |
-| Kategorie | taxonomie | Muži A, Muži B, Dorost, Starší žáci, Mladší žáci, Přípravka |
-| Sezóna | taxonomie | 2024/25, 2025/26… |
-| Počet hráčů | číslo | |
-| Hlavní trenér | text | |
-| Asistent trenéra | text | |
-| Zdravotník | text | |
-| Logo týmu | obrázek | |
-| Popis | editor | |
+**Archivní URL:** `/tymy/`  
+**Šablona archivu:** `archive-tym.php`  
+**Šablona detailu:** `single-tym.php`
 
-**Doplnění od uživatele:**
-
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| | | |
-| | | |
-| | | |
+| Pole | Meta klíč | Typ | Popis |
+|------|-----------|-----|-------|
+| Název týmu | *(titulek příspěvku)* | title | Automaticky jako název příspěvku WordPress |
+| Identifikátor (slug) | `tym_slug` | text | Slug pro propojení s hráči (např. `muzi-a`) |
+| Počet hráčů | `pocet_hracu` | number | Celkový počet hráčů v soupisku |
+| Hlavní trenér | `hlavni_trener` | text | Jméno hlavního trenéra |
+| Asistent trenéra | `asistent_trenera` | text | Jméno asistenta trenéra |
+| Zdravotník | `zdravotnik` | text | Jméno zdravotníka |
+| Logo týmu | *(obrázek příspěvku)* | image | Přes funkci Obrázek příspěvku |
+| Popis | *(obsah příspěvku)* | editor | Plný WordPress editor |
+| Kategorie | taxonomie `kategorie-tymu` | taxonomie | Muži A, Muži B, Dorost, Starší žáci, Mladší žáci, Přípravka |
+| Sezóna | taxonomie `sezona` | taxonomie | 2024/25, 2025/26… |
 
 ---
 
 ### 3. Hráči (`hrac`)
 
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| Jméno | title | automaticky jako název příspěvku |
-| Číslo dresu | číslo | |
-| Rok narození | číslo | |
-| Pozice | taxonomie | Brankář, Obránce, Záložník, Útočník |
-| Tým | vztah (CPT) | vazba na příspěvek typu Tým |
-| Fotografie | obrázek | |
-| Kontakt | text | volitelný kontaktní údaj |
+**Šablony:** hráči nemají vlastní archivní stránku; jsou zobrazeni v soupisce týmu přes funkci `slavoj_vypis_hrace_tymu()`.
 
-**Doplnění od uživatele:**
-
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| | | |
-| | | |
-| | | |
+| Pole | Meta klíč | Typ | Popis |
+|------|-----------|-----|-------|
+| Jméno | *(titulek příspěvku)* | title | Celé jméno hráče |
+| Číslo dresu | `cislo` | number (1–99) | Číslo na dresu; slouží pro řazení v soupisku |
+| Rok narození | `rok_narozeni` | number | Rok narození (např. 1995) |
+| Slug týmu | `tym_slug` | text | Musí odpovídat hodnotě `tym_slug` příslušného týmu |
+| Fotografie | *(obrázek příspěvku)* | image | Přes funkci Obrázek příspěvku |
+| Pozice | taxonomie `pozice-hrace` | taxonomie | Brankáři, Obránci, Záložníci, Útočníci |
+| Kategorie týmu | taxonomie `kategorie-tymu` | taxonomie | Muži A, Muži B, Dorost… |
+| Sezóna | taxonomie `sezona` | taxonomie | 2024/25, 2025/26… |
 
 ---
 
 ### 4. Galerie (`galerie`)
 
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| Název události | title | automaticky jako název příspěvku |
-| Datum události | datum | |
-| Popis | editor | |
-| Tým | taxonomie | |
-| Sezóna | taxonomie | |
-| Fotografie | galerie | ACF Gallery nebo WordPress media galerie |
+**Archivní URL:** `/galerie/`  
+**Šablona archivu:** `page-galerie.php` (page template) nebo `archive-galerie.php`  
+**Šablona detailu:** `single-galerie.php`
 
-**Doplnění od uživatele:**
-
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| | | |
-| | | |
-| | | |
+| Pole | Meta klíč | Typ | Popis |
+|------|-----------|-----|-------|
+| Název alba | *(titulek příspěvku)* | title | Název fotoalba nebo události |
+| Náhledová fotografie | *(obrázek příspěvku)* | image | Přes funkci Obrázek příspěvku |
+| Datum události | `datum_udalosti` | date | Datum pořízení fotografií |
+| Tým (popis) | `tym` | text | Textový popis týmu (záložní pole) |
+| Sezóna (popis) | `sezona` | text | Textový popis sezóny (záložní pole) |
+| Kategorie týmu | taxonomie `kategorie-tymu` | taxonomie | Pro filtrování galerie |
+| Sezóna | taxonomie `sezona` | taxonomie | Pro filtrování galerie |
+| Fotografie v albu | *(obsah příspěvku)* | gallery block | Vkládání fotek přes WordPress editor nebo ACF |
 
 ---
 
 ### 5. Kontakty (`kontakt`)
 
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| Jméno | title | automaticky jako název příspěvku |
-| Funkce / Role | text | např. „Předseda klubu" |
-| Telefon | text | |
-| E-mail | email | |
-| Fotografie | obrázek | |
-| Pořadí | číslo | pro řazení kontaktů na stránce |
+**Šablona:** `page-kontakty.php` (page template)
 
-**Doplnění od uživatele:**
-
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| | | |
-| | | |
-| | | |
+| Pole | Meta klíč | Typ | Popis |
+|------|-----------|-----|-------|
+| Jméno | *(titulek příspěvku)* | title | Celé jméno člena výboru |
+| Fotografie | *(obrázek příspěvku)* | image | Přes funkci Obrázek příspěvku |
+| Funkce / Pozice | `pozice` | text | Např. „Předseda klubu" |
+| Telefon | `telefon` | text | Telefonní číslo |
+| E-mail | `email` | email | E-mailová adresa |
+| Pořadí zobrazení | `poradi` | number | Číslo pro řazení na stránce (nižší = výše) |
 
 ---
 
 ### 6. Sponzoři (`sponzor`)
 
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| Název | title | automaticky jako název příspěvku |
-| Logo | obrázek | |
-| URL webových stránek | url | odkaz na web sponzora |
-| Popis | editor | krátký text o spolupráci |
-| Typ sponzorství | taxonomie | Hlavní partner, Partner, Podpora |
-| Pořadí | číslo | pro řazení na stránce sponzorů |
+**Šablona:** `page-sponzori.php` (page template)
 
-**Doplnění od uživatele:**
-
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| | | |
-| | | |
-| | | |
+| Pole | Meta klíč | Typ | Popis |
+|------|-----------|-----|-------|
+| Název sponzora | *(titulek příspěvku)* | title | Název firmy / partnera |
+| Logo | *(obrázek příspěvku)* | image | Přes funkci Obrázek příspěvku |
+| Webové stránky | `web_sponzora` | url | Odkaz na web sponzora (klikatelný) |
+| Pořadí zobrazení | `poradi` | number | Číslo pro řazení na stránce (nižší = výše) |
 
 ---
 
-## Další typy obsahu – prostor pro doplnění
+## Taxonomie (implementované)
 
-Pokud web bude potřebovat další typy obsahu, doplňte je sem:
+| Taxonomie | Slug | Výchozí hodnoty | Používá se v |
+|-----------|------|-----------------|--------------|
+| Kategorie týmu | `kategorie-tymu` | muzi-a, muzi-b, dorost, starsi-zaci, mladsi-zaci, pripravka | zapas, tym, hrac, galerie |
+| Sezóna | `sezona` | 2025/26, 2024/25, 2023/24 | zapas, tym, hrac, galerie |
+| Stav zápasu | `stav-zapasu` | nadchazejici, odehrany, zruseny | zapas |
+| Pozice hráče | `pozice-hrace` | brankari, obranci, zaloznici, utocnici | hrac |
 
-### 7. _(název – doplní uživatel)_
-
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| | | |
-| | | |
-| | | |
-| | | |
-| | | |
+> Výchozí hodnoty taxonomií jsou automaticky vytvořeny při aktivaci pluginu **Slavoj Custom Fields** nebo ručně přes **Nástroje → Slavoj nastavení**.
 
 ---
 
-### 8. _(název – doplní uživatel)_
+## Závislosti a propojení
 
-| Pole | Typ | Poznámka |
-|------|-----|----------|
-| | | |
-| | | |
-| | | |
-| | | |
-| | | |
+```
+zapas  →  taxonomie: kategorie-tymu, sezona, stav-zapasu
+          meta: datum_zapasu, cas_zapasu, domaci, hoste, skore, strelci, misto_konani
 
----
+tym    →  taxonomie: kategorie-tymu, sezona
+          meta: tym_slug, pocet_hracu, hlavni_trener, asistent_trenera, zdravotnik
 
-## Taxonomie (sdílené kategorie)
+hrac   →  taxonomie: kategorie-tymu, sezona, pozice-hrace
+          meta: cislo, rok_narozeni, tym_slug
+          propojení: tym_slug musí odpovídat hodnotě tym_slug v příslušném záznamu CPT tym
 
-| Taxonomie | Slug | Hodnoty | Používá se v |
-|-----------|------|---------|--------------|
-| Kategorie týmu | `kategorie-tymu` | Muži A, Muži B, Dorost, Starší žáci, Mladší žáci, Přípravka | Zápasy, Týmy, Hráči, Galerie |
-| Sezóna | `sezona` | 2024/25, 2025/26, … | Zápasy, Týmy, Galerie |
-| Pozice hráče | `pozice-hrace` | Brankář, Obránce, Záložník, Útočník | Hráči |
-| Stav zápasu | `stav-zapasu` | Nadcházející, Odehraný, Zrušený | Zápasy |
-| Typ sponzorství | `typ-sponzorství` | Hlavní partner, Partner, Podpora | Sponzoři |
+galerie → taxonomie: kategorie-tymu, sezona
+          meta: datum_udalosti, tym, sezona
 
-**Doplnění od uživatele:**
+kontakt → meta: pozice, telefon, email, poradi
 
-| Taxonomie | Slug | Hodnoty | Používá se v |
-|-----------|------|---------|--------------|
-| | | | |
-| | | | |
+sponzor → meta: web_sponzora, poradi
+```
 
 ---
 
-*Vytvořeno: únor 2026 – Fáze 1 (krok 1.1)*
+*Vytvořeno: únor 2026 – Fáze 1 (krok 1.1)*  
+*Aktualizováno: únor 2026 – po implementaci CPT, taxonomií a meta boxů*
+
