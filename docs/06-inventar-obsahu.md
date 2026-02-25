@@ -63,8 +63,7 @@ Obsahuje úplný seznam všech implementovaných typů obsahu, jejich skutečné
 | Číslo dresu | `cislo` | number (1–99) | Číslo na dresu; slouží pro řazení v soupisku |
 | Rok narození | `rok_narozeni` | number | Rok narození (např. 1995) |
 | Slug týmu | `tym_slug` | text | Musí odpovídat hodnotě `tym_slug` příslušného týmu |
-| Fotografie | *(obrázek příspěvku)* | image | Přes funkci Obrázek příspěvku |
-| Pozice | taxonomie `pozice-hrace` | taxonomie | Brankáři, Obránci, Záložníci, Útočníci |
+| Pozice | taxonomie `pozice-hrace` | taxonomie | Brankáři, Hráči v poli |
 | Kategorie týmu | taxonomie `kategorie-tymu` | taxonomie | Muži A, Muži B, Dorost… |
 | Sezóna | taxonomie `sezona` | taxonomie | 2024/25, 2025/26… |
 
@@ -80,7 +79,6 @@ Obsahuje úplný seznam všech implementovaných typů obsahu, jejich skutečné
 |------|-----------|-----|-------|
 | Název alba | *(titulek příspěvku)* | title | Název fotoalba nebo události |
 | Náhledová fotografie | *(obrázek příspěvku)* | image | Přes funkci Obrázek příspěvku |
-| Datum události | `datum_udalosti` | date | Datum pořízení fotografií |
 | Tým (popis) | `tym` | text | Textový popis týmu (záložní pole) |
 | Sezóna (popis) | `sezona` | text | Textový popis sezóny (záložní pole) |
 | Kategorie týmu | taxonomie `kategorie-tymu` | taxonomie | Pro filtrování galerie |
@@ -113,7 +111,6 @@ Obsahuje úplný seznam všech implementovaných typů obsahu, jejich skutečné
 | Název sponzora | *(titulek příspěvku)* | title | Název firmy / partnera |
 | Logo | *(obrázek příspěvku)* | image | Přes funkci Obrázek příspěvku |
 | Webové stránky | `web_sponzora` | url | Odkaz na web sponzora (klikatelný) |
-| Pořadí zobrazení | `poradi` | number | Číslo pro řazení na stránce (nižší = výše) |
 
 ---
 
@@ -124,7 +121,7 @@ Obsahuje úplný seznam všech implementovaných typů obsahu, jejich skutečné
 | Kategorie týmu | `kategorie-tymu` | muzi-a, muzi-b, dorost, starsi-zaci, mladsi-zaci, pripravka | zapas, tym, hrac, galerie |
 | Sezóna | `sezona` | 2025/26, 2024/25, 2023/24 | zapas, tym, hrac, galerie |
 | Stav zápasu | `stav-zapasu` | nadchazejici, odehrany, zruseny | zapas |
-| Pozice hráče | `pozice-hrace` | brankari, obranci, zaloznici, utocnici | hrac |
+| Pozice hráče | `pozice-hrace` | brankari, hraci-v-poli | hrac |
 
 > Výchozí hodnoty taxonomií jsou automaticky vytvořeny při aktivaci pluginu **Slavoj Custom Fields** nebo ručně přes **Nástroje → Slavoj nastavení**.
 
@@ -144,11 +141,11 @@ hrac   →  taxonomie: kategorie-tymu, sezona, pozice-hrace
           propojení: tym_slug musí odpovídat hodnotě tym_slug v příslušném záznamu CPT tym
 
 galerie → taxonomie: kategorie-tymu, sezona
-          meta: datum_udalosti, tym, sezona
+          meta: tym, sezona
 
 kontakt → meta: pozice, telefon, email, poradi
 
-sponzor → meta: web_sponzora, poradi
+sponzor → meta: web_sponzora
 ```
 
 ---

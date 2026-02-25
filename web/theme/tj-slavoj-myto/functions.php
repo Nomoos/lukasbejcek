@@ -103,7 +103,7 @@ function slavoj_register_post_types() {
         'public'              => true,
         'has_archive'         => false,
         'rewrite'             => array('slug' => 'hraci'),
-        'supports'            => array('title', 'thumbnail'),
+        'supports'            => array('title'),
         'menu_icon'           => 'dashicons-id',
         'show_in_rest'        => true,
         'taxonomies'          => array('sezona', 'kategorie-tymu', 'pozice-hrace'),
@@ -456,15 +456,10 @@ add_action('add_meta_boxes', 'slavoj_galerie_meta_boxes');
 
 function slavoj_galerie_meta_box_html($post) {
     wp_nonce_field('slavoj_galerie_nonce', 'slavoj_galerie_nonce_field');
-    $datum   = get_post_meta($post->ID, 'datum_udalosti', true);
     $tym     = get_post_meta($post->ID, 'tym', true);
     $sezona  = get_post_meta($post->ID, 'sezona', true);
     ?>
     <table class="form-table">
-      <tr>
-        <th><label for="datum_udalosti">Datum události</label></th>
-        <td><input type="date" id="datum_udalosti" name="datum_udalosti" value="<?php echo esc_attr($datum); ?>" class="widefat"></td>
-      </tr>
       <tr>
         <th><label for="galerie_tym">Tým</label></th>
         <td><input type="text" id="galerie_tym" name="tym" value="<?php echo esc_attr($tym); ?>" class="widefat" placeholder="např. Muži A"></td>
@@ -484,7 +479,7 @@ function slavoj_galerie_save_meta($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
 
-    $fields = array('datum_udalosti', 'tym', 'sezona');
+    $fields = array('tym', 'sezona');
     foreach ($fields as $field) {
         if (isset($_POST[$field])) {
             update_post_meta($post_id, $field, sanitize_text_field(wp_unslash($_POST[$field])));
@@ -511,17 +506,12 @@ add_action('add_meta_boxes', 'slavoj_sponzor_meta_boxes');
 
 function slavoj_sponzor_meta_box_html($post) {
     wp_nonce_field('slavoj_sponzor_nonce', 'slavoj_sponzor_nonce_field');
-    $web      = get_post_meta($post->ID, 'web_sponzora', true);
-    $poradi   = get_post_meta($post->ID, 'poradi', true);
+    $web = get_post_meta($post->ID, 'web_sponzora', true);
     ?>
     <table class="form-table">
       <tr>
         <th><label for="web_sponzora">Webové stránky</label></th>
         <td><input type="url" id="web_sponzora" name="web_sponzora" value="<?php echo esc_attr($web); ?>" class="widefat" placeholder="https://"></td>
-      </tr>
-      <tr>
-        <th><label for="poradi">Pořadí zobrazení</label></th>
-        <td><input type="number" id="poradi" name="poradi" value="<?php echo esc_attr($poradi); ?>" class="widefat" min="0"></td>
       </tr>
     </table>
     <?php
@@ -533,11 +523,8 @@ function slavoj_sponzor_save_meta($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
 
-    $fields = array('web_sponzora', 'poradi');
-    foreach ($fields as $field) {
-        if (isset($_POST[$field])) {
-            update_post_meta($post_id, $field, sanitize_text_field(wp_unslash($_POST[$field])));
-        }
+    if (isset($_POST['web_sponzora'])) {
+        update_post_meta($post_id, 'web_sponzora', sanitize_text_field(wp_unslash($_POST['web_sponzora'])));
     }
 }
 add_action('save_post_sponzor', 'slavoj_sponzor_save_meta');
@@ -681,10 +668,8 @@ function slavoj_vypis_soupisku($kategorie) {
  */
 function slavoj_vypis_hrace_tymu($tym_slug) {
     $pozice_skupiny = array(
-        'brankari' => 'Brankáři',
-        'obranci'  => 'Obránci',
-        'zaloznici'=> 'Záložníci',
-        'utocnici' => 'Útočníci',
+        'brankari'    => 'Brankáři',
+        'hraci-v-poli' => 'Hráči v poli',
     );
 
     foreach ($pozice_skupiny as $pozice_slug => $pozice_nazev) {

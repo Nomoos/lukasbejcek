@@ -15,9 +15,6 @@ get_header();
     $args = array(
         'post_type'      => 'sponzor',
         'posts_per_page' => -1,
-        'orderby'        => 'meta_value_num',
-        'meta_key'       => 'poradi',
-        'order'          => 'ASC',
     );
     $sponzori_query = new WP_Query($args);
 

@@ -77,13 +77,13 @@ function slavoj_cf_setup_page() {
             <td><strong>Galerie</strong></td>
             <td><code>galerie</code></td>
             <td>Fotogalerie a fotoalba z akcí</td>
-            <td>datum_udalosti, tym, sezona</td>
+            <td>tym, sezona</td>
           </tr>
           <tr>
             <td><strong>Sponzoři</strong></td>
             <td><code>sponzor</code></td>
             <td>Partneři a sponzoři klubu</td>
-            <td>web_sponzora, poradi</td>
+            <td>web_sponzora</td>
           </tr>
           <tr>
             <td><strong>Kontakty</strong></td>
@@ -127,7 +127,7 @@ function slavoj_cf_setup_page() {
             <td><strong>Pozice hráče</strong></td>
             <td><code>pozice-hrace</code></td>
             <td>hrac</td>
-            <td>brankari, obranci, zaloznici, utocnici</td>
+            <td>brankari, hraci-v-poli</td>
           </tr>
         </tbody>
       </table>
@@ -202,10 +202,8 @@ function slavoj_cf_seed_taxonomies() {
 
     // Pozice hráčů
     $pozice = array(
-        'Brankáři'  => 'brankari',
-        'Obránci'   => 'obranci',
-        'Záložníci' => 'zaloznici',
-        'Útočníci'  => 'utocnici',
+        'Brankáři'       => 'brankari',
+        'Hráči v poli'   => 'hraci-v-poli',
     );
     foreach ($pozice as $nazev => $slug) {
         if (!term_exists($slug, 'pozice-hrace')) {
