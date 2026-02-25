@@ -1,0 +1,11 @@
+# BEGIN WordPress
+# Tato část je generována WordPressem. Neupravujte ručně – bude přepsána.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /fotbal_club/
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /fotbal_club/index.php [L]
+</IfModule>
+# END WordPress

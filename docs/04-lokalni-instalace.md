@@ -32,8 +32,11 @@ git clone https://github.com/Nomoos/lukasbejcek.git C:\xampp\htdocs\fotbal_club
 git clone https://github.com/Nomoos/lukasbejcek.git /Applications/XAMPP/htdocs/fotbal_club
 ```
 
-WordPress core soubory se nacházejí v podsložce `wordpress/` repozitáře.  
-Lokální URL webu bude: **`http://localhost/fotbal_club/wordpress/`**
+WordPress core soubory se nacházejí v podsložce `wordpress/` repozitáře, ale veřejná adresa webu **neobsahuje `/wordpress/`** v URL.  
+Stránky (např. Kontakty) budou dostupné na: **`http://localhost/fotbal_club/kontakty/`**
+
+> Toto je standardní technika „[WordPress in its own directory](https://developer.wordpress.org/advanced-administration/server/wordpress-in-directory/)":
+> kořenový `index.php` přesměruje požadavky do `wordpress/`, zatímco Apache přepisuje URL pomocí `.htaccess` v kořeni repozitáře.
 
 ### Krok 3 – Vytvořte databázi
 
@@ -49,8 +52,8 @@ Ujistěte se, že v souboru jsou správně nastaveny hodnoty:
 define( 'DB_NAME', 'slavoj_myto' );
 define( 'DB_USER', 'root' );
 define( 'DB_PASSWORD', '' );          // v XAMPP prázdné
-define( 'WP_HOME',    'http://localhost/fotbal_club/wordpress' );
-define( 'WP_SITEURL', 'http://localhost/fotbal_club/wordpress' );
+define( 'WP_HOME',    'http://localhost/fotbal_club' );           // veřejná URL webu
+define( 'WP_SITEURL', 'http://localhost/fotbal_club/wordpress' ); // kde jsou soubory WP
 ```
 
 Dále nahraďte zástupné fráze `'put your unique phrase here'` vlastními hodnotami  
@@ -58,8 +61,9 @@ vygenerovanými na https://api.wordpress.org/secret-key/1.1/salt/
 
 ### Krok 5 – Nainstalujte WordPress
 
-1. V prohlížeči otevřete `http://localhost/fotbal_club/wordpress/`.
+1. V prohlížeči otevřete `http://localhost/fotbal_club/wordpress/` (instalační průvodce funguje přes adresu SITEURL).
 2. Projděte instalačním průvodcem WordPress a vyplňte název webu a admin přihlašovací údaje.
+3. Po instalaci bude web dostupný na `http://localhost/fotbal_club/`.
 
 ### Krok 6 – Aktivujte téma
 
@@ -107,7 +111,8 @@ Přejděte na **Nastavení → Trvalé odkazy** a zvolte **Název příspěvku**
 
 Po instalaci zkontrolujte:
 
-- [ ] Web se zobrazuje na `http://localhost/fotbal_club/wordpress/`
+- [ ] Web se zobrazuje na `http://localhost/fotbal_club/`
+- [ ] Stránka Kontakty je dostupná na `http://localhost/fotbal_club/kontakty/`
 - [ ] WordPress admin je dostupný na `http://localhost/fotbal_club/wordpress/wp-admin`
 - [ ] Téma je aktivní
 - [ ] Plugin **Slavoj Custom Fields** (`slavoj-custom-fields`) je aktivní
