@@ -85,12 +85,17 @@ Plugin zastupuje funkce Advanced Custom Fields a Custom Post Type UI – registr
 
 #### 6b – Doporučené pluginy (volitelné)
 
-V sekci **Pluginy → Přidat nový** nainstalujte dle potřeby:
+V sekci **Pluginy → Přidat nový** nainstalujte následující pluginy. Každý z nich plní specifickou roli, která není pokryta vlastním kódem projektu:
 
-| Plugin | Účel |
-|--------|------|
-| Contact Form 7 | Kontaktní formulář |
-| Yoast SEO | SEO optimalizace |
+| Plugin | Odkaz | Proč ho potřebujeme |
+|--------|-------|---------------------|
+| Contact Form 7 | [wordpress.org/plugins/contact-form-7](https://wordpress.org/plugins/contact-form-7/) | Zpracování a odesílání kontaktního formuláře na stránce Kontakty; zajišťuje validaci vstupů a odesílání e-mailů bez vlastního PHP kódu |
+| Yoast SEO | [wordpress.org/plugins/wordpress-seo](https://wordpress.org/plugins/wordpress-seo/) | Správa meta titulků, popisů, XML sitemapy a Open Graph tagů; zlepšuje viditelnost webu ve vyhledávačích a náhled při sdílení na sociálních sítích |
+| WP Super Cache | [wordpress.org/plugins/wp-super-cache](https://wordpress.org/plugins/wp-super-cache/) | Ukládání vygenerovaných stránek do mezipaměti (statické HTML); výrazně zkracuje dobu načítání a snižuje zátěž serveru při větším počtu návštěvníků |
+| Wordfence Security | [wordpress.org/plugins/wordfence](https://wordpress.org/plugins/wordfence/) | Firewall, ochrana přihlašovací stránky a skenování malwaru; chrání web před útoky hrubou silou a neoprávněným přístupem |
+| UpdraftPlus | [wordpress.org/plugins/updraftplus](https://wordpress.org/plugins/updraftplus/) | Automatické zálohování souborů WordPressu a databáze na vzdálené úložiště (Google Drive, Dropbox); umožňuje obnovu webu při výpadku nebo chybě |
+
+> **Poznámka:** Pluginy **Advanced Custom Fields (ACF)** a **Custom Post Type UI** není nutné instalovat – vlastní typy obsahu (CPT) i meta pole jsou implementovány přímo v kódu tématu v souboru `functions.php`. Podrobný přehled všech pluginů a vlastního kódu najdete v [07-pluginy.md](./07-pluginy.md).
 
 ### Krok 8 – Nastavte permalink strukturu
 
