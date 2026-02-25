@@ -16,7 +16,6 @@ Obsahuje seznam všech identifikovaných typů obsahu, jejich pole a prostor pro
 | Skóre domácí | číslo | prázdné u nadcházejících zápasů |
 | Skóre hosté | číslo | prázdné u nadcházejících zápasů |
 | Datum a čas | datetime | datum a čas výkopu |
-| Místo konání | text | hřiště / adresa |
 | Střelci | textarea | volný text, např. „2× Schmid, Bejček" |
 | Tým (kategorie) | taxonomie | Muži A, Muži B, Dorost, Žáci… |
 | Sezóna | taxonomie | 2024/25, 2025/26… |
