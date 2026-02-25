@@ -69,32 +69,32 @@ $sezony_nazvy = array(
   <div class="row g-4">
     <?php
     $args = array(
-        'category_name'  => 'galerie',
+        'post_type'      => 'galerie',
         'posts_per_page' => -1,
     );
 
-    // Meta query pro filtrování
-    $meta_query = array();
+    // Taxonomy query pro filtrování
+    $tax_query = array();
 
     if ($filtr_tym) {
-        $meta_query[] = array(
-            'key'     => 'tym_slug',
-            'value'   => $filtr_tym,
-            'compare' => '=',
+        $tax_query[] = array(
+            'taxonomy' => 'kategorie-tymu',
+            'field'    => 'slug',
+            'terms'    => $filtr_tym,
         );
     }
 
     if ($filtr_sezona) {
-        $meta_query[] = array(
-            'key'     => 'sezona',
-            'value'   => $filtr_sezona,
-            'compare' => '=',
+        $tax_query[] = array(
+            'taxonomy' => 'sezona',
+            'field'    => 'slug',
+            'terms'    => $filtr_sezona,
         );
     }
 
-    if (!empty($meta_query)) {
-        $meta_query['relation'] = 'AND';
-        $args['meta_query'] = $meta_query;
+    if (!empty($tax_query)) {
+        $tax_query['relation'] = 'AND';
+        $args['tax_query'] = $tax_query;
     }
 
     $galerie_query = new WP_Query($args);

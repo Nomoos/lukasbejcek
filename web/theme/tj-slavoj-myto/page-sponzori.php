@@ -13,7 +13,7 @@ get_header();
   <div class="row g-4 justify-content-center">
     <?php
     $args = array(
-        'category_name'  => 'sponzori',
+        'post_type'      => 'sponzor',
         'posts_per_page' => -1,
     );
     $sponzori_query = new WP_Query($args);

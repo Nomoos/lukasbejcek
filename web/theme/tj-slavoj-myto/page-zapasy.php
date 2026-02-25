@@ -77,27 +77,36 @@ $filtr_stav = isset($_GET['stav']) ? sanitize_text_field(wp_unslash($_GET['stav'
     <div class="col-md-8">
       <?php
       $args = array(
-          'category_name'  => 'zapasy',
+          'post_type'      => 'zapas',
           'posts_per_page' => 20,
+          'meta_key'       => 'datum_zapasu',
+          'orderby'        => 'meta_value',
+          'order'          => 'DESC',
       );
 
-      // Meta query pro filtrování
+      // Taxonomy query pro filtrování
+      $tax_query  = array();
       $meta_query = array();
 
       if ($filtr_tym) {
-          $meta_query[] = array(
-              'key'     => 'tym_slug',
-              'value'   => $filtr_tym,
-              'compare' => '=',
+          $tax_query[] = array(
+              'taxonomy' => 'kategorie-tymu',
+              'field'    => 'slug',
+              'terms'    => $filtr_tym,
           );
       }
 
       if ($filtr_sezona) {
-          $meta_query[] = array(
-              'key'     => 'sezona',
-              'value'   => $filtr_sezona,
-              'compare' => '=',
+          $tax_query[] = array(
+              'taxonomy' => 'sezona',
+              'field'    => 'slug',
+              'terms'    => $filtr_sezona,
           );
+      }
+
+      if (!empty($tax_query)) {
+          $tax_query['relation'] = 'AND';
+          $args['tax_query'] = $tax_query;
       }
 
       if ($filtr_stav === 'odehrane') {

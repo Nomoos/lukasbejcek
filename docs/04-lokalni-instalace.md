@@ -1,6 +1,6 @@
 # 04 – Lokální instalace (jak rozchodit projekt lokálně)
 
-Tento dokument popisuje, jak spustit WordPress web TJ Slavoj Mýto na **vlastním počítači** pro účely vývoje a testování.
+Tento dokument popisuje, jak spustit WordPress web TJ Slavoj Mýto na **vlastním počítači** pro účely vývoje a testování pomocí **XAMPP** (Apache + MySQL + PHP).
 
 ---
 
@@ -9,75 +9,11 @@ Tento dokument popisuje, jak spustit WordPress web TJ Slavoj Mýto na **vlastní
 Před instalací se ujistěte, že máte nainstalováno:
 
 - **Git** – pro klonování repozitáře
-- Jedno z lokálních prostředí:
-  - [Local (by WP Engine)](https://localwp.com/) – doporučeno pro začátečníky
-  - [XAMPP](https://www.apachefriends.org/) – klasické prostředí Apache + MySQL + PHP
-  - [Docker](https://www.docker.com/) + [wp-env](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/) – pro pokročilé
+- [XAMPP](https://www.apachefriends.org/) – klasické prostředí Apache + MySQL + PHP
 
 ---
 
-## Možnost A – Local (by WP Engine) – nejjednodušší
-
-> **⚠️ Kompatibilita s klasickými webhostingy**
->
-> **Local (by WP Engine)** je výhradně **nástroj pro lokální vývoj** – nejedná se o hosting ani o žádný cloudový produkt.  
-> Slouží jen k tomu, aby WordPress běžel na vašem počítači.  
-> Výsledné soubory tématu a pluginů jsou **standardní WordPress soubory** kompatibilní s jakýmkoliv hostingem
-> (sdílený hosting, VPS, Wedos, Active24, SiteGround apod.).  
-> Neexistuje žádná vazba na WP Engine jako hosting providera – po dokončení vývoje nahrajete soubory
-> na libovolný hosting přes FTP dle návodu v [05-deployment-ftp.md](./05-deployment-ftp.md).
-
-### Krok 1 – Nainstalujte Local
-
-1. Stáhněte [Local](https://localwp.com/) a nainstalujte na svůj systém.
-2. Otevřete aplikaci Local.
-
-### Krok 2 – Vytvořte nový web
-
-1. Klikněte na **+ Create a new site** (tlačítko vlevo dole).
-2. Zadejte název webu, např. `tj-slavoj-myto`.
-3. Zvolte verzi PHP ≥ 8.0 a MySQL ≥ 8.0.
-4. Nastavte libovolné admin heslo.
-5. Klikněte **Add Site** – Local automaticky stáhne a nakonfiguruje WordPress.
-
-### Krok 3 – Zkopírujte téma z repozitáře
-
-1. Klonujte tento repozitář (pokud ještě není stažený):
-   ```bash
-   git clone https://github.com/Nomoos/lukasbejcek.git
-   ```
-2. Najděte složku WordPressu vytvořenou aplikací Local – typicky:
-   ```
-   ~/Local Sites/tj-slavoj-myto/app/public/wp-content/themes/
-   ```
-3. Zkopírujte obsah složky `web/theme/` z repozitáře do:
-   ```
-   wp-content/themes/slavoj-myto/
-   ```
-
-### Krok 4 – Aktivujte téma
-
-1. V aplikaci Local klikněte na **WP Admin** (otevře se prohlížeč).
-2. Přejděte na **Vzhled → Témata** a aktivujte téma `slavoj-myto`.
-
-### Krok 5 – Nainstalujte potřebné pluginy
-
-V sekci **Pluginy → Přidat nový** nainstalujte:
-
-| Plugin | Účel |
-|--------|------|
-| Advanced Custom Fields (ACF) | Správa custom polí |
-| Custom Post Type UI | Snadné vytvoření CPT |
-| Contact Form 7 | Kontaktní formulář |
-| Yoast SEO | SEO optimalizace |
-
-### Krok 6 – Nastavte permalink strukturu
-
-Přejděte na **Nastavení → Trvalé odkazy** a zvolte **Název příspěvku** (`/%postname%/`). Uložte.
-
----
-
-## Možnost B – XAMPP
+## Instalace pomocí XAMPP
 
 ### Krok 1 – Nainstalujte XAMPP
 
@@ -107,44 +43,31 @@ Přejděte na **Nastavení → Trvalé odkazy** a zvolte **Název příspěvku**
 
 ### Krok 5 – Zkopírujte téma
 
-Zkopírujte obsah složky `web/theme/` do:
-```
-C:\xampp\htdocs\tj-slavoj-myto\wp-content\themes\slavoj-myto\
-```
+1. Klonujte tento repozitář (pokud ještě není stažený):
+   ```bash
+   git clone https://github.com/Nomoos/lukasbejcek.git
+   ```
+2. Zkopírujte obsah složky `web/theme/` do:
+   ```
+   C:\xampp\htdocs\tj-slavoj-myto\wp-content\themes\slavoj-myto\
+   ```
 
 Aktivujte téma v admin rozhraní (**Vzhled → Témata**).
 
----
+### Krok 6 – Nainstalujte potřebné pluginy
 
-## Možnost C – Docker + wp-env
+V sekci **Pluginy → Přidat nový** nainstalujte:
 
-### Požadavky
+| Plugin | Účel |
+|--------|------|
+| Advanced Custom Fields (ACF) | Správa custom polí |
+| Custom Post Type UI | Snadné vytvoření CPT |
+| Contact Form 7 | Kontaktní formulář |
+| Yoast SEO | SEO optimalizace |
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- Node.js (pro `@wordpress/env`)
+### Krok 7 – Nastavte permalink strukturu
 
-### Instalace wp-env
-
-```bash
-npm install -g @wordpress/env
-```
-
-### Spuštění
-
-Ve složce repozitáře (kde bude `.wp-env.json`):
-
-```bash
-wp-env start
-```
-
-WordPress poběží na `http://localhost:8888`, admin panel na `http://localhost:8888/wp-admin`  
-(výchozí přihlášení: `admin` / `password`).
-
-### Zastavení prostředí
-
-```bash
-wp-env stop
-```
+Přejděte na **Nastavení → Trvalé odkazy** a zvolte **Název příspěvku** (`/%postname%/`). Uložte.
 
 ---
 
