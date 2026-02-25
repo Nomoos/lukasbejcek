@@ -1,0 +1,33 @@
+<?php
+/**
+ * Template Name: Historie
+ * Stránka s historií klubu TJ Slavoj Mýto
+ * Obsahuje: text historie klubu, logo na pravé straně (text obtéká zleva)
+ */
+get_header();
+?>
+
+<div class="container py-5">
+    <h2 class="mb-4 text-center fw-bold">Historie Klubu</h2>
+    <div class="row align-items-start">
+      <div class="col-lg-7">
+        <p>První zprávy o kopané v Mýtě sahají do roku 1909, kdy byl založen klub kopané v Mýtě, jako druhý na okrese po Rokycanech, s názvem „Sportovní klub Olympia Mýto". Hrálo se na hřišti u sv. Vojtěcha. O tři roky později byl klub přejmenován na „Sportovní klub Český Lev", a poté byla činnost přerušena 1. sv. válkou.</p>
+        <p>Poválečná obnova přinesla i nový název „Rudá hvězda Mýto", který byl však zanedlouho změněn na „SK Viktoria Mýto". V roce 1931 přecházejí hráči do nově vzniklého klubu „SK Olympia Mýto" a slaví 30let svého trvání. Ještě před 2. sv. válkou bylo zrušeno hřiště u sv. Vojtěcha a několik let se hrálo na cizím hřišti kařešských fotbalistů za celkovým lesíkem.</p>
+      </div>
+
+      <div class="col-lg-5 text-center">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" alt="TJ Slavoj Mýto" class="img-fluid club-logo">
+      </div>
+    </div>
+    <div class="col-lg-11">
+      <p>Po válce začal klub usilovat o vybudování vlastního hřiště na Benátkách. „SK Olympia Mýto" byla v té době začleněna do Sokola, a poté v r. 1952 byly sokolské jednoty převedeny jako složky ROH, pod jednotlivé průmyslové závody. Mýtský klub byl přičleněn ke sladovně a byl mu dán název „Slavoj". Od té doby se název klubu již nezměnil. Změnil se pouze vzhled hřiště. Od r. 1950 až r. 1987 byly dřevěné kabiny i tribuna postupně přebudovány na zděné. Od 90. let se dále zdokonalovalo nejen hřiště a okolí, ale i týmy. Úspěchy mýtského fotbalu vynesly družstvo do krajských soutěží a začal být kladen větší důraz na práci s mládeží.</p>
+
+      <p>V r. 1994 postoupili muži do 1. B třídy, žáci hráli již krajský přebor. V letech 2001–02 přišel postup do A třídy a i nadále mužstvo slaví úspěchy, když se v r. 2004–05 stává účastníkem krajského přeboru. Kraj se v Mýtě udržel pouze po dobu dvou let, kdy přišlo chvilkové období pádů se smutným návratem až do 1. B třídy.</p>
+
+      <p>Úspěchy se vrátily ke Slavoji znovu v r. 2009–10, kdy se tým opět probojoval do 1. A třídy. Postup zpět do krajského přeboru se povedl v roce 2017. Historický úspěch v Mýtě rok 2019 – „A" tým postupuje do Divize. Ostatní týmy mužů B hrají nyní I. A třídu, dorost – krajskou soutěž, žáci okresní přebor a úspěšně se rozrůstá i základna mladších i starších přípravek. Stále se drží i mýtská stará garda.</p>
+
+      <p>Od sezóny 2022/2023 se "A" tým mužů vrací do krajského přeboru a "B" tým bude řadit v I. B třídě. Stále se ve svých skupinách skvěle drží i všechny mládežnické týmy.</p>
+    </div>
+</div>
+
+<?php get_footer(); ?>
