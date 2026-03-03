@@ -31,16 +31,13 @@ get_header();
             <div class="col-md-4 col-lg-3">
               <div class="committee-card p-4">
                 <!-- FOTOGRAFIE / PLACEHOLDER -->
-                <div class="committee-img-wrapper">
-                  <?php if (has_post_thumbnail()) : ?>
-                    <?php the_post_thumbnail('thumbnail', array(
-                        'class' => 'committee-img',
-                        'style' => 'border-radius: 50%; width: 120px; height: 120px; object-fit: cover;',
-                    )); ?>
-                  <?php else : ?>
-                    <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" class="committee-img" alt="TJ Slavoj Mýto">
-                  <?php endif; ?>
-                </div>
+                <?php if (has_post_thumbnail()) : ?>
+                  <?php the_post_thumbnail('thumbnail', array(
+                      'class' => 'committee-photo',
+                  )); ?>
+                <?php else : ?>
+                  <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" class="committee-photo" alt="TJ Slavoj Mýto">
+                <?php endif; ?>
 
                 <!-- JMÉNO -->
                 <h4 class="mb-1"><?php the_title(); ?></h4>

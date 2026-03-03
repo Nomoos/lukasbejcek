@@ -9,7 +9,13 @@ get_header();
 
   <!-- BANNER -->
   <section class="banner">
-    <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/banner.jpg" alt="TJ Slavoj Mýto">
+    <?php
+    $banner_url = get_the_post_thumbnail_url(get_queried_object_id(), 'full');
+    if (!$banner_url) {
+        $banner_url = get_template_directory_uri() . '/img/banner.jpg';
+    }
+    ?>
+    <img src="<?php echo esc_url($banner_url); ?>" alt="TJ Slavoj Mýto">
     <div class="banner-text">
       <h1 class="fs-2 fw-bold">TJ Slavoj Mýto</h1>
       <h2>Fotbalový klub s tradicí od roku 1909</h2>

@@ -250,6 +250,7 @@ h1, h2, h3, h4, h5, h6 { margin: 0; line-height: 1.25; font-weight: 700; color: 
 .committee-card { background: #fff; border: 1.5px solid var(--border); border-radius: 20px; padding: 24px; text-align: center; }
 .committee-img-wrapper { width: 120px; height: 120px; background: var(--card); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
 .committee-img { width: 80px; }
+.committee-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 16px; }
 .committee-card a { color: var(--text); text-decoration: none; }
 .committee-card a:hover { color: var(--primary); }
 

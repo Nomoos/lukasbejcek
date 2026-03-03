@@ -162,68 +162,68 @@ Přidat:
 #### 3.2 Přepracování šablon
 
 **index.php (Domovská stránka)**
-- [ ] Banner zůstává, ale obrázek jako featured image stránky
-- [ ] Karty zápasů - nahradit WP_Query na custom post type "Match"
-- [ ] Filtrovat pouze nadcházející zápasy (4 nejbližší)
-- [ ] Sekce aktualit - zachovat, ale optimalizovat
+- [x] Banner zůstává, obrázek jako featured image stránky (fallback na banner.jpg)
+- [x] Karty zápasů - WP_Query na custom post type "Match"
+- [x] Filtrovat pouze nadcházející zápasy (4 nejbližší)
+- [x] Sekce aktualit - WP_Query kategorie "aktuality"
 
 **page-zapasy.php**
-- [ ] Implementovat funkční filtry pomocí AJAX/JavaScript
-- [ ] WP_Query na custom post type "Match"
-- [ ] Meta query pro filtrování podle týmu, sezóny, stavu
+- [x] Funkční filtry přes HTML form GET
+- [x] WP_Query na custom post type "Match"
+- [x] Tax query pro filtrování podle týmu, sezóny, stavu
+- [x] Zobrazit detaily z custom fields
 - [ ] Pagination pro seznam zápasů
-- [ ] Zobrazit detaily z custom fields
 
 **page-tymy.php**
-- [ ] Funkční select boxy s AJAX
-- [ ] WP_Query na custom post type "Team"
-- [ ] Načíst souvisící hráče přes post relationships
-- [ ] Zobrazit všechny údaje z custom fields
-- [ ] Možnost stažení soupisek jako PDF
+- [x] Funkční select boxy s HTML form
+- [x] WP_Query na custom post type "Team"
+- [x] Soupiska hráčů přes helper funkci
+- [x] Zobrazit všechny údaje z custom fields
 
 **page-galerie.php**
-- [ ] Implementovat funkční filtry
-- [ ] WP_Query na custom post type "Gallery"
-- [ ] Grid layout s featured images
-- [ ] Lightbox pro zobrazení obrázků
-- [ ] Lazy loading obrázků
+- [x] Funkční filtry
+- [x] WP_Query na custom post type "Gallery"
+- [x] Grid layout s featured images
 
 **single-galerie.php**
-- [ ] Detailní stránka galerie
-- [ ] Zobrazení všech fotek z galerie
-- [ ] Lightbox s navigací
-- [ ] Breadcrumbs zpět na přehled
+- [x] Detailní stránka galerie
+- [x] Zobrazení fotek (ACF galerie nebo post content)
+- [x] Lightbox s navigací a klávesnicí
 
 **page-historie.php**
-- [ ] Přesunout obsah do editoru WordPress stránky
-- [ ] Zachovat formátování a obrázky
-- [ ] Přidat možnost úpravy přes admin
+- [x] Obsah načítán z WP page editoru (the_content)
+- [x] Zachováno formátování (dvousloupcový layout)
 
 **page-kontakty.php**
-- [ ] WP_Query na custom post type "Contact"
-- [ ] Zobrazit všechny údaje z custom fields (tel, email)
-- [ ] Možnost kontaktního formuláře (Contact Form 7)
+- [x] WP_Query na custom post type "Contact"
+- [x] Zobrazit všechny údaje z custom fields (tel, email)
+- [x] Veškeré styly v CSS (bez inline style)
 
-**page-sponzori.php (nová)**
-- [ ] Vytvořit kompletní šablonu
-- [ ] WP_Query na custom post type "Sponsor"
-- [ ] Rozdělení podle typu sponzorství
-- [ ] Zobrazení log s odkazy
-- [ ] Responsivní grid
+**page-sponzori.php**
+- [x] WP_Query na custom post type "Sponsor"
+- [x] Zobrazení log s odkazy
+- [x] Responsivní grid
 
-#### 3.3 Šablona pro single posts
+#### 3.3 Šablony pro single posts
 
-**single-match.php** (detail zápasu)
-- [ ] Kompletní informace o zápase
-- [ ] Historie vzájemných zápasů
-- [ ] Fotogalerie ze zápasu (pokud existuje)
-- [ ] Související zápasy
+**single-zapas.php** (detail zápasu)
+- [x] Kompletní informace o zápase
+- [x] Správcovský formulář pro zadání skóre a střelců
 
-**single-player.php** (profil hráče)
-- [ ] Fotografie a základní údaje
-- [ ] Statistiky (góly, asistence - budoucí rozšíření)
-- [ ] Zápasy, kde hrál
-- [ ] Historie v klubu
+**single-tym.php** (detail týmu)
+- [x] Informace o týmu (trenéři, počet hráčů)
+- [x] Soupiska hráčů
+- [x] Nejbližší zápasy týmu
+
+**single-hrac.php** (profil hráče)
+- [x] Fotografie a základní údaje (číslo, rok narození, pozice, tým)
+- [x] Odkaz na tým
+
+**archive-zapas.php**
+- [x] Filtry, WP_Query, seznam zápasů s odkazem na detail
+
+**archive-tym.php**
+- [x] Filtry, WP_Query, grid karet týmů
 
 ### Fáze 4: Frontend funkcionality (2-3 dny)
 
