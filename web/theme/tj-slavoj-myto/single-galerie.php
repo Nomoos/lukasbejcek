@@ -10,13 +10,17 @@ get_header();
   <h2 class="text-center fw-bold mb-2"><?php the_title(); ?></h2>
 
   <?php
-  $tym = esc_html(get_post_meta(get_the_ID(), 'tym', true));
+  $kategorie_tymu = get_the_terms(get_the_ID(), 'kategorie-tymu');
   $sezona = esc_html(get_post_meta(get_the_ID(), 'sezona', true));
-  if ($tym || $sezona) :
+  $kategorie_nazev = '';
+  if (!empty($kategorie_tymu) && !is_wp_error($kategorie_tymu)) {
+      $kategorie_nazev = esc_html($kategorie_tymu[0]->name);
+  }
+  if ($kategorie_nazev || $sezona) :
   ?>
     <p class="text-center text-muted mb-4">
-      <?php echo $tym; ?>
-      <?php if ($tym && $sezona) echo ' – '; ?>
+      <?php echo $kategorie_nazev; ?>
+      <?php if ($kategorie_nazev && $sezona) echo ' – '; ?>
       <?php echo $sezona; ?>
     </p>
   <?php endif; ?>

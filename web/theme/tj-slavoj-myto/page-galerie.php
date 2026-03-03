@@ -7,15 +7,13 @@
 get_header();
 
 // Získání filtrů z GET parametrů
-$filtr_tym = isset($_GET['tym']) ? sanitize_text_field(wp_unslash($_GET['tym'])) : '';
+$filtr_kategorie = isset($_GET['kategorie']) ? sanitize_text_field(wp_unslash($_GET['kategorie'])) : '';
 $filtr_sezona = isset($_GET['sezona']) ? sanitize_text_field(wp_unslash($_GET['sezona'])) : '';
 
-$tymy_nazvy = array(
-    'muzi-a'      => 'Muži A',
-    'muzi-b'      => 'Muži B',
-    'dorost'      => 'Dorost',
-    'starsi-zaci' => 'Starší žáci',
-);
+$kategorie_tymu_terms = get_terms(array(
+    'taxonomy'   => 'kategorie-tymu',
+    'hide_empty' => false,
+));
 
 $sezony_nazvy = array(
     '2025-26' => 'Sezóna 2025/26',
@@ -29,13 +27,15 @@ $sezony_nazvy = array(
 
     <!-- FILTRY -->
     <form method="get" class="d-flex gap-3 mb-4">
-      <select name="tym" class="form-select bg-light filter-select-team-sm" onchange="this.form.submit()">
-        <option value="">Všechny týmy</option>
-        <?php foreach ($tymy_nazvy as $slug => $nazev) : ?>
-          <option value="<?php echo esc_attr($slug); ?>" <?php selected($filtr_tym, $slug); ?>>
-            <?php echo esc_html($nazev); ?>
-          </option>
-        <?php endforeach; ?>
+      <select name="kategorie" class="form-select bg-light filter-select-team-sm" onchange="this.form.submit()">
+        <option value="">Všechny kategorie</option>
+        <?php if (!empty($kategorie_tymu_terms) && !is_wp_error($kategorie_tymu_terms)) : ?>
+          <?php foreach ($kategorie_tymu_terms as $term) : ?>
+            <option value="<?php echo esc_attr($term->slug); ?>" <?php selected($filtr_kategorie, $term->slug); ?>>
+              <?php echo esc_html($term->name); ?>
+            </option>
+          <?php endforeach; ?>
+        <?php endif; ?>
       </select>
 
       <select name="sezona" class="form-select bg-light filter-select-season-sm" onchange="this.form.submit()">
@@ -76,11 +76,11 @@ $sezony_nazvy = array(
     // Taxonomy query pro filtrování
     $tax_query = array();
 
-    if ($filtr_tym) {
+    if ($filtr_kategorie) {
         $tax_query[] = array(
             'taxonomy' => 'kategorie-tymu',
             'field'    => 'slug',
-            'terms'    => $filtr_tym,
+            'terms'    => $filtr_kategorie,
         );
     }
 
