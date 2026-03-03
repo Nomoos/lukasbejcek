@@ -10,74 +10,98 @@ která lze použít pro testování webu a demonstraci funkčnosti v WordPress.
 
 ## Zdroj dat
 
-Ukázková data byla extrahována ze souborů:
+Ukázková data odpovídají skutečným datům sezóny 2025/26 dostupným na http://slavojmyto.cz/:
 
-| Soubor | Typ obsahu |
-|--------|-----------|
-| `original/html/zapasy.html` | Zápasy (statické HTML) |
-| `original/page-zapasy.php` | Zápasy (WordPress PHP šablona) |
-| `original/html/tymy.html` | Týmy a hráči (statické HTML) |
-| `original/html/kontakty.html` | Výbor klubu (statické HTML) |
-| `original/html/galerie.html` | Galerie – názvy alb (statické HTML) |
-| `original/html/index.html` | Homepage – aktuality a nadcházející zápasy |
-| `original/html/historie.html` | Historie klubu |
+| Obsah | Popis |
+|-------|-------|
+| Zápasy Muži A | TJ Slavoj Mýto, Plzeňský krajský přebor, 15 kol (srpen–listopad 2025) |
+| Zápasy Muži B | TJ Slavoj Mýto B, 1.B třída sk. C, 13 kol (srpen–listopad 2025) |
+| Soupiska Muži B | 7 hráčů (číslo dresu, jméno) |
 
 ---
 
 ## Ukázková data: Zápasy
 
-### Muži A – Sezóna 2025/26
+### Muži A – TJ Slavoj Mýto, Krajský přebor, Sezóna 2025/26
 
-| Titulek | Domácí | Hosté | Datum | Čas | Skóre | Střelci | Stav | Kategorie |
-|---------|--------|-------|-------|-----|-------|---------|------|-----------|
-| TJ Slavoj Mýto vs Rapid Plzeň | Rapid Plzeň | TJ Slavoj Mýto | 2025-08-08 | 18:00 | 4:2 | 2× Schmid, Bejček, Otec | odehrany | muzi-a |
-| TJ Slavoj Mýto vs TJ Chotěšov | TJ Slavoj Mýto | TJ Chotěšov | 2025-08-15 | 18:00 | *(prázdné)* | *(prázdné)* | nadchazejici | muzi-a |
-| TJ Slavoj Mýto vs FK Bohemia Kaznějov | FK Bohemia Kaznějov | TJ Slavoj Mýto | 2025-08-08 | 18:00 | *(prázdné)* | *(prázdné)* | nadchazejici | muzi-a |
+| Titulek | Domácí | Hosté | Datum | Čas | Skóre | Stav | Kategorie |
+|---------|--------|-------|-------|-----|-------|------|-----------|
+| FK Rapid Plzeň vs TJ Slavoj Mýto | FK Rapid Plzeň | TJ Slavoj Mýto | 2025-08-08 | 18:00 | 2:4 | odehrany | muzi-a |
+| TJ Slavoj Mýto vs SK Nepomuk | TJ Slavoj Mýto | SK Nepomuk | 2025-08-17 | 17:30 | 4:0 | odehrany | muzi-a |
+| TJ Vejprnice vs TJ Slavoj Mýto | TJ Vejprnice | TJ Slavoj Mýto | 2025-08-23 | 10:15 | 3:2 | odehrany | muzi-a |
+| TJ Slavoj Mýto vs FK Měcholupy | TJ Slavoj Mýto | FK Měcholupy | 2025-08-30 | 17:30 | 5:2 | odehrany | muzi-a |
+| FK Horní Bříza vs TJ Slavoj Mýto | FK Horní Bříza | TJ Slavoj Mýto | 2025-09-06 | 10:15 | 3:0 | odehrany | muzi-a |
+| FK Lhota vs TJ Slavoj Mýto | FK Lhota | TJ Slavoj Mýto | 2025-09-13 | 17:00 | 4:0 | odehrany | muzi-a |
+| TJ Slavoj Mýto vs TJ Horšovský Týn | TJ Slavoj Mýto | TJ Horšovský Týn | 2025-09-21 | 16:45 | 3:2 | odehrany | muzi-a |
+| TJ Chotěšov vs TJ Slavoj Mýto | TJ Chotěšov | TJ Slavoj Mýto | 2025-09-27 | 10:15 | 2:2 | odehrany | muzi-a |
+| TJ Slavoj Mýto vs FK Chlumčany | TJ Slavoj Mýto | FK Chlumčany | 2025-10-04 | 16:00 | 3:2 | odehrany | muzi-a |
+| FK Koloveč vs TJ Slavoj Mýto | FK Koloveč | TJ Slavoj Mýto | 2025-10-12 | 16:00 | 0:1 | odehrany | muzi-a |
+| TJ Slavoj Mýto vs FK Bohemia Kaznějov | TJ Slavoj Mýto | FK Bohemia Kaznějov | 2025-10-18 | 15:30 | 2:1 | odehrany | muzi-a |
+| FK Radnice vs TJ Slavoj Mýto | FK Radnice | TJ Slavoj Mýto | 2025-10-26 | 14:30 | 0:6 | odehrany | muzi-a |
+| TJ Slavoj Mýto vs FK Nýrsko | TJ Slavoj Mýto | FK Nýrsko | 2025-11-01 | 14:00 | 0:1 | odehrany | muzi-a |
+| FK Holýšov vs TJ Slavoj Mýto | FK Holýšov | TJ Slavoj Mýto | 2025-11-09 | 14:00 | 0:2 | odehrany | muzi-a |
+| TJ Slavoj Mýto vs FK Luby | TJ Slavoj Mýto | FK Luby | 2025-11-15 | 13:30 | 1:1 | odehrany | muzi-a |
 
-### Ostatní týmy – nadcházející zápasy (z homepage)
+### Muži B – TJ Slavoj Mýto B, 1.B třída sk. C, Sezóna 2025/26
 
-| Titulek | Domácí | Hosté | Datum | Čas | Stav | Kategorie |
-|---------|--------|-------|-------|-----|------|-----------|
-| Rapid Plzeň vs TJ Slavoj Mýto | Rapid Plzeň | TJ Slavoj Mýto | 2025-08-08 | 18:00 | nadchazejici | muzi-b |
-| TJ Slavoj Mýto vs FK Bohemia Kaznějov | TJ Slavoj Mýto | FK Bohemia Kaznějov | 2025-08-08 | 18:00 | nadchazejici | dorost |
-| Rapid Plzeň vs TJ Slavoj Mýto | Rapid Plzeň | TJ Slavoj Mýto | 2025-08-08 | 18:00 | nadchazejici | starsi-zaci |
+| Titulek | Domácí | Hosté | Datum | Čas | Skóre | Stav | Kategorie |
+|---------|--------|-------|-------|-----|-------|------|-----------|
+| TJ Slavoj Mýto B vs FK Úněšov | TJ Slavoj Mýto B | FK Úněšov | 2025-08-24 | 17:30 | 4:3 | odehrany | muzi-b |
+| FK Všeruby vs TJ Slavoj Mýto B | FK Všeruby | TJ Slavoj Mýto B | 2025-08-27 | 18:00 | 2:2 | odehrany | muzi-b |
+| FK Ledce vs TJ Slavoj Mýto B | FK Ledce | TJ Slavoj Mýto B | 2025-08-31 | 13:30 | 6:0 | odehrany | muzi-b |
+| TJ Slavoj Mýto B vs FK Touškov | TJ Slavoj Mýto B | FK Touškov | 2025-09-07 | 17:00 | 1:3 | odehrany | muzi-b |
+| TJ Zbiroh vs TJ Slavoj Mýto B | TJ Zbiroh | TJ Slavoj Mýto B | 2025-09-13 | 17:00 | 7:2 | odehrany | muzi-b |
+| TJ Slavoj Mýto B vs FK Plasy | TJ Slavoj Mýto B | FK Plasy | 2025-09-21 | 10:00 | 1:2 | odehrany | muzi-b |
+| TJ Slavoj Mýto B vs FK Raková | TJ Slavoj Mýto B | FK Raková | 2025-09-27 | 10:15 | 0:1 | odehrany | muzi-b |
+| FK Doubravka B vs TJ Slavoj Mýto B | FK Doubravka B | TJ Slavoj Mýto B | 2025-10-05 | 16:00 | 5:2 | odehrany | muzi-b |
+| TJ Slavoj Mýto B vs FK Volduchy | TJ Slavoj Mýto B | FK Volduchy | 2025-10-11 | 10:00 | 5:2 | odehrany | muzi-b |
+| FK Rapid Plzeň B vs TJ Slavoj Mýto B | FK Rapid Plzeň B | TJ Slavoj Mýto B | 2025-10-19 | 15:30 | 7:2 | odehrany | muzi-b |
+| TJ Slavoj Mýto B vs FK Horní Bříza B | TJ Slavoj Mýto B | FK Horní Bříza B | 2025-10-25 | 10:15 | 2:4 | odehrany | muzi-b |
+| FK Bolevec vs TJ Slavoj Mýto B | FK Bolevec | TJ Slavoj Mýto B | 2025-11-01 | 14:00 | 3:0 | odehrany | muzi-b |
+| TJ Slavoj Mýto B vs FK Příkosice | TJ Slavoj Mýto B | FK Příkosice | 2025-11-08 | 10:00 | 3:2 | odehrany | muzi-b |
+
+> **Poznámka ke skóre:** skóre je uloženo ve formátu `domácí:hosté` (např. `2:4` = domácí vstřelil 2, hostující 4 góly).
 
 ---
 
 ## Ukázková data: Týmy
 
-### Muži A – Sezóna 2024/25
+### Muži A – Sezóna 2025/26
 
 | Pole | Hodnota |
 |------|---------|
-| Název | Muži A |
+| Název | TJ Slavoj Mýto – Muži A |
 | tym_slug | `muzi-a` |
-| Sezóna | 2024/25 |
-| Počet hráčů | 16 |
-| Hlavní trenér | Nyklas Petr |
-| Asistent trenéra | Honzík Ivan |
-| Zdravotník | Hrabák Jan |
+| Sezóna | 2025/26 |
 | Kategorie | muzi-a |
+
+### Muži B – Sezóna 2025/26
+
+| Pole | Hodnota |
+|------|---------|
+| Název | TJ Slavoj Mýto B – Muži B |
+| tym_slug | `muzi-b` |
+| Sezóna | 2025/26 |
+| Kategorie | muzi-b |
 
 ---
 
 ## Ukázková data: Hráči
 
-### Soupiska – Muži A, Sezóna 2024/25
+### Soupiska – Muži B (TJ Slavoj Mýto B), Sezóna 2025/26
 
-| Jméno | Číslo dresu | Rok narození | Pozice | tym_slug |
-|-------|------------|--------------|--------|---------|
-| Josef Brankář | 1 | 1987 | brankari | muzi-a |
-| Pavel Brankář | 2 | 1987 | brankari | muzi-a |
-| Adam Bejček | 4 | 1989 | hraci-v-poli | muzi-a |
-| Jan Novák | 5 | 1990 | hraci-v-poli | muzi-a |
-| Martin Procházka | 6 | 2000 | hraci-v-poli | muzi-a |
-| Tomáš Horáček | 7 | 2005 | hraci-v-poli | muzi-a |
-| Jakub Kříž | 8 | 1999 | hraci-v-poli | muzi-a |
+| Číslo dresu | Jméno | Pozice | tym_slug |
+|------------|-------|--------|---------|
+| 1 | Milan Navrátil | neuvedeno | muzi-b |
+| 6 | Marek Šobáň | neuvedeno | muzi-b |
+| 8 | Martin Drábek | neuvedeno | muzi-b |
+| 9 | Alexandr Čajkovskij | neuvedeno | muzi-b |
+| 10 | Matěj Tůma | neuvedeno | muzi-b |
+| 13 | Jiří Drábek | neuvedeno | muzi-b |
+| 13 | Filip Stejskal | neuvedeno | muzi-b |
 
-> **Poznámka:** Jména brankářů a část hráčů jsou v originálu uvedena jako placeholder „Josef Jan".
-> Pro testovací účely jsou nahrazena smysluplnými jmény. Jméno „Adam Bejček" a výsledek zápasu
-> (4:2, střelci: 2× Schmid, Bejček, Otec) jsou přímo z originálního kódu.
+> **Poznámka:** Pozice všech hráčů je v originálním zdroji uvedena jako „Neuvedeno".
+> V databázi je použit term `neuvedeno` v taxonomii `pozice-hrace`.
 
 ---
 
@@ -115,14 +139,26 @@ Ukázková data byla extrahována ze souborů:
 
 ### Možnost A – Automatický seed přes administraci (doporučeno)
 
-Plugin `slavoj-custom-fields` obsahuje tlačítko **„Vytvořit ukázková data"** dostupné přes
-**Nástroje → Slavoj nastavení**. Kliknutím se automaticky vytvoří všechna testovací data
-popsaná v tomto dokumentu.
+Plugin `slavoj-custom-fields` obsahuje tlačítko **„Vytvořit ukázková data (sezóna 2025/26)"** dostupné přes
+**Nástroje → Slavoj nastavení**. Kliknutím se automaticky vytvoří všechna data
+popsaná v tomto dokumentu (taxonomie, 2 týmy, 28 zápasů, 7 hráčů).
 
-> ⚠️ Seed lze spustit pouze jednou – při opakovaném spuštění se duplicity přeskočí
-> (kontrola podle titulku příspěvku).
+> ℹ️ Seed lze spustit opakovaně – duplicitní záznamy jsou automaticky přeskočeny
+> (kontrola podle titulku příspěvku a post_type).
 
-### Možnost B – Ruční zadání přes administraci
+### Možnost B – SQL import (přímý přístup k databázi)
+
+Soubor `wordpress/seed-data.sql` obsahuje kompletní SQL příkazy připravené pro
+přímý import do databáze `slavoj_myto`:
+
+```bash
+mysql -u root -p slavoj_myto < wordpress/seed-data.sql
+```
+
+> ℹ️ Script předpokládá prefix `wp_`. Pro jiný prefix proveďte globální náhradu.
+> Script je idempotentní (`INSERT IGNORE` + podmíněný INSERT pro postmeta).
+
+### Možnost C – Ruční zadání přes administraci
 
 1. Přihlaste se do administrace WordPress (`/wp-admin`).
 2. Přejděte do **Nástroje → Slavoj nastavení** a klikněte **„Vytvořit výchozí hodnoty taxonomií"**.
@@ -132,13 +168,13 @@ popsaná v tomto dokumentu.
    - **Hráči → Přidat hráče** – zadejte číslo dresu, rok narození a `tym_slug`.
    - **Kontakty → Přidat kontakt** – vyplňte jméno, funkci a kontaktní údaje.
 
-### Možnost C – WP-CLI (pro pokročilé / CI prostředí)
+### Možnost D – WP-CLI (pro pokročilé / CI prostředí)
 
 ```bash
 # Spustit seed taxonomií
 wp eval 'slavoj_cf_seed_taxonomies();'
 
-# Spustit seed ukázkových dat
+# Spustit seed ukázkových dat (sezóna 2025/26)
 wp eval 'slavoj_cf_seed_demo_data();'
 ```
 
