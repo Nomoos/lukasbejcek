@@ -338,7 +338,7 @@ add_action('add_meta_boxes', 'slavoj_tym_meta_boxes');
 
 function slavoj_tym_meta_box_html($post) {
     wp_nonce_field('slavoj_tym_nonce', 'slavoj_tym_nonce_field');
-    $pocet_hracu    = get_post_meta($post->ID, 'pocet_hracu', true);
+    $pocet_hracu    = slavoj_count_hracu_tymu($post->ID);
     $hlavni_trener  = get_post_meta($post->ID, 'hlavni_trener', true);
     $asistent       = get_post_meta($post->ID, 'asistent_trenera', true);
     $zdravotnik     = get_post_meta($post->ID, 'zdravotnik', true);
@@ -350,8 +350,11 @@ function slavoj_tym_meta_box_html($post) {
         <td><input type="text" id="tym_slug" name="tym_slug" value="<?php echo esc_attr($tym_slug); ?>" class="widefat" placeholder="např. muzi-a"></td>
       </tr>
       <tr>
-        <th><label for="pocet_hracu">Počet hráčů</label></th>
-        <td><input type="number" id="pocet_hracu" name="pocet_hracu" value="<?php echo esc_attr($pocet_hracu); ?>" class="widefat"></td>
+        <th>Počet hráčů</th>
+        <td>
+          <strong><?php echo esc_html($pocet_hracu); ?></strong>
+          <p class="description">Vypočítáno automaticky z hráčů přiřazených k tomuto týmu v dané sezóně.</p>
+        </td>
       </tr>
       <tr>
         <th><label for="hlavni_trener">Hlavní trenér</label></th>
@@ -369,20 +372,127 @@ function slavoj_tym_meta_box_html($post) {
     <?php
 }
 
+/**
+ * Vypočítá a uloží počet hráčů pro daný tým na základě aktuálního stavu hráčů CPT.
+ * Hráči jsou filtrováni podle tym_slug týmu a sezóny týmu.
+ * Pokud tým nemá přiřazenou sezónu, použije se aktuálně nejnovější sezóna.
+ *
+ * @param int $post_id  ID záznamu CPT tym
+ * @return int  Počet nalezených hráčů
+ */
+function slavoj_count_hracu_tymu($post_id) {
+    $tym_slug = get_post_meta($post_id, 'tym_slug', true);
+    if (!$tym_slug) {
+        update_post_meta($post_id, 'pocet_hracu', 0);
+        return 0;
+    }
+
+    // Zjistíme sezónu týmu; pokud není určena, použijeme nejnovější dostupnou.
+    $sez_terms = get_the_terms($post_id, 'sezona');
+    if ($sez_terms && !is_wp_error($sez_terms)) {
+        $sezona_slug = $sez_terms[0]->slug;
+    } else {
+        $all_sezony = get_terms(array('taxonomy' => 'sezona', 'hide_empty' => false, 'orderby' => 'name', 'order' => 'DESC'));
+        $sezona_slug = (!is_wp_error($all_sezony) && !empty($all_sezony)) ? $all_sezony[0]->slug : '';
+    }
+
+    $args = array(
+        'post_type'      => 'hrac',
+        'posts_per_page' => -1,
+        'fields'         => 'ids',
+        'meta_query'     => array(
+            array(
+                'key'     => 'tym_slug',
+                'value'   => $tym_slug,
+                'compare' => '=',
+            ),
+        ),
+    );
+
+    if ($sezona_slug) {
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'sezona',
+                'field'    => 'slug',
+                'terms'    => $sezona_slug,
+            ),
+        );
+    }
+
+    $query = new WP_Query($args);
+    $count = $query->found_posts;
+    wp_reset_postdata();
+
+    update_post_meta($post_id, 'pocet_hracu', $count);
+    return $count;
+}
+
 function slavoj_tym_save_meta($post_id) {
     if (!isset($_POST['slavoj_tym_nonce_field'])) return;
     if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['slavoj_tym_nonce_field'])), 'slavoj_tym_nonce')) return;
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
 
-    $fields = array('tym_slug', 'pocet_hracu', 'hlavni_trener', 'asistent_trenera', 'zdravotnik');
+    $fields = array('tym_slug', 'hlavni_trener', 'asistent_trenera', 'zdravotnik');
     foreach ($fields as $field) {
         if (isset($_POST[$field])) {
             update_post_meta($post_id, $field, sanitize_text_field(wp_unslash($_POST[$field])));
         }
     }
+
+    // Přepočítáme počet hráčů po uložení týmu.
+    slavoj_count_hracu_tymu($post_id);
 }
 add_action('save_post_tym', 'slavoj_tym_save_meta');
+
+/**
+ * Po uložení hráče aktualizujeme pocet_hracu nadřízeného týmu.
+ *
+ * @param int $hrac_id  ID záznamu CPT hrac
+ */
+function slavoj_update_pocet_hracu_po_zmene_hrace($hrac_id) {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    slavoj_recalculate_tym_pocet_hracu($hrac_id);
+}
+add_action('save_post_hrac', 'slavoj_update_pocet_hracu_po_zmene_hrace');
+
+/**
+ * Před smazáním hráče aktualizujeme pocet_hracu nadřízeného týmu.
+ *
+ * @param int $hrac_id  ID záznamu CPT hrac
+ */
+function slavoj_update_pocet_hracu_pred_smazanim_hrace($hrac_id) {
+    if (get_post_type($hrac_id) !== 'hrac') return;
+    slavoj_recalculate_tym_pocet_hracu($hrac_id);
+}
+add_action('before_delete_post', 'slavoj_update_pocet_hracu_pred_smazanim_hrace');
+
+/**
+ * Pomocná funkce – najde tým podle tym_slug hráče a přepočítá pocet_hracu.
+ *
+ * @param int $hrac_id  ID záznamu CPT hrac
+ */
+function slavoj_recalculate_tym_pocet_hracu($hrac_id) {
+    $tym_slug = get_post_meta($hrac_id, 'tym_slug', true);
+    if (!$tym_slug) return;
+
+    $tymy = get_posts(array(
+        'post_type'      => 'tym',
+        'posts_per_page' => -1,
+        'fields'         => 'ids',
+        'meta_query'     => array(
+            array(
+                'key'     => 'tym_slug',
+                'value'   => $tym_slug,
+                'compare' => '=',
+            ),
+        ),
+    ));
+
+    foreach ($tymy as $tym_id) {
+        slavoj_count_hracu_tymu($tym_id);
+    }
+}
 
 // =====================================================================
 // META BOXY – HRÁČ

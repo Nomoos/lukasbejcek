@@ -463,7 +463,6 @@ function slavoj_cf_seed_demo_data() {
         ));
         if ($tym_id && !is_wp_error($tym_id)) {
             update_post_meta($tym_id, 'tym_slug',          'muzi-a');
-            update_post_meta($tym_id, 'pocet_hracu',       16);
             update_post_meta($tym_id, 'hlavni_trener',     'Nyklas Petr');
             update_post_meta($tym_id, 'asistent_trenera',  'Honzík Ivan');
             update_post_meta($tym_id, 'zdravotnik',        'Hrabák Jan');
