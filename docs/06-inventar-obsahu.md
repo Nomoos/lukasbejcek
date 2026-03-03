@@ -130,7 +130,7 @@ Obsahuje úplný seznam všech implementovaných typů obsahu, jejich skutečné
 
 ```
 zapas  →  taxonomie: kategorie-tymu, sezona, stav-zapasu
-          meta: datum_zapasu, cas_zapasu, domaci, hoste, skore, strelci, misto_konani
+          meta: datum_zapasu, cas_zapasu, domaci, hoste, skore, strelci
 
 tym    →  taxonomie: kategorie-tymu, sezona
           meta: tym_slug, pocet_hracu, hlavni_trener, asistent_trenera, zdravotnik

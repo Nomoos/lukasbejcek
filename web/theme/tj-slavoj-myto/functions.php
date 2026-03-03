@@ -270,7 +270,6 @@ function slavoj_zapas_meta_box_html($post) {
     $hoste   = get_post_meta($post->ID, 'hoste', true);
     $skore   = get_post_meta($post->ID, 'skore', true);
     $strelci = get_post_meta($post->ID, 'strelci', true);
-    $misto   = get_post_meta($post->ID, 'misto_konani', true);
     ?>
     <table class="form-table">
       <tr>
@@ -297,10 +296,6 @@ function slavoj_zapas_meta_box_html($post) {
         <th><label for="strelci">Střelci</label></th>
         <td><input type="text" id="strelci" name="strelci" value="<?php echo esc_attr($strelci); ?>" class="widefat" placeholder="např. 2× Novák, Bejček"></td>
       </tr>
-      <tr>
-        <th><label for="misto_konani">Místo konání</label></th>
-        <td><input type="text" id="misto_konani" name="misto_konani" value="<?php echo esc_attr($misto); ?>" class="widefat" placeholder="např. Hřiště TJ Slavoj Mýto"></td>
-      </tr>
     </table>
     <?php
 }
@@ -311,7 +306,7 @@ function slavoj_zapas_save_meta($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
 
-    $fields = array('datum_zapasu', 'cas_zapasu', 'domaci', 'hoste', 'skore', 'strelci', 'misto_konani');
+    $fields = array('datum_zapasu', 'cas_zapasu', 'domaci', 'hoste', 'skore', 'strelci');
     foreach ($fields as $field) {
         if (isset($_POST[$field])) {
             update_post_meta($post_id, $field, sanitize_text_field(wp_unslash($_POST[$field])));
