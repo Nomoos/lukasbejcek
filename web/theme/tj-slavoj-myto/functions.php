@@ -27,8 +27,15 @@ add_action('after_setup_theme', 'slavoj_theme_support');
 // Načtení stylů a skriptů
 function slavoj_enqueue_scripts() {
     wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3');
-    wp_enqueue_style('slavoj-style', get_stylesheet_uri(), array('bootstrap'), '1.0');
+    wp_enqueue_style('slavoj-style', get_stylesheet_uri(), array('bootstrap'), '2.0');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array(), '5.3.3', true);
+    wp_enqueue_script(
+        'slavoj-nav-toggle',
+        get_template_directory_uri() . '/js/nav-toggle.js',
+        array(),
+        '1.0',
+        true  /* footer */
+    );
 }
 add_action('wp_enqueue_scripts', 'slavoj_enqueue_scripts');
 
@@ -696,6 +703,35 @@ add_action('save_post_kontakt', 'slavoj_kontakt_save_meta');
 // =====================================================================
 
 /**
+ * Zjistí, zda je název týmu vlastním klubem TJ Slavoj Mýto.
+ *
+ * @param string $nazev_tymu  Název týmu z meta pole domaci nebo hoste.
+ * @return bool
+ */
+function slavoj_is_club_team($nazev_tymu) {
+    return stripos($nazev_tymu, 'Slavoj') !== false
+        || stripos($nazev_tymu, 'TJ Mýto') !== false;
+}
+
+/**
+ * Vrátí zobrazovaný název kategorie týmu podle jeho slugu.
+ *
+ * @param string $slug  Slug taxonomie kategorie-tymu (např. 'muzi-a').
+ * @return string  Zobrazovaný název (např. 'Muži A'), nebo samotný slug pokud není nalezen.
+ */
+function slavoj_get_team_display_name($slug) {
+    $mapa = array(
+        'muzi-a'      => 'Muži A',
+        'muzi-b'      => 'Muži B',
+        'dorost'      => 'Dorost',
+        'starsi-zaci' => 'Starší žáci',
+        'mladsi-zaci' => 'Mladší žáci',
+        'pripravka'   => 'Přípravka',
+    );
+    return isset($mapa[$slug]) ? $mapa[$slug] : $slug;
+}
+
+/**
  * Vrátí výsledek zápasu z pohledu TJ Slavoj Mýto.
  *
  * @param string $domaci  Název domácího týmu.
@@ -710,8 +746,8 @@ function slavoj_zapas_vysledek($domaci, $hoste, $skore) {
     $goly_domaci = (int) $m[1];
     $goly_hoste  = (int) $m[2];
 
-    $je_domaci = (stripos($domaci, 'Slavoj') !== false || stripos($domaci, 'TJ Mýto') !== false);
-    $je_hoste  = (stripos($hoste,  'Slavoj') !== false || stripos($hoste,  'TJ Mýto') !== false);
+    $je_domaci = slavoj_is_club_team($domaci);
+    $je_hoste  = slavoj_is_club_team($hoste);
 
     if (!$je_domaci && !$je_hoste) {
         return '';
@@ -754,10 +790,10 @@ function slavoj_fallback_menu() {
  */
 class Slavoj_Nav_Walker extends Walker_Nav_Menu {
     /**
-     * @param string   $output Výstupní HTML.
-     * @param WP_Post  $item   Datový objekt položky.
-     * @param int      $depth  Hloubka.
-     * @param stdClass $args   Argumenty.
+     * @param string   $output Running output HTML string.
+     * @param WP_Post  $item   Menu item data object.
+     * @param int      $depth  Depth of the current menu item.
+     * @param stdClass $args   wp_nav_menu() arguments object.
      * @param int      $id     ID.
      */
     public function start_el(&$output, $item, $depth = 0, $args = array(), $id = 0) {
