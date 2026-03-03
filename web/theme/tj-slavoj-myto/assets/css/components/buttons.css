@@ -67,7 +67,27 @@
   background-color: #d4d4d4;
 }
 
-/* ── Desktop (≥ 768px): přepnout na řadu ── */
+/* ── Tlačítko Filtrovat ── */
+.filter--submit {
+  background-color: #111827;
+  color: #ffffff;
+  border-color: #111827;
+  background-image: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding-inline: 20px;
+}
+
+.filter--submit:hover {
+  background-color: #233D97;
+  border-color: #233D97;
+}
+
+.filter--submit:focus-visible {
+  outline: 2px solid #233D97;
+  outline-offset: 2px;
+}
+
 @media (min-width: 768px) {
   .filters {
     flex-direction: row;
