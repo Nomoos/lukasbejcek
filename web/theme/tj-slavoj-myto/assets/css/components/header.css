@@ -1,7 +1,10 @@
 /*
  * assets/css/components/header.css
- * Hlavička webu: .site-header, .brand, .nav-toggle
- * Mobile‑first: hamburger vždy viditelný, desktop přepne na horizontální nav.
+ * Hlavička: .site-header, .brand, .nav-toggle
+ *
+ * Layout: brand vlevo | nav (flex) | toggle vpravo
+ * Mobil:  nav hidden (controlled by JS + [hidden] attr)
+ * Desktop(≥900px): nav vždy viditelná, toggle skrytý
  */
 
 /* ── Wrapper ── */
@@ -11,7 +14,7 @@
   top: 0;
   z-index: 100;
   border-bottom: 2px solid #c8c8c8;
-  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  box-shadow: 0 1px 6px rgba(0,0,0,.08);
 }
 
 .site-header__inner {
@@ -20,6 +23,8 @@
   justify-content: space-between;
   min-height: 64px;
   gap: 12px;
+  /* position:relative needed for absolute nav dropdown on mobile */
+  position: relative;
 }
 
 /* ── Brand / Logo ── */
@@ -41,51 +46,51 @@
   font-size: 17px;
   font-weight: 800;
   color: #111827;
-  letter-spacing: -0.01em;
+  letter-spacing: -.01em;
 }
 
-/* ── Hamburger tlačítko (mobile) ── */
+/* ── Hamburger tlačítko (mobile, min. 44×44 px) ── */
 .nav-toggle {
-  /* Touch target: min 44×44 px */
   min-width: 44px;
   min-height: 44px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1px solid #cccccc;
+  border: 1.5px solid #cccccc;
   border-radius: 999px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
   color: #111827;
-  transition: background .15s, box-shadow .15s;
+  font-family: inherit;
+  transition: background .15s;
+  /* Flex-shrink 0 so it doesn't compress */
+  flex-shrink: 0;
 }
 
-.nav-toggle:hover {
-  background: #f0f0f0;
-}
+.nav-toggle:hover  { background: #f0f0f0; }
 
 .nav-toggle:focus-visible {
   outline: 2px solid #233D97;
   outline-offset: 2px;
 }
 
-/* Tři čáry hamburgeru (pure CSS, bez obrázků) */
+/* Tři čáry – pure CSS (bez obrázků nebo SVG v HTML) */
 .nav-toggle__icon {
   width: 18px;
   height: 12px;
+  flex-shrink: 0;
   display: inline-block;
   background:
-    linear-gradient(#111827, #111827) 0 0   / 100% 2px,
-    linear-gradient(#111827, #111827) 0 50% / 100% 2px,
-    linear-gradient(#111827, #111827) 0 100%/ 100% 2px;
+    linear-gradient(#111827, #111827) 0 0    / 100% 2px,
+    linear-gradient(#111827, #111827) 0 50%  / 100% 2px,
+    linear-gradient(#111827, #111827) 0 100% / 100% 2px;
   background-repeat: no-repeat;
-  flex-shrink: 0;
 }
 
-/* ── Desktop (≥ 900px): hamburger skrytý ── */
+/* ── Desktop (≥ 900 px): toggle skrytý ── */
 @media (min-width: 900px) {
   .nav-toggle { display: none; }
 }
