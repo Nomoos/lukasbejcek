@@ -64,6 +64,20 @@ INSERT IGNORE INTO `wp_term_taxonomy`
   (`term_taxonomy_id`, `term_id`, `taxonomy`, `description`, `parent`, `count`)
 VALUES (1003, 1003, 'stav-zapasu', 'Zápas byl odehrán, skóre zadáno', 0, 0);
 
+INSERT IGNORE INTO `wp_terms` (`term_id`, `name`, `slug`, `term_group`)
+VALUES (1005, 'Nadcházející', 'nadchazejici', 0);
+
+INSERT IGNORE INTO `wp_term_taxonomy`
+  (`term_taxonomy_id`, `term_id`, `taxonomy`, `description`, `parent`, `count`)
+VALUES (1005, 1005, 'stav-zapasu', 'Zápas ještě nebyl odehrán', 0, 0);
+
+INSERT IGNORE INTO `wp_terms` (`term_id`, `name`, `slug`, `term_group`)
+VALUES (1006, 'Zrušený', 'zruseny', 0);
+
+INSERT IGNORE INTO `wp_term_taxonomy`
+  (`term_taxonomy_id`, `term_id`, `taxonomy`, `description`, `parent`, `count`)
+VALUES (1006, 1006, 'stav-zapasu', 'Zápas byl zrušen', 0, 0);
+
 -- ============================================================
 -- 4. TAXONOMIE – POZICE HRÁČE
 -- ============================================================

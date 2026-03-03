@@ -733,15 +733,69 @@ function slavoj_zapas_vysledek($domaci, $hoste, $skore) {
  * Záložní menu pokud není nastaveno v administraci
  */
 function slavoj_fallback_menu() {
-    echo '<ul class="nav">';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/')) . '">Domů</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/zapasy/')) . '">Zápasy</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/tymy/')) . '">Týmy</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/galerie/')) . '">Galerie</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/historie/')) . '">Historie</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/sponzori/')) . '">Sponzoři</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/kontakty/')) . '">Kontakty</a></li>';
+    echo '<ul class="nav__list">';
+    $polozky = array(
+        'Domů'     => home_url('/'),
+        'Zápasy'   => home_url('/zapasy/'),
+        'Týmy'     => home_url('/tymy/'),
+        'Galerie'  => home_url('/galerie/'),
+        'Historie' => home_url('/historie/'),
+        'Sponzoři' => home_url('/sponzori/'),
+        'Kontakty' => home_url('/kontakty/'),
+    );
+    foreach ($polozky as $label => $url) {
+        echo '<li class="nav__item"><a class="nav__link" href="' . esc_url($url) . '">' . esc_html($label) . '</a></li>';
+    }
     echo '</ul>';
+}
+
+/**
+ * Nav Walker – přidá třídy nav__item a nav__link na položky wp_nav_menu().
+ */
+class Slavoj_Nav_Walker extends Walker_Nav_Menu {
+    /**
+     * @param string   $output Výstupní HTML.
+     * @param WP_Post  $item   Datový objekt položky.
+     * @param int      $depth  Hloubka.
+     * @param stdClass $args   Argumenty.
+     * @param int      $id     ID.
+     */
+    public function start_el(&$output, $item, $depth = 0, $args = array(), $id = 0) {
+        $classes   = empty($item->classes) ? array() : (array) $item->classes;
+        $is_active = in_array('current-menu-item', $classes, true);
+
+        $li_classes = 'nav__item';
+        if ($is_active) {
+            $li_classes .= ' nav__item--active';
+        }
+
+        $output .= '<li class="' . esc_attr($li_classes) . '">';
+
+        $link_classes = 'nav__link';
+        if ($is_active) {
+            $link_classes .= ' nav__link--active';
+        }
+
+        $atts          = array();
+        $atts['href']  = !empty($item->url) ? $item->url : '';
+        $atts['class'] = $link_classes;
+        if ($item->target) {
+            $atts['target'] = $item->target;
+        }
+        if ($item->xfn) {
+            $atts['rel'] = $item->xfn;
+        }
+
+        $attributes = '';
+        foreach ($atts as $attr => $value) {
+            if (!empty($value)) {
+                $attributes .= ' ' . $attr . '="' . esc_attr($value) . '"';
+            }
+        }
+
+        $title  = apply_filters('the_title', $item->title, $item->ID);
+        $output .= '<a' . $attributes . '>' . esc_html($title) . '</a>';
+    }
 }
 
 /**

@@ -9,103 +9,522 @@ License: GNU General Public License v2 or later
 Text Domain: tj-slavoj-myto
 */
 
-/* ===== ZÁKLAD ===== */
+/* ===================================================================
+   CSS PROMĚNNÉ
+   =================================================================== */
+:root {
+  --primary:         #233D97;
+  --primary-hover:   #1a2e73;
+  --primary-light:   #f0f4ff;
+  --bg:              #ffffff;
+  --card-bg:         #ffffff;
+  --gray-light:      #E6E6E6;
+  --gray-mid:        #6c757d;
+  --text:            #1a1a1a;
+  --text-muted:      #6c757d;
+  --border:          #dee2e6;
+  --radius:          12px;
+  --radius-sm:       8px;
+  --radius-pill:     50px;
+  --container:       1200px;
+  --win-color:       #1a7a3f;
+  --loss-color:      #c0392b;
+  --draw-color:      #6c757d;
+}
+
+/* ===================================================================
+   ZÁKLAD
+   =================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
-  background: #fff;
+  background: var(--bg);
   font-family: Arial, sans-serif;
-  color: #000;
+  color: var(--text);
 }
 
-/* ===== FILTROVÉ SELEKTY ===== */
-.filter-select-team {
-  width: 20%;
-  background-color: #233D97;
-  color: white;
+/* ===================================================================
+   UTILITY
+   =================================================================== */
+.container {
+  max-width: var(--container);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
-.filter-select-season {
-  width: 20%;
+.section {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 
-.filter-select-status {
-  width: 20%;
-  background-color: #233D97;
-  color: white;
+/* Přístupnostní třída – skryje prvek vizuálně, ale ponechá ho pro čtečky */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.filter-select-team-sm {
-  width: 11%;
-}
-
-.filter-select-season-sm {
-  width: 15%;
-}
-
-/* ===== HLAVIČKA ===== */
-header {
-  background-color: #E6E6E6;
-  border-bottom: 2px solid #ccc;
-}
-
+/* ===================================================================
+   HEADER – navigační lišta
+   =================================================================== */
 .header {
+  background-color: var(--gray-light);
+  border-bottom: 2px solid #ccc;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header__inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
-.logo {
+/* ─── Brand ─── */
+.brand {
   display: flex;
   align-items: center;
+  text-decoration: none;
+  color: var(--text);
 }
 
-.logo img {
+.brand__logo {
   height: 50px;
   margin-right: 10px;
 }
 
-.logo h1 {
-  font-size: 22px;
+.brand__name {
+  font-size: 1.25rem;
+  font-weight: 700;
   margin: 0;
+  line-height: 1.2;
+  color: var(--text);
 }
 
-/* ===== NAVIGACE ===== */
-nav ul {
+/* ─── Nav ─── */
+.nav__list {
   display: flex;
   list-style: none;
   margin: 0;
   padding: 0;
+  gap: 0.25rem;
 }
 
-nav li {
-  margin-left: 25px;
+.nav__item {
+  margin: 0;
 }
 
-nav a {
+.nav__link {
+  display: block;
+  padding: 0.4rem 0.8rem;
   text-decoration: none;
-  color: #000;
-  font-size: 15px;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background-color 0.15s;
 }
 
-nav a.active,
-nav a:hover {
-  color: #233D97;
-  font-weight: bold;
+.nav__link:hover,
+.nav__link:focus,
+.nav__link.current-menu-item {
+  color: var(--primary);
+  background-color: rgba(35, 61, 151, 0.07);
+  outline: none;
 }
 
-.nav-link {
-  color: #000 !important;
+/* WordPress vygenerované menu – podpora pro wp_nav_menu() */
+.header .nav-item > a {
+  display: block;
+  padding: 0.4rem 0.8rem;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.header .nav-item > a:hover,
+.header .nav-item > a:focus,
+.header .current-menu-item > a {
+  color: var(--primary);
+  background-color: rgba(35, 61, 151, 0.07);
+}
+
+/* Hamburger pro mobil */
+.nav__toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  color: var(--text);
+}
+
+/* ===================================================================
+   PAGE TITLE – záhlaví stránky
+   =================================================================== */
+.page-title {
+  padding-top: 2.5rem;
+  padding-bottom: 0;
+}
+
+.page-title__h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  color: var(--text);
+}
+
+.page-title__subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0 0 1.5rem;
+}
+
+/* ===================================================================
+   FILTRY
+   =================================================================== */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-bottom: 2.5rem;
+}
+
+.filter {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 0.45rem 2rem 0.45rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 14px;
+  transition: opacity 0.15s, box-shadow 0.15s;
+  min-width: 140px;
+}
+
+.filter:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Tmavě modrý filtr (tým, stav) */
+.filter--primary {
+  background-color: var(--primary);
+  color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16'%3E%3Cpath fill='%23ffffff' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+}
+
+.filter--primary:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 2px 6px rgba(35, 61, 151, 0.35);
+}
+
+/* Šedý filtr (sezóna) */
+.filter--muted {
+  background-color: var(--gray-light);
+  color: var(--text);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16'%3E%3Cpath fill='%231a1a1a' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+}
+
+.filter--muted:hover {
+  background-color: #d3d3d3;
+}
+
+/* ===================================================================
+   TEAM HERO – modrý pruh s logem a názvem týmu
+   =================================================================== */
+.team-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.team-hero__bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  height: 64px;
+  width: 100%;
+}
+
+/* Logo překrývá pruh */
+.team-hero__logo {
+  height: 56px;
+  width: auto;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.4));
+}
+
+.team-hero__title {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0.6rem 0 0;
+  padding-bottom: 0.25rem;
+}
+
+/* ===================================================================
+   SEZNAM ZÁPASŮ
+   =================================================================== */
+.matches {
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
+.matches__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ─── Základní karta ─── */
+.match-card {
+  background-color: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid transparent;
+  border-radius: var(--radius);
+  padding: 0.9rem 1.1rem;
+  transition: box-shadow 0.18s, background-color 0.18s;
+}
+
+.match-card:hover {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.09);
+  background-color: #fafafa;
+}
+
+/* ─── Varianta: odehraný zápas ─── */
+.match-card--played {
+  border-left-color: var(--border);
+}
+
+/* ─── Varianta: nadcházející zápas ─── */
+.match-card--upcoming {
+  background-color: var(--primary-light);
+  border-color: var(--primary);
+  border-left-color: var(--primary);
+}
+
+.match-card--upcoming:hover {
+  background-color: #e0eaff;
+}
+
+/* ─── Výsledkové varianty ─── */
+.match-card--win {
+  border-left-color: var(--win-color);
+}
+
+.match-card--loss {
+  border-left-color: var(--loss-color);
+}
+
+.match-card--draw {
+  border-left-color: var(--draw-color);
+}
+
+/* ─── Meta (datum + čas + odznak) ─── */
+.match-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.match-card__datetime {
   font-weight: 500;
 }
 
-.nav-link.active,
-.nav-link:hover {
-  color: #233D97 !important;
+/* ─── Hlavní řádek (týmy + skóre) ─── */
+.match-card__main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
-/* ===== BANNER ===== */
+.match-card__team {
+  flex: 1;
+  font-weight: 700;
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.match-card__team--home {
+  text-align: left;
+}
+
+.match-card__team--away {
+  text-align: right;
+}
+
+/* ─── Skóre / "vs" badge ─── */
+.match-card__score {
+  flex-shrink: 0;
+  min-width: 56px;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 0.1rem 0.6rem;
+  border-radius: var(--radius-pill);
+  background-color: var(--gray-light);
+  color: var(--text);
+}
+
+.match-card__score--win {
+  background-color: #d4edda;
+  color: var(--win-color);
+}
+
+.match-card__score--loss {
+  background-color: #f8d7da;
+  color: var(--loss-color);
+}
+
+.match-card__score--draw {
+  background-color: var(--gray-light);
+  color: var(--draw-color);
+}
+
+.match-card__score--upcoming {
+  background-color: rgba(35, 61, 151, 0.12);
+  color: var(--primary);
+  letter-spacing: 0.05rem;
+}
+
+/* ─── Sub řádek (Domácí / Hosté) ─── */
+.match-card__sub {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.match-card__side {
+  /* levo / pravo popisek */
+}
+
+/* ─── Střelci ─── */
+.match-card__scorers {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+/* ===================================================================
+   ODZNAKY (badges)
+   =================================================================== */
+.badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-pill);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Odehráno */
+.badge--neutral {
+  background-color: var(--gray-light);
+  color: var(--text-muted);
+}
+
+/* Nadcházející */
+.badge--primary {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+/* Výhra */
+.badge--success {
+  background-color: #d4edda;
+  color: var(--win-color);
+}
+
+/* Prohra */
+.badge--danger {
+  background-color: #f8d7da;
+  color: var(--loss-color);
+}
+
+/* Remíza */
+.badge--warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* ===================================================================
+   PRÁZDNÝ STAV
+   =================================================================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  background: #f8f9fa;
+  border-radius: var(--radius);
+  border: 1.5px dashed var(--border);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.empty-state__icon {
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state__title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.empty-state__text {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* ===================================================================
+   BANNER (domovská stránka)
+   =================================================================== */
 .banner {
   position: relative;
   height: 280px;
@@ -133,19 +552,19 @@ nav a:hover {
   margin: 0;
 }
 
-/* ===== KARTY SE ZÁPASY ===== */
-.h3 {
-  text-align: center;
-}
-
+/* ===================================================================
+   KARTY (domovská stránka – přehled nadcházejících zápasů)
+   =================================================================== */
 .zapasy-container {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .card {
   width: 22%;
-  background: #E6E6E6;
+  background: var(--gray-light);
   border-radius: 0 40px 0 0;
   padding: 15px 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -154,7 +573,7 @@ nav a:hover {
 
 .card h3 {
   margin: 5px 0;
-  color: #233D97;
+  color: var(--primary);
   font-size: 16px;
 }
 
@@ -163,29 +582,33 @@ nav a:hover {
   margin: 4px 0;
 }
 
-/* ===== MODRÝ A ŠEDÝ PRUH ===== */
+/* ===================================================================
+   MODRÝ A ŠEDÝ DEKORATIVNÍ PRUH (legacy – ponechat pro zpětnou kom.)
+   =================================================================== */
 .blue-bar-p {
   width: 100%;
-  height: 60px;
-  background-color: #233D97;
+  height: 64px;
+  background-color: var(--primary);
   border-radius: 0 20px 0 0;
 }
 
 .blue-bar-l {
   width: 100%;
-  height: 60px;
-  background-color: #233D97;
+  height: 64px;
+  background-color: var(--primary);
   border-radius: 20px 0 0 0;
 }
 
 .gray-bar {
   width: 100%;
   height: 60px;
-  background-color: #E6E6E6;
+  background-color: var(--gray-light);
   border-radius: 20px 0 0 0;
 }
 
-/* ===== AKTUÁLNÍ ZPRÁVY ===== */
+/* ===================================================================
+   AKTUALITY
+   =================================================================== */
 .aktuality {
   background: #fff;
   padding: 50px 0;
@@ -204,7 +627,7 @@ nav a:hover {
 }
 
 .aktualita {
-  background: #E6E6E6;
+  background: var(--gray-light);
   border-radius: 8px;
   padding: 20px;
   border: 1px solid #ccc;
@@ -213,7 +636,7 @@ nav a:hover {
 
 .aktualita h4 {
   margin-top: 0;
-  color: #233D97;
+  color: var(--primary);
   font-size: 17px;
 }
 
@@ -237,31 +660,32 @@ nav a:hover {
   border-radius: 8px;
 }
 
-/* ===== FORMULÁŘOVÉ SELEKTY ===== */
+/* ===================================================================
+   FORMULÁŘOVÉ SELEKTY (legacy Bootstrap override)
+   =================================================================== */
 .form-select {
   border: none;
   box-shadow: none;
-  border-radius: 10px;
+  border-radius: var(--radius-pill);
   padding: 0.4rem 1rem;
-  font-size: 15px;
-  background-color: #E6E6E6;
+  font-size: 0.9rem;
+  background-color: var(--gray-light);
 }
 
-/* ===== BOXY ===== */
-.border {
-  border-color: #000 !important;
+.filter-select-team,
+.filter-select-status {
+  background-color: var(--primary);
+  color: white;
 }
 
-.rounded-3 {
-  border-radius: 10px !important;
+.filter-select-season {
+  background-color: var(--gray-light);
+  color: var(--text);
 }
 
-h2, h4, h5 {
-  color: #000;
-  font-weight: bold;
-}
-
-/* ===== GALERIE ===== */
+/* ===================================================================
+   GALERIE
+   =================================================================== */
 .gallery-logo {
   width: 120px;
   z-index: 2;
@@ -273,14 +697,14 @@ h2, h4, h5 {
 .gallery-card {
   width: 100%;
   aspect-ratio: 1/1;
-  background-color: #E6E6E6;
+  background-color: var(--gray-light);
   border-radius: 0 20px 0 0;
 }
 
 .fotky {
   width: 100%;
   aspect-ratio: 1/1;
-  background-color: #E6E6E6;
+  background-color: var(--gray-light);
 }
 
 .gallery-img {
@@ -292,104 +716,13 @@ h2, h4, h5 {
 .gallery-placeholder {
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: #E6E6E6;
+  background: var(--gray-light);
   border-radius: 15px;
 }
 
-/* ===== ZÁPASY KARTY ===== */
-.match-card {
-  background-color: #fff;
-  border: 1px solid #00000030;
-  border-radius: 15px;
-  transition: 0.2s;
-}
-
-.match-card:hover {
-  background-color: #E6E6E6;
-}
-
-/* Nadcházející zápas – jemně odlišené pozadí */
-.match-card.match-upcoming {
-  background-color: #f0f4ff;
-  border-color: #233D97;
-}
-
-.match-card.match-upcoming:hover {
-  background-color: #e0eaff;
-}
-
-/* Výsledek – barevné skóre */
-.score-win {
-  color: #1a7a3f;
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-.score-loss {
-  color: #c0392b;
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-.score-draw {
-  color: #6c757d;
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-.score-upcoming {
-  color: #233D97;
-  font-weight: bold;
-  font-size: 1.1rem;
-  letter-spacing: 0.05rem;
-}
-
-/* Odznak stavu zápasu */
-.match-status-badge {
-  font-size: 0.7rem;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03rem;
-}
-
-.badge-odehrany {
-  background-color: #e9ecef;
-  color: #495057;
-}
-
-.badge-nadchazejici {
-  background-color: #233D97;
-  color: #fff;
-}
-
-.badge-zruseny {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-/* Název sekce týmu pod modrým pruhem */
-.section-team-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #000;
-  text-align: center;
-  margin-top: 0.75rem;
-  margin-bottom: 0;
-}
-
-/* Prázdný stav – žádné zápasy */
-.match-empty-state {
-  padding: 40px 20px;
-  text-align: center;
-  color: #6c757d;
-  background: #f8f9fa;
-  border-radius: 15px;
-  border: 1px dashed #dee2e6;
-}
-
-/* ===== KOMISE KARTY (KONTAKTY) ===== */
+/* ===================================================================
+   KOMISE KARTY (KONTAKTY)
+   =================================================================== */
 .committee-card {
   background: #fff;
   border: 2px solid #dcdcdc;
@@ -406,7 +739,7 @@ h2, h4, h5 {
 .committee-img-wrapper {
   width: 160px;
   height: 160px;
-  background: #E6E6E6;
+  background: var(--gray-light);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -414,7 +747,18 @@ h2, h4, h5 {
   margin: 0 auto 15px auto;
 }
 
-/* ===== SPONZOŘI ===== */
+.committee-card a {
+  color: #000;
+  text-decoration: none;
+}
+
+.committee-card a:hover {
+  color: var(--primary);
+}
+
+/* ===================================================================
+   SPONZOŘI
+   =================================================================== */
 .sponsor-card {
   background: #fff;
   border: 2px solid #dcdcdc;
@@ -429,12 +773,12 @@ h2, h4, h5 {
   align-items: center;
   justify-content: center;
   height: 250px;
-  transition: 0.2s;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .sponsor-card:hover {
   background-color: #f5f5f5;
-  color: #233D97;
+  color: var(--primary);
 }
 
 .sponsor-card img {
@@ -449,22 +793,16 @@ h2, h4, h5 {
   font-size: 16px;
 }
 
-/* ===== KONTAKTY ODKAZY ===== */
-.committee-card a {
-  color: #000;
-  text-decoration: none;
-}
-
-.committee-card a:hover {
-  color: #233D97;
-}
-
-/* ===== HISTORIE ===== */
+/* ===================================================================
+   HISTORIE
+   =================================================================== */
 .club-logo {
   max-width: 250px;
 }
 
-/* ===== LIGHTBOX ===== */
+/* ===================================================================
+   LIGHTBOX
+   =================================================================== */
 .lightbox-overlay {
   display: none;
   position: fixed;
@@ -513,15 +851,12 @@ h2, h4, h5 {
   padding: 10px;
 }
 
-.lightbox-prev {
-  left: 20px;
-}
+.lightbox-prev { left: 20px; }
+.lightbox-next { right: 20px; }
 
-.lightbox-next {
-  right: 20px;
-}
-
-/* ===== MAPA ===== */
+/* ===================================================================
+   MAPA
+   =================================================================== */
 .map-container {
   width: 100%;
   height: 400px;
@@ -533,4 +868,172 @@ h2, h4, h5 {
   height: 100%;
   border: 0;
   border-radius: 15px;
+}
+
+/* ===================================================================
+   OBECNÁ TYPOGRAFIE
+   =================================================================== */
+h2, h4, h5 {
+  color: #000;
+  font-weight: bold;
+}
+
+/* ===================================================================
+   FOOTER
+   =================================================================== */
+.site-footer {
+  background-color: var(--primary);
+  color: #fff;
+  padding: 2.5rem 0 1.5rem;
+  margin-top: 3rem;
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.site-footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.site-footer__logo {
+  height: 48px;
+  filter: brightness(0) invert(1);
+}
+
+.site-footer__name {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.site-footer__info {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  max-width: 260px;
+  line-height: 1.6;
+}
+
+.site-footer__bottom {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  font-size: 0.8rem;
+  opacity: 0.7;
+  text-align: center;
+}
+
+/* ===================================================================
+   RESPONSIVITA
+   =================================================================== */
+
+/* Tablet */
+@media (max-width: 992px) {
+  .card {
+    width: 47%;
+  }
+}
+
+/* Mobil */
+@media (max-width: 768px) {
+  /* ─── Header ─── */
+  .header__inner {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .nav__list {
+    flex-wrap: wrap;
+    gap: 0;
+    width: 100%;
+  }
+
+  .nav__link,
+  .header .nav-item > a {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  /* ─── Filtry – full width ─── */
+  .filters {
+    flex-direction: column;
+  }
+
+  .filter {
+    width: 100%;
+    min-width: unset;
+  }
+
+  /* ─── Match cards – přeskládání pro mobil ─── */
+  .match-card {
+    padding: 0.75rem 0.85rem;
+  }
+
+  .match-card__main {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+
+  .match-card__team {
+    flex: unset;
+    width: 100%;
+    white-space: normal;
+  }
+
+  .match-card__team--home {
+    text-align: center;
+  }
+
+  .match-card__team--away {
+    text-align: center;
+  }
+
+  .match-card__score {
+    order: -1;
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 0.25rem 0;
+    background: none;
+    color: inherit;
+  }
+
+  .match-card__score--win   { color: var(--win-color);  }
+  .match-card__score--loss  { color: var(--loss-color); }
+  .match-card__score--draw  { color: var(--draw-color); }
+  .match-card__score--upcoming { color: var(--primary); }
+
+  .match-card__meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  /* ─── Karty (domovská stránka) ─── */
+  .card {
+    width: 100%;
+  }
+
+  /* ─── Aktuality ─── */
+  .aktualita.druhy {
+    flex-direction: column;
+  }
+
+  .aktualita.druhy .text {
+    width: 100%;
+  }
+
+  .aktualita.druhy img {
+    width: 100%;
+  }
+
+  /* ─── Team hero ─── */
+  .team-hero__logo {
+    height: 44px;
+  }
 }
