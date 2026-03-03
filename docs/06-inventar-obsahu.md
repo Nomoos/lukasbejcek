@@ -41,7 +41,7 @@ Obsahuje úplný seznam všech implementovaných typů obsahu, jejich skutečné
 |------|-----------|-----|-------|
 | Název týmu | *(titulek příspěvku)* | title | Automaticky jako název příspěvku WordPress |
 | Identifikátor (slug) | `tym_slug` | text | Slug pro propojení s hráči (např. `muzi-a`) |
-| Počet hráčů | `pocet_hracu` | number | Celkový počet hráčů v soupisku |
+| Počet hráčů | `pocet_hracu` | number | Automaticky vypočítáno z hráčů přiřazených k týmu v dané sezóně; není ručně editovatelné |
 | Hlavní trenér | `hlavni_trener` | text | Jméno hlavního trenéra |
 | Asistent trenéra | `asistent_trenera` | text | Jméno asistenta trenéra |
 | Zdravotník | `zdravotnik` | text | Jméno zdravotníka |
@@ -130,7 +130,7 @@ Obsahuje úplný seznam všech implementovaných typů obsahu, jejich skutečné
 
 ```
 zapas  →  taxonomie: kategorie-tymu, sezona, stav-zapasu
-          meta: datum_zapasu, cas_zapasu, domaci, hoste, skore, strelci, misto_konani
+          meta: datum_zapasu, cas_zapasu, domaci, hoste, skore, strelci
 
 tym    →  taxonomie: kategorie-tymu, sezona
           meta: tym_slug, pocet_hracu, hlavni_trener, asistent_trenera, zdravotnik

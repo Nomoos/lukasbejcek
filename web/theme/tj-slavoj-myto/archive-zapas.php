@@ -130,7 +130,6 @@ $kategorie   = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => f
               $hoste   = esc_html(get_post_meta(get_the_ID(), 'hoste', true));
               $skore   = get_post_meta(get_the_ID(), 'skore', true);
               $strelci = esc_html(get_post_meta(get_the_ID(), 'strelci', true));
-              $misto   = esc_html(get_post_meta(get_the_ID(), 'misto_konani', true));
               ?>
               <div class="match-card mb-3 p-3 border rounded-4">
                 <div class="row">
@@ -142,9 +141,6 @@ $kategorie   = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => f
                     }
                     ?>
                     <?php echo $cas ? ' v ' . $cas : ''; ?><br>
-                    <?php if ($misto) : ?>
-                      <span class="text-secondary"><small><?php echo $misto; ?></small></span><br>
-                    <?php endif; ?>
                     <?php if ($strelci) : ?>
                       <span class="text-secondary">Střelci: <?php echo $strelci; ?></span>
                     <?php endif; ?>

@@ -75,7 +75,6 @@ a pro přípravu testovacích dat.
 | Čas výkopu | `cas_zapasu` | time `HH:MM` | ✅ | `18:00` |
 | Skóre | `skore` | string | ❌ | `4:2`; prázdné = nadcházející |
 | Střelci | `strelci` | string | ❌ | „2× Schmid, Bejček, Otec" |
-| Místo konání | `misto_konani` | string | ❌ | „Mýto – domácí" |
 | Kategorie týmu | taxonomie `kategorie-tymu` | term slug | ✅ | `muzi-a` |
 | Sezóna | taxonomie `sezona` | term slug | ✅ | `2025-26` |
 | Stav zápasu | taxonomie `stav-zapasu` | term slug | ✅ | `odehrany` |
@@ -95,7 +94,7 @@ a pro přípravu testovacích dat.
 | Slug týmu | `tym_slug` | string | ✅ | `muzi-a` |
 | Popis | `post_content` | HTML/editor | ❌ | Volný popis týmu |
 | Logo | `_thumbnail_id` | image ID | ❌ | ID přílohy |
-| Počet hráčů | `pocet_hracu` | integer | ❌ | `16` |
+| Počet hráčů | `pocet_hracu` | integer | ❌ | `16` – **vypočítáno automaticky** z hráčů přiřazených k týmu v dané sezóně (při neurčení sezóny se použije aktuálně nejnovější) |
 | Hlavní trenér | `hlavni_trener` | string | ❌ | „Nyklas Petr" |
 | Asistent trenéra | `asistent_trenera` | string | ❌ | „Honzík Ivan" |
 | Zdravotník | `zdravotnik` | string | ❌ | „Hrabák Jan" |
@@ -106,6 +105,7 @@ a pro přípravu testovacích dat.
 
 - `tym_slug` musí být jedinečný – slouží jako cizí klíč pro propojení s hráči.
 - Hodnota `tym_slug` **musí** odpovídat slugu příslušné taxonomie `kategorie-tymu`.
+- `pocet_hracu` se **nikdy nezadává ručně** – hodnota se automaticky vypočítává z počtu hráčů CPT `hrac`, kteří mají shodnou hodnotu meta pole `tym_slug` a jsou přiřazeni ke stejné sezóně jako tým. Pokud tým nemá přiřazenou sezónu, použije se nejnovější dostupná sezóna. Přepočet probíhá při uložení týmu i při každé změně (uložení, smazání) hráče.
 
 ---
 

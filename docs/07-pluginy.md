@@ -58,14 +58,13 @@ Pro maximální kontrolu nad kódem a minimální závislost na externích plugi
 | Hostující tým | `hoste` | text | Název hostujícího týmu |
 | Skóre | `skore` | text | Výsledek ve formátu „3:1" |
 | Střelci | `strelci` | text | Jména střelců, např. „2× Novák, Bejček" |
-| Místo konání | `misto_konani` | text | Název hřiště nebo adresa |
 
 **Pole pro Tým (`tym`):**
 
 | Pole | Klíč | Typ | Popis |
 |------|------|-----|-------|
 | Slug týmu | `tym_slug` | text | Identifikátor pro propojení s hráči (např. `muzi-a`) |
-| Počet hráčů | `pocet_hracu` | number | Celkový počet hráčů v soupisku |
+| Počet hráčů | `pocet_hracu` | number | **Automaticky vypočítáno** – počet hráčů CPT `hrac` se shodným `tym_slug` v dané sezóně; není ručně editovatelné |
 | Hlavní trenér | `hlavni_trener` | text | Jméno hlavního trenéra |
 | Asistent trenéra | `asistent_trenera` | text | Jméno asistenta trenéra |
 | Zdravotník | `zdravotnik` | text | Jméno zdravotníka |

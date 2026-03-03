@@ -59,7 +59,7 @@ function slavoj_cf_setup_page() {
             <td><strong>Zápasy</strong></td>
             <td><code>zapas</code></td>
             <td>Fotbalové zápasy s výsledky a detaily</td>
-            <td>datum_zapasu, cas_zapasu, domaci, hoste, skore, strelci, misto_konani</td>
+            <td>datum_zapasu, cas_zapasu, domaci, hoste, skore, strelci</td>
           </tr>
           <tr>
             <td><strong>Týmy</strong></td>
@@ -355,7 +355,6 @@ function slavoj_cf_seed_demo_data() {
             'cas_zapasu'    => '18:00',
             'skore'         => '4:2',
             'strelci'       => '2× Schmid, Bejček, Otec',
-            'misto_konani'  => 'Hosté',
             'sezona'        => '2025/26',
             'kategorie'     => 'muzi-a',
             'stav'          => 'odehrany',
@@ -368,7 +367,6 @@ function slavoj_cf_seed_demo_data() {
             'cas_zapasu'    => '18:00',
             'skore'         => '',
             'strelci'       => '',
-            'misto_konani'  => 'Domácí',
             'sezona'        => '2025/26',
             'kategorie'     => 'muzi-a',
             'stav'          => 'nadchazejici',
@@ -381,7 +379,6 @@ function slavoj_cf_seed_demo_data() {
             'cas_zapasu'    => '18:00',
             'skore'         => '',
             'strelci'       => '',
-            'misto_konani'  => 'Hosté',
             'sezona'        => '2025/26',
             'kategorie'     => 'muzi-a',
             'stav'          => 'nadchazejici',
@@ -394,7 +391,6 @@ function slavoj_cf_seed_demo_data() {
             'cas_zapasu'    => '18:00',
             'skore'         => '',
             'strelci'       => '',
-            'misto_konani'  => 'Hosté',
             'sezona'        => '2025/26',
             'kategorie'     => 'muzi-b',
             'stav'          => 'nadchazejici',
@@ -407,7 +403,6 @@ function slavoj_cf_seed_demo_data() {
             'cas_zapasu'    => '16:00',
             'skore'         => '',
             'strelci'       => '',
-            'misto_konani'  => 'Domácí',
             'sezona'        => '2025/26',
             'kategorie'     => 'dorost',
             'stav'          => 'nadchazejici',
@@ -420,7 +415,6 @@ function slavoj_cf_seed_demo_data() {
             'cas_zapasu'    => '10:00',
             'skore'         => '',
             'strelci'       => '',
-            'misto_konani'  => 'Hosté',
             'sezona'        => '2025/26',
             'kategorie'     => 'starsi-zaci',
             'stav'          => 'nadchazejici',
@@ -443,7 +437,6 @@ function slavoj_cf_seed_demo_data() {
             update_post_meta($post_id, 'cas_zapasu',   $z['cas_zapasu']);
             update_post_meta($post_id, 'skore',        $z['skore']);
             update_post_meta($post_id, 'strelci',      $z['strelci']);
-            update_post_meta($post_id, 'misto_konani', $z['misto_konani']);
             wp_set_object_terms($post_id, $z['sezona'],    'sezona');
             wp_set_object_terms($post_id, $z['kategorie'], 'kategorie-tymu');
             wp_set_object_terms($post_id, $z['stav'],      'stav-zapasu');
@@ -463,7 +456,6 @@ function slavoj_cf_seed_demo_data() {
         ));
         if ($tym_id && !is_wp_error($tym_id)) {
             update_post_meta($tym_id, 'tym_slug',          'muzi-a');
-            update_post_meta($tym_id, 'pocet_hracu',       16);
             update_post_meta($tym_id, 'hlavni_trener',     'Nyklas Petr');
             update_post_meta($tym_id, 'asistent_trenera',  'Honzík Ivan');
             update_post_meta($tym_id, 'zdravotnik',        'Hrabák Jan');
