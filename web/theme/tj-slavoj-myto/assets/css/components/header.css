@@ -1,0 +1,91 @@
+/*
+ * assets/css/components/header.css
+ * Hlavička webu: .site-header, .brand, .nav-toggle
+ * Mobile‑first: hamburger vždy viditelný, desktop přepne na horizontální nav.
+ */
+
+/* ── Wrapper ── */
+.site-header {
+  background: #E6E6E6;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid #c8c8c8;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  gap: 12px;
+}
+
+/* ── Brand / Logo ── */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.brand__logo {
+  width: 40px;
+  height: auto;
+}
+
+.brand__name {
+  font-size: 17px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.01em;
+}
+
+/* ── Hamburger tlačítko (mobile) ── */
+.nav-toggle {
+  /* Touch target: min 44×44 px */
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  transition: background .15s, box-shadow .15s;
+}
+
+.nav-toggle:hover {
+  background: #f0f0f0;
+}
+
+.nav-toggle:focus-visible {
+  outline: 2px solid #233D97;
+  outline-offset: 2px;
+}
+
+/* Tři čáry hamburgeru (pure CSS, bez obrázků) */
+.nav-toggle__icon {
+  width: 18px;
+  height: 12px;
+  display: inline-block;
+  background:
+    linear-gradient(#111827, #111827) 0 0   / 100% 2px,
+    linear-gradient(#111827, #111827) 0 50% / 100% 2px,
+    linear-gradient(#111827, #111827) 0 100%/ 100% 2px;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+}
+
+/* ── Desktop (≥ 900px): hamburger skrytý ── */
+@media (min-width: 900px) {
+  .nav-toggle { display: none; }
+}

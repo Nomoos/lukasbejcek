@@ -1,0 +1,103 @@
+/*
+ * assets/css/components/nav-mobile.css
+ * Mobilní navigace (.mobile-nav) s hidden atributem.
+ * Na desktopu se zobrazí přes CSS i při hidden="".
+ */
+
+/* ── Mobile: skrytý panel pod headerem ── */
+.mobile-nav {
+  background: #E6E6E6;
+  border-top: 1px solid #c8c8c8;
+  border-bottom: 3px solid #233D97;
+}
+
+/* Přepíše HTML hidden atribut – na mobile je skrytý, ale díky JS to funguje */
+/* Na desktopu: neaplikujeme display:none, přebijeme [hidden] */
+
+.mobile-nav__inner {
+  padding: 12px 0;
+}
+
+.mobile-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobile-nav__list li { margin: 0; }
+
+.mobile-nav__list a {
+  display: block;
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 600;
+  border-left: 3px solid transparent;
+  transition: background .15s, color .15s, border-color .15s;
+  /* Touch target ≥ 44px výška */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-nav__list a:hover,
+.mobile-nav__list a:focus-visible {
+  background: rgba(35, 61, 151, .1);
+  color: #233D97;
+  border-left-color: #233D97;
+  outline: none;
+}
+
+.mobile-nav__list .current-menu-item > a {
+  color: #233D97;
+  background: rgba(35, 61, 151, .12);
+  border-left-color: #233D97;
+}
+
+/* ── Desktop (≥ 900px): přepnout na horizontální lištu ── */
+@media (min-width: 900px) {
+  /* Zobrazit nav i přes HTML hidden atribut */
+  .mobile-nav,
+  .mobile-nav[hidden] {
+    display: block !important;
+    border-top: none;
+    border-bottom: none;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .mobile-nav__inner {
+    padding: 0;
+    /* Na desktopu nav sedí v site-header__inner napravo */
+  }
+
+  .mobile-nav__list {
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .mobile-nav__list a {
+    padding: 8px 14px;
+    border-left: none;
+    border-radius: 8px;
+    font-size: 15px;
+    min-height: unset;
+  }
+
+  .mobile-nav__list a:hover,
+  .mobile-nav__list a:focus-visible {
+    border-left-color: transparent;
+    background: rgba(35, 61, 151, .12);
+  }
+
+  .mobile-nav__list .current-menu-item > a {
+    border-left-color: transparent;
+    background: rgba(35, 61, 151, .14);
+  }
+}
