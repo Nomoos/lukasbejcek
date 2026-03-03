@@ -561,20 +561,15 @@ add_action('add_meta_boxes', 'slavoj_galerie_meta_boxes');
 
 function slavoj_galerie_meta_box_html($post) {
     wp_nonce_field('slavoj_galerie_nonce', 'slavoj_galerie_nonce_field');
-    $tym     = get_post_meta($post->ID, 'tym', true);
     $sezona  = get_post_meta($post->ID, 'sezona', true);
     ?>
     <table class="form-table">
-      <tr>
-        <th><label for="galerie_tym">Tým</label></th>
-        <td><input type="text" id="galerie_tym" name="tym" value="<?php echo esc_attr($tym); ?>" class="widefat" placeholder="např. Muži A"></td>
-      </tr>
       <tr>
         <th><label for="galerie_sezona">Sezóna</label></th>
         <td><input type="text" id="galerie_sezona" name="sezona" value="<?php echo esc_attr($sezona); ?>" class="widefat" placeholder="např. 2025/26"></td>
       </tr>
     </table>
-    <p class="description">Fotografie přidejte přes funkci <strong>Obrázek příspěvku</strong> (náhled alba) nebo vložte galerii přímo do obsahu příspěvku.</p>
+    <p class="description">Kategorie týmu přiřaďte pomocí panelu <strong>Kategorie týmu</strong> vpravo. Fotografie přidejte přes funkci <strong>Obrázek příspěvku</strong> (náhled alba) nebo vložte galerii přímo do obsahu příspěvku.</p>
     <?php
 }
 
@@ -584,7 +579,7 @@ function slavoj_galerie_save_meta($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
 
-    $fields = array('tym', 'sezona');
+    $fields = array('sezona');
     foreach ($fields as $field) {
         if (isset($_POST[$field])) {
             update_post_meta($post_id, $field, sanitize_text_field(wp_unslash($_POST[$field])));
