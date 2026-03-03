@@ -41,10 +41,9 @@ get_header();
         <img
           src="<?php echo esc_url($image['sizes']['medium']); ?>"
           alt="<?php echo esc_attr($image['alt']); ?>"
-          class="img-fluid fotky lightbox-trigger"
+          class="img-fluid fotky lightbox-trigger gallery-trigger"
           data-full="<?php echo esc_url($image['url']); ?>"
           data-index="<?php echo (int) $index; ?>"
-          style="cursor: pointer;"
         >
       </div>
     <?php endforeach; ?>

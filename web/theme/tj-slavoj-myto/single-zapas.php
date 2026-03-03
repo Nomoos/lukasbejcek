@@ -127,10 +127,10 @@ while (have_posts()) : the_post();
 
       <!-- SPRÁVCOVSKÝ FORMULÁŘ – viditelný jen přihlášeným s oprávněním edit_post -->
       <?php if (current_user_can('edit_post', get_the_ID())) : ?>
-        <div class="border rounded p-4 mb-4" style="border-color: #233D97 !important; background: #f0f4ff;">
-          <h5 class="fw-bold mb-3" style="color: #233D97;">
+        <div class="border rounded p-4 mb-4 admin-box">
+          <h5 class="fw-bold mb-3 admin-box__title">
             ✏️ Správa zápasu
-            <span class="badge bg-secondary ms-2" style="font-size: 0.65rem; vertical-align: middle;">pouze pro správce</span>
+            <span class="badge bg-secondary ms-2 admin-box__badge">pouze pro správce</span>
           </h5>
 
           <?php
@@ -221,7 +221,7 @@ while (have_posts()) : the_post();
             ?>
 
             <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary" style="background-color: #233D97; border-color: #233D97;">
+              <button type="submit" class="btn btn-primary">
                 Uložit skóre a střelce
               </button>
               <a href="<?php echo esc_url(get_edit_post_link()); ?>" class="btn btn-outline-secondary">

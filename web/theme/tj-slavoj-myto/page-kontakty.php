@@ -47,12 +47,12 @@ get_header();
 
                 <!-- POZICE -->
                 <?php if ($pozice) : ?>
-                  <p class="text-muted mb-3" style="font-size: 14px;"><?php echo $pozice; ?></p>
+                  <p class="text-muted small mb-3"><?php echo $pozice; ?></p>
                 <?php endif; ?>
 
                 <!-- TELEFON -->
                 <?php if ($telefon) : ?>
-                  <p class="mb-0" style="font-size: 14px;">
+                  <p class="small mb-0">
                     <strong>Tel.:</strong>
                     <a href="tel:<?php echo esc_attr(preg_replace('/\s+/', '', $telefon)); ?>"><?php echo $telefon; ?></a>
                   </p>
@@ -60,7 +60,7 @@ get_header();
 
                 <!-- EMAIL -->
                 <?php if ($email) : ?>
-                  <p class="mb-0" style="font-size: 14px;">
+                  <p class="small mb-0">
                     <strong>Email:</strong>
                     <a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a>
                   </p>

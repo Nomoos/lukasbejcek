@@ -16,9 +16,9 @@ $kategorie = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => fal
   <h2 class="mb-0">Týmy</h2>
   <p class="text-muted mb-4">Přehled všech týmů TJ Slavoj Mýto</p>
 
-  <!-- FILTRY -->
+  <!-- FILTRY – žádný JavaScript, standardní submit tlačítko -->
   <form method="get" class="d-flex gap-3 mb-4 flex-wrap">
-    <select name="kategorie" class="form-select bg-light filter-select-team-sm" onchange="this.form.submit()">
+    <select name="kategorie" class="form-select bg-light filter-select-team-sm">
       <option value="">Všechny kategorie</option>
       <?php if (!is_wp_error($kategorie)) : ?>
         <?php foreach ($kategorie as $kat) : ?>
@@ -29,7 +29,7 @@ $kategorie = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => fal
       <?php endif; ?>
     </select>
 
-    <select name="sezona" class="form-select bg-light filter-select-season-sm" onchange="this.form.submit()">
+    <select name="sezona" class="form-select bg-light filter-select-season-sm">
       <option value="">Všechny sezóny</option>
       <?php if (!is_wp_error($sezony)) : ?>
         <?php foreach ($sezony as $sez) : ?>
@@ -39,6 +39,8 @@ $kategorie = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => fal
         <?php endforeach; ?>
       <?php endif; ?>
     </select>
+
+    <button type="submit" class="btn btn-primary">Filtrovat</button>
   </form>
 
   <!-- SEZNAM TÝMŮ -->
@@ -84,14 +86,11 @@ $kategorie = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => fal
             ?>
             <div class="col-md-4 col-lg-3">
               <a href="<?php the_permalink(); ?>" class="text-decoration-none">
-                <div class="card h-100 shadow-sm border-0 team-card" style="transition:0.2s;">
+                <div class="card h-100 shadow-sm border-0 team-card">
                   <div class="card-body text-center p-4">
                     <?php if (has_post_thumbnail()) : ?>
                       <div class="mb-3">
-                        <?php the_post_thumbnail('thumbnail', array(
-                            'class' => 'rounded-circle',
-                            'style' => 'width:80px;height:80px;object-fit:cover;',
-                        )); ?>
+                        <?php the_post_thumbnail('thumbnail', array('class' => 'rounded-circle team-thumb')); ?>
                       </div>
                     <?php else : ?>
                       <div class="committee-img-wrapper mb-3">

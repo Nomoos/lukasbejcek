@@ -7,23 +7,35 @@
 get_header();
 
 // Získání filtrů z GET parametrů
-$filtr_tym = isset($_GET['tym']) ? sanitize_text_field(wp_unslash($_GET['tym'])) : 'muzi-a';
-$filtr_sezona = isset($_GET['sezona']) ? sanitize_text_field(wp_unslash($_GET['sezona'])) : '2025-26';
+$filtr_tym    = isset($_GET['tym'])    ? sanitize_text_field(wp_unslash($_GET['tym']))    : '';
+$filtr_sezona = isset($_GET['sezona']) ? sanitize_text_field(wp_unslash($_GET['sezona'])) : '';
 
-$tymy_nazvy = array(
-    'muzi-a'      => 'Muži A',
-    'muzi-b'      => 'Muži B',
-    'dorost'      => 'Dorost',
-    'starsi-zaci' => 'Starší žáci',
-);
+$dostupne_tymy   = get_terms(array(
+    'taxonomy'   => 'kategorie-tymu',
+    'hide_empty' => false,
+    'orderby'    => 'name',
+    'order'      => 'ASC',
+));
+$dostupne_sezony = get_terms(array(
+    'taxonomy'   => 'sezona',
+    'hide_empty' => false,
+    'orderby'    => 'name',
+    'order'      => 'DESC',
+));
 
-$sezony_nazvy = array(
-    '2025-26' => 'Sezóna 2025/26',
-    '2024-25' => 'Sezóna 2024/25',
-);
-
-$nazev_tymu = isset($tymy_nazvy[$filtr_tym]) ? $tymy_nazvy[$filtr_tym] : $filtr_tym;
-$nazev_sezony = isset($sezony_nazvy[$filtr_sezona]) ? $sezony_nazvy[$filtr_sezona] : $filtr_sezona;
+// Název vybraného týmu a sezóny odvozený z taxonomie
+$nazev_tymu   = '';
+$nazev_sezony = '';
+if ($filtr_tym && !is_wp_error($dostupne_tymy)) {
+    foreach ($dostupne_tymy as $t) {
+        if ($t->slug === $filtr_tym) { $nazev_tymu = $t->name; break; }
+    }
+}
+if ($filtr_sezona && !is_wp_error($dostupne_sezony)) {
+    foreach ($dostupne_sezony as $s) {
+        if ($s->slug === $filtr_sezona) { $nazev_sezony = 'Sezóna ' . $s->name; break; }
+    }
+}
 ?>
 
 <!-- OBSAH -->
@@ -31,23 +43,29 @@ $nazev_sezony = isset($sezony_nazvy[$filtr_sezona]) ? $sezony_nazvy[$filtr_sezon
     <h2 class="mb-0">Týmy</h2>
     <p class="text-muted mb-4">Přehled všech týmů TJ Slavoj Mýto</p>
 
-    <!-- FILTRY -->
-    <form method="get" class="d-flex gap-3 mb-4">
-      <select name="tym" class="form-select bg-light filter-select-team-sm" onchange="this.form.submit()">
-        <?php foreach ($tymy_nazvy as $slug => $nazev) : ?>
-          <option value="<?php echo esc_attr($slug); ?>" <?php selected($filtr_tym, $slug); ?>>
-            <?php echo esc_html($nazev); ?>
+    <!-- FILTRY – žádný JavaScript, standardní submit tlačítko -->
+    <form method="get" class="d-flex gap-3 mb-4 flex-wrap">
+      <label class="sr-only" for="f-tym">Tým</label>
+      <select id="f-tym" name="tym" class="form-select bg-light filter-select-team-sm">
+        <option value="">Všechny týmy</option>
+        <?php if (!is_wp_error($dostupne_tymy) && !empty($dostupne_tymy)) : foreach ($dostupne_tymy as $t) : ?>
+          <option value="<?php echo esc_attr($t->slug); ?>" <?php selected($filtr_tym, $t->slug); ?>>
+            <?php echo esc_html($t->name); ?>
           </option>
-        <?php endforeach; ?>
+        <?php endforeach; endif; ?>
       </select>
 
-      <select name="sezona" class="form-select bg-light filter-select-season-sm" onchange="this.form.submit()">
-        <?php foreach ($sezony_nazvy as $slug => $nazev) : ?>
-          <option value="<?php echo esc_attr($slug); ?>" <?php selected($filtr_sezona, $slug); ?>>
-            <?php echo esc_html($nazev); ?>
+      <label class="sr-only" for="f-sezona">Sezóna</label>
+      <select id="f-sezona" name="sezona" class="form-select bg-light filter-select-season-sm">
+        <option value="">Všechny sezóny</option>
+        <?php if (!is_wp_error($dostupne_sezony) && !empty($dostupne_sezony)) : foreach ($dostupne_sezony as $s) : ?>
+          <option value="<?php echo esc_attr($s->slug); ?>" <?php selected($filtr_sezona, $s->slug); ?>>
+            Sezóna <?php echo esc_html($s->name); ?>
           </option>
-        <?php endforeach; ?>
+        <?php endforeach; endif; ?>
       </select>
+
+      <button type="submit" class="btn btn-primary">Filtrovat</button>
     </form>
 
     <div class="row">
@@ -93,7 +111,7 @@ $nazev_sezony = isset($sezony_nazvy[$filtr_sezona]) ? $sezony_nazvy[$filtr_sezon
       </div>
 
       <div class="col-md-4 text-center">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" alt="TJ Slavoj Mýto" class="img-fluid mt-4" style="max-width: 200px;">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" alt="TJ Slavoj Mýto" class="img-fluid club-logo mt-4">
       </div>
     </div>
 

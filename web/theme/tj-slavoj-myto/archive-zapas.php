@@ -18,9 +18,9 @@ $kategorie   = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => f
   <h2 class="mb-0">Zápasy</h2>
   <p class="text-muted mb-4">Přehled všech zápasů TJ Slavoj Mýto</p>
 
-  <!-- FILTRY -->
+  <!-- FILTRY – žádný JavaScript, standardní submit tlačítko -->
   <form method="get" class="d-flex gap-3 mb-4 flex-wrap">
-    <select name="tym" class="form-select filter-select-team" onchange="this.form.submit()">
+    <select name="tym" class="form-select filter-select-team">
       <option value="">Všechny týmy</option>
       <?php if (!is_wp_error($kategorie)) : ?>
         <?php foreach ($kategorie as $kat) : ?>
@@ -31,7 +31,7 @@ $kategorie   = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => f
       <?php endif; ?>
     </select>
 
-    <select name="sezona" class="form-select bg-light filter-select-season" onchange="this.form.submit()">
+    <select name="sezona" class="form-select bg-light filter-select-season">
       <option value="">Všechny sezóny</option>
       <?php if (!is_wp_error($sezony)) : ?>
         <?php foreach ($sezony as $sez) : ?>
@@ -42,11 +42,13 @@ $kategorie   = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => f
       <?php endif; ?>
     </select>
 
-    <select name="stav" class="form-select filter-select-status" onchange="this.form.submit()">
+    <select name="stav" class="form-select filter-select-status">
       <option value="vse" <?php selected($filtr_stav, 'vse'); ?>>Všechny zápasy</option>
       <option value="odehrane" <?php selected($filtr_stav, 'odehrane'); ?>>Odehrané</option>
       <option value="neodehrane" <?php selected($filtr_stav, 'neodehrane'); ?>>Nadcházející</option>
     </select>
+
+    <button type="submit" class="btn btn-primary">Filtrovat</button>
   </form>
 </div>
 

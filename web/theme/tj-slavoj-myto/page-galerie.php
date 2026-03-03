@@ -15,19 +15,22 @@ $kategorie_tymu_terms = get_terms(array(
     'hide_empty' => false,
 ));
 
-$sezony_nazvy = array(
-    '2025-26' => 'Sezóna 2025/26',
-    '2024-25' => 'Sezóna 2024/25',
-);
+$dostupne_sezony = get_terms(array(
+    'taxonomy'   => 'sezona',
+    'hide_empty' => false,
+    'orderby'    => 'name',
+    'order'      => 'DESC',
+));
 ?>
 
 <div class="container py-5">
     <h2 class="mb-0">Galerie</h2>
     <p class="text-muted mb-4">Fotografie z klubového života TJ Slavoj Mýto</p>
 
-    <!-- FILTRY -->
-    <form method="get" class="d-flex gap-3 mb-4">
-      <select name="kategorie" class="form-select bg-light filter-select-team-sm" onchange="this.form.submit()">
+    <!-- FILTRY – žádný JavaScript, standardní submit tlačítko -->
+    <form method="get" class="d-flex gap-3 mb-4 flex-wrap">
+      <label class="sr-only" for="f-kategorie">Kategorie</label>
+      <select id="f-kategorie" name="kategorie" class="form-select bg-light filter-select-team-sm">
         <option value="">Všechny kategorie</option>
         <?php if (!empty($kategorie_tymu_terms) && !is_wp_error($kategorie_tymu_terms)) : ?>
           <?php foreach ($kategorie_tymu_terms as $term) : ?>
@@ -38,14 +41,17 @@ $sezony_nazvy = array(
         <?php endif; ?>
       </select>
 
-      <select name="sezona" class="form-select bg-light filter-select-season-sm" onchange="this.form.submit()">
+      <label class="sr-only" for="f-sezona">Sezóna</label>
+      <select id="f-sezona" name="sezona" class="form-select bg-light filter-select-season-sm">
         <option value="">Všechny sezóny</option>
-        <?php foreach ($sezony_nazvy as $slug => $nazev) : ?>
-          <option value="<?php echo esc_attr($slug); ?>" <?php selected($filtr_sezona, $slug); ?>>
-            <?php echo esc_html($nazev); ?>
+        <?php if (!is_wp_error($dostupne_sezony) && !empty($dostupne_sezony)) : foreach ($dostupne_sezony as $s) : ?>
+          <option value="<?php echo esc_attr($s->slug); ?>" <?php selected($filtr_sezona, $s->slug); ?>>
+            Sezóna <?php echo esc_html($s->name); ?>
           </option>
-        <?php endforeach; ?>
+        <?php endforeach; endif; ?>
       </select>
+
+      <button type="submit" class="btn btn-primary">Filtrovat</button>
     </form>
 </div>
 
