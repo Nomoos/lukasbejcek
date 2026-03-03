@@ -10,7 +10,10 @@
 
 function slavoj_menus() {
     register_nav_menus(array(
-        'main_menu' => 'Hlavní menu',
+        'primary'   => 'Hlavní menu',
+        'footer'    => 'Patičkové menu',
+        /* Zpětná kompatibilita se starším názvem */
+        'main_menu' => 'Hlavní menu (legacy)',
     ));
 }
 add_action('after_setup_theme', 'slavoj_menus');
@@ -26,11 +29,54 @@ add_action('after_setup_theme', 'slavoj_theme_support');
 
 // Načtení stylů a skriptů
 function slavoj_enqueue_scripts() {
+    $ver = wp_get_theme()->get('Version');
+
+    // Bootstrap CSS (grid, utilities) + Bootstrap JS bundle (navbar collapse – bez custom JS)
     wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3');
-    wp_enqueue_style('slavoj-style', get_stylesheet_uri(), array('bootstrap'), '1.0');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array(), '5.3.3', true);
+
+    // Hlavní šablona CSS (assets/css/main.css importuje všechny komponenty)
+    wp_enqueue_style('slavoj-main', get_template_directory_uri() . '/assets/css/main.css', array('bootstrap'), $ver);
 }
 add_action('wp_enqueue_scripts', 'slavoj_enqueue_scripts');
+
+// ──────────────────────────────────────────────────────────────────────
+// BOOTSTRAP TŘÍDY PRO wp_nav_menu() (primary lokace)
+// Přidá nav-item na <li> a nav-link na <a> – kompatibilní s Bootstrap navbar.
+// ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Přidá Bootstrap třídu 'nav-item' na <li> položky hlavního menu.
+ */
+function slavoj_bootstrap_nav_item_class( $classes, $item, $args, $depth ) {
+    if ( isset( $args->theme_location ) && 'primary' === $args->theme_location ) {
+        $classes[] = 'nav-item';
+    }
+    return $classes;
+}
+add_filter( 'nav_menu_css_class', 'slavoj_bootstrap_nav_item_class', 10, 4 );
+
+/**
+ * Přidá Bootstrap třídy 'nav-link' (a 'active' pro aktuální stránku) na <a>.
+ */
+function slavoj_bootstrap_nav_link_attrs( $attrs, $item, $args, $depth ) {
+    if ( isset( $args->theme_location ) && 'primary' === $args->theme_location ) {
+        $cls = isset( $attrs['class'] ) ? $attrs['class'] . ' nav-link' : 'nav-link';
+
+        if ( ! empty( $item->classes ) ) {
+            if ( in_array( 'current-menu-item', (array) $item->classes, true ) ) {
+                $cls .= ' active';
+                $attrs['aria-current'] = 'page';
+            } elseif ( array_intersect( array( 'current-page-ancestor', 'current-menu-ancestor' ), (array) $item->classes ) ) {
+                $cls .= ' active';
+                /* Ancestor: active highlight but no aria-current (not the exact page) */
+            }
+        }
+        $attrs['class'] = $cls;
+    }
+    return $attrs;
+}
+add_filter( 'nav_menu_link_attributes', 'slavoj_bootstrap_nav_link_attrs', 10, 4 );
 
 // =====================================================================
 // CUSTOM POST TYPES
@@ -696,18 +742,173 @@ add_action('save_post_kontakt', 'slavoj_kontakt_save_meta');
 // =====================================================================
 
 /**
+ * Zjistí, zda je název týmu vlastním klubem TJ Slavoj Mýto.
+ *
+ * @param string $nazev_tymu  Název týmu z meta pole domaci nebo hoste.
+ * @return bool
+ */
+function slavoj_is_club_team($nazev_tymu) {
+    return stripos($nazev_tymu, 'Slavoj') !== false
+        || stripos($nazev_tymu, 'TJ Mýto') !== false;
+}
+
+/**
+ * Vrátí zobrazovaný název kategorie týmu podle jeho slugu.
+ *
+ * @param string $slug  Slug taxonomie kategorie-tymu (např. 'muzi-a').
+ * @return string  Zobrazovaný název (např. 'Muži A'), nebo samotný slug pokud není nalezen.
+ */
+function slavoj_get_team_display_name($slug) {
+    $mapa = array(
+        'muzi-a'      => 'Muži A',
+        'muzi-b'      => 'Muži B',
+        'dorost'      => 'Dorost',
+        'starsi-zaci' => 'Starší žáci',
+        'mladsi-zaci' => 'Mladší žáci',
+        'pripravka'   => 'Přípravka',
+    );
+    return isset($mapa[$slug]) ? $mapa[$slug] : $slug;
+}
+
+/**
+ * Vrátí výsledek zápasu z pohledu TJ Slavoj Mýto.
+ *
+ * @param string $domaci  Název domácího týmu.
+ * @param string $hoste   Název hostujícího týmu.
+ * @param string $skore   Skóre ve formátu "domácí:hosté", např. "3:1". Prázdný řetězec = nadcházející.
+ * @return string  'vyhral' | 'prohral' | 'remiza' | '' (nezapas/nadcházející)
+ */
+function slavoj_zapas_vysledek($domaci, $hoste, $skore) {
+    if (empty($skore) || !preg_match('/^(\d+):(\d+)$/', $skore, $m)) {
+        return '';
+    }
+    $goly_domaci = (int) $m[1];
+    $goly_hoste  = (int) $m[2];
+
+    $je_domaci = slavoj_is_club_team($domaci);
+    $je_hoste  = slavoj_is_club_team($hoste);
+
+    if (!$je_domaci && !$je_hoste) {
+        return '';
+    }
+
+    $nase_goly   = $je_domaci ? $goly_domaci : $goly_hoste;
+    $jejich_goly = $je_domaci ? $goly_hoste  : $goly_domaci;
+
+    if ($nase_goly > $jejich_goly) {
+        return 'vyhral';
+    }
+    if ($nase_goly < $jejich_goly) {
+        return 'prohral';
+    }
+    return 'remiza';
+}
+
+/**
  * Záložní menu pokud není nastaveno v administraci
  */
 function slavoj_fallback_menu() {
-    echo '<ul class="nav">';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/')) . '">Domů</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/zapasy/')) . '">Zápasy</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/tymy/')) . '">Týmy</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/galerie/')) . '">Galerie</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/historie/')) . '">Historie</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/sponzori/')) . '">Sponzoři</a></li>';
-    echo '<li class="nav-item"><a class="nav-link" href="' . esc_url(home_url('/kontakty/')) . '">Kontakty</a></li>';
+    echo '<ul class="nav__list">';
+    $polozky = array(
+        'Domů'     => home_url('/'),
+        'Zápasy'   => home_url('/zapasy/'),
+        'Týmy'     => home_url('/tymy/'),
+        'Galerie'  => home_url('/galerie/'),
+        'Historie' => home_url('/historie/'),
+        'Sponzoři' => home_url('/sponzori/'),
+        'Kontakty' => home_url('/kontakty/'),
+    );
+    foreach ($polozky as $label => $url) {
+        echo '<li class="nav__item"><a class="nav__link" href="' . esc_url($url) . '">' . esc_html($label) . '</a></li>';
+    }
     echo '</ul>';
+}
+
+/**
+ * Záložní menu pro Bootstrap navbar (primary) – pokud není menu v administraci.
+ */
+function slavoj_fallback_primary_menu() {
+    $polozky = array(
+        'Domů'     => home_url('/'),
+        'Zápasy'   => home_url('/zapasy/'),
+        'Týmy'     => home_url('/tymy/'),
+        'Galerie'  => home_url('/galerie/'),
+        'Historie' => home_url('/historie/'),
+        'Sponzoři' => home_url('/sponzori/'),
+        'Kontakty' => home_url('/kontakty/'),
+    );
+    echo '<ul class="navbar-nav ms-auto">';
+    foreach ($polozky as $label => $url) {
+        echo '<li class="nav-item"><a class="nav-link" href="' . esc_url($url) . '">' . esc_html($label) . '</a></li>';
+    }
+    echo '</ul>';
+}
+
+/**
+ * Záložní menu pro patičku – pokud není menu v administraci.
+ */
+function slavoj_fallback_footer_menu() {
+    $polozky = array(
+        'Zápasy'   => home_url('/zapasy/'),
+        'Týmy'     => home_url('/tymy/'),
+        'Galerie'  => home_url('/galerie/'),
+        'Kontakty' => home_url('/kontakty/'),
+        'Sponzoři' => home_url('/sponzori/'),
+    );
+    echo '<ul class="footer-nav__list">';
+    foreach ($polozky as $label => $url) {
+        echo '<li><a class="footer-nav__link" href="' . esc_url($url) . '">' . esc_html($label) . '</a></li>';
+    }
+    echo '</ul>';
+}
+
+/**
+ * Nav Walker – přidá třídy nav__item a nav__link na položky wp_nav_menu().
+ */
+class Slavoj_Nav_Walker extends Walker_Nav_Menu {
+    /**
+     * @param string   $output Running output HTML string.
+     * @param WP_Post  $item   Menu item data object.
+     * @param int      $depth  Depth of the current menu item.
+     * @param stdClass $args   wp_nav_menu() arguments object.
+     * @param int      $id     ID.
+     */
+    public function start_el(&$output, $item, $depth = 0, $args = array(), $id = 0) {
+        $classes   = empty($item->classes) ? array() : (array) $item->classes;
+        $is_active = in_array('current-menu-item', $classes, true);
+
+        $li_classes = 'nav__item';
+        if ($is_active) {
+            $li_classes .= ' nav__item--active';
+        }
+
+        $output .= '<li class="' . esc_attr($li_classes) . '">';
+
+        $link_classes = 'nav__link';
+        if ($is_active) {
+            $link_classes .= ' nav__link--active';
+        }
+
+        $atts          = array();
+        $atts['href']  = !empty($item->url) ? $item->url : '';
+        $atts['class'] = $link_classes;
+        if ($item->target) {
+            $atts['target'] = $item->target;
+        }
+        if ($item->xfn) {
+            $atts['rel'] = $item->xfn;
+        }
+
+        $attributes = '';
+        foreach ($atts as $attr => $value) {
+            if (!empty($value)) {
+                $attributes .= ' ' . $attr . '="' . esc_attr($value) . '"';
+            }
+        }
+
+        $title  = apply_filters('the_title', $item->title, $item->ID);
+        $output .= '<a' . $attributes . '>' . esc_html($title) . '</a>';
+    }
 }
 
 /**

@@ -1,0 +1,39 @@
+/*
+ * assets/css/components/hero.css
+ * Team-hero: modrý pruh s logem a názvem týmu.
+ */
+
+.team-hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.team-hero__bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #233D97;
+  height: 72px;
+}
+
+.team-hero__logo {
+  height: 52px;
+  width: auto;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.3));
+}
+
+.team-hero__title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+  margin: 12px auto 0;
+  padding-bottom: 8px;
+}
+
+@media (min-width: 600px) {
+  .team-hero__bar  { height: 80px; }
+  .team-hero__logo { height: 64px; }
+  .team-hero__title { font-size: 26px; }
+}

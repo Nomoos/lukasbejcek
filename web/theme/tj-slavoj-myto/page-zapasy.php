@@ -1,92 +1,86 @@
 <?php
 /**
  * Template Name: Zápasy
- * Stránka se seznamem zápasů TJ Slavoj Mýto
- * Obsahuje: filtry (tým, sezóna, stav), seznam zápasů
+ * Přehledová stránka zápasů TJ Slavoj Mýto.
+ *
+ * Přístup: PHP/HTML/CSS primary – žádný JavaScript.
+ * Filtry jsou standardní HTML <form> (GET), výsledky renderuje PHP smyčka.
  */
 get_header();
 
-// Získání filtrů z GET parametrů
-$filtr_tym = isset($_GET['tym']) ? sanitize_text_field(wp_unslash($_GET['tym'])) : '';
+/* ── Sanitace GET parametrů ── */
+$filtr_tym    = isset($_GET['tym'])    ? sanitize_text_field(wp_unslash($_GET['tym']))    : '';
 $filtr_sezona = isset($_GET['sezona']) ? sanitize_text_field(wp_unslash($_GET['sezona'])) : '';
-$filtr_stav = isset($_GET['stav']) ? sanitize_text_field(wp_unslash($_GET['stav'])) : 'vse';
+$filtr_stav   = isset($_GET['stav'])   ? sanitize_text_field(wp_unslash($_GET['stav']))   : 'vse';
+
+/* ── Taxonomie pro filtry ── */
+$dostupne_tymy   = get_terms(array(
+    'taxonomy'   => 'kategorie-tymu',
+    'hide_empty' => true,
+    'orderby'    => 'name',
+    'order'      => 'ASC',
+));
+$dostupne_sezony = get_terms(array(
+    'taxonomy'   => 'sezona',
+    'hide_empty' => true,
+    'orderby'    => 'name',
+    'order'      => 'DESC',
+));
+
+/* ── Název týmu pro hero sekci ── */
+$tym_nazev = $filtr_tym ? slavoj_get_team_display_name($filtr_tym) : '';
 ?>
 
-<div class="container py-5">
-    <h2 class="mb-0">Zápasy</h2>
-    <p class="text-muted mb-4">Přehled všech zápasů TJ Slavoj Mýto</p>
+<!-- ═════════════════════════════════
+     ZÁHLAVÍ STRÁNKY + FILTRY
+     ═════════════════════════════════ -->
+<section class="section">
+  <div class="container">
 
-    <!-- FILTRY -->
-    <form method="get" class="d-flex gap-3 mb-4">
-      <select name="tym" class="form-select filter-select-team" onchange="this.form.submit()">
-        <option value="">Všechny týmy</option>
-        <option value="muzi-a" <?php selected($filtr_tym, 'muzi-a'); ?>>Muži A</option>
-        <option value="muzi-b" <?php selected($filtr_tym, 'muzi-b'); ?>>Muži B</option>
-        <option value="dorost" <?php selected($filtr_tym, 'dorost'); ?>>Dorost</option>
-        <option value="starsi-zaci" <?php selected($filtr_tym, 'starsi-zaci'); ?>>Starší žáci</option>
-      </select>
+    <header class="page-title">
+      <h1 class="page-title__h1">Zápasy</h1>
+      <p class="page-title__subtitle">Přehled všech zápasů TJ Slavoj Mýto</p>
+    </header>
 
-      <select name="sezona" class="form-select bg-light filter-select-season" onchange="this.form.submit()">
-        <option value="">Všechny sezóny</option>
-        <option value="2025-26" <?php selected($filtr_sezona, '2025-26'); ?>>Sezóna 2025/26</option>
-        <option value="2024-25" <?php selected($filtr_sezona, '2024-25'); ?>>Sezóna 2024/25</option>
-      </select>
-
-      <select name="stav" class="form-select filter-select-status" onchange="this.form.submit()">
-        <option value="vse" <?php selected($filtr_stav, 'vse'); ?>>Všechny zápasy</option>
-        <option value="odehrane" <?php selected($filtr_stav, 'odehrane'); ?>>Odehrané zápasy</option>
-        <option value="neodehrane" <?php selected($filtr_stav, 'neodehrane'); ?>>Budoucí zápasy</option>
-      </select>
-    </form>
-</div>
-
-<!-- MODRÝ PRUH S LOGEM -->
-<div class="fluid">
-  <div class="row">
-    <div class="col-5">
-      <div class="blue-bar-p"></div>
-    </div>
-    <div class="col-1 text-center">
-      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" alt="TJ Slavoj Mýto" height="50">
-    </div>
-    <div class="col-6">
-      <div class="blue-bar-l"></div>
-    </div>
-  </div>
-</div>
-
-<?php if ($filtr_tym) : ?>
-<div class="container">
-  <h1 style="text-align: center;" class="mt-3">
     <?php
-    $tymy_nazvy = array(
-        'muzi-a'      => 'Muži A',
-        'muzi-b'      => 'Muži B',
-        'dorost'      => 'Dorost',
-        'starsi-zaci' => 'Starší žáci',
-    );
-    echo esc_html(isset($tymy_nazvy[$filtr_tym]) ? $tymy_nazvy[$filtr_tym] : $filtr_tym);
+    get_template_part('template-parts/filters', 'matches', array(
+        'dostupne_tymy'   => $dostupne_tymy,
+        'dostupne_sezony' => $dostupne_sezony,
+        'filtr_tym'       => $filtr_tym,
+        'filtr_sezona'    => $filtr_sezona,
+        'filtr_stav'      => $filtr_stav,
+    ));
     ?>
-  </h1>
-</div>
-<?php endif; ?>
 
-<!-- SEZNAM ZÁPASŮ -->
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
+  </div>
+</section>
+
+<!-- ═════════════════════════════════
+     TEAM HERO
+     ═════════════════════════════════ -->
+<?php
+get_template_part('template-parts/hero', 'team', array(
+    'tym_nazev' => $tym_nazev,
+));
+?>
+
+<!-- ═════════════════════════════════
+     SEZNAM ZÁPASŮ
+     ═════════════════════════════════ -->
+<section class="section matches" aria-label="Seznam zápasů">
+  <div class="container">
+    <div class="matches__list stack">
       <?php
-      $args = array(
+      /* ── WP_Query ── */
+      $query_args = array(
           'post_type'      => 'zapas',
-          'posts_per_page' => 20,
+          'posts_per_page' => 40,
           'meta_key'       => 'datum_zapasu',
           'orderby'        => 'meta_value',
           'order'          => 'DESC',
       );
 
-      // Taxonomy query pro filtrování
-      $tax_query  = array();
-      $meta_query = array();
+      $tax_query = array('relation' => 'AND');
 
       if ($filtr_tym) {
           $tax_query[] = array(
@@ -95,7 +89,6 @@ $filtr_stav = isset($_GET['stav']) ? sanitize_text_field(wp_unslash($_GET['stav'
               'terms'    => $filtr_tym,
           );
       }
-
       if ($filtr_sezona) {
           $tax_query[] = array(
               'taxonomy' => 'sezona',
@@ -103,71 +96,128 @@ $filtr_stav = isset($_GET['stav']) ? sanitize_text_field(wp_unslash($_GET['stav'
               'terms'    => $filtr_sezona,
           );
       }
-
-      if (!empty($tax_query)) {
-          $tax_query['relation'] = 'AND';
-          $args['tax_query'] = $tax_query;
-      }
-
       if ($filtr_stav === 'odehrane') {
-          $meta_query[] = array(
-              'key'     => 'datum_zapasu',
-              'value'   => current_time('Y-m-d'),
-              'compare' => '<',
-              'type'    => 'DATE',
+          $tax_query[] = array(
+              'taxonomy' => 'stav-zapasu',
+              'field'    => 'slug',
+              'terms'    => 'odehrany',
           );
       } elseif ($filtr_stav === 'neodehrane') {
-          $meta_query[] = array(
-              'key'     => 'datum_zapasu',
-              'value'   => current_time('Y-m-d'),
-              'compare' => '>=',
-              'type'    => 'DATE',
+          $tax_query[] = array(
+              'taxonomy' => 'stav-zapasu',
+              'field'    => 'slug',
+              'terms'    => 'nadchazejici',
           );
       }
 
-      if (!empty($meta_query)) {
-          $meta_query['relation'] = 'AND';
-          $args['meta_query'] = $meta_query;
+      if (count($tax_query) > 1) {
+          $query_args['tax_query'] = $tax_query;
       }
 
-      $zapasy_query = new WP_Query($args);
+      $q = new WP_Query($query_args);
 
-      if ($zapasy_query->have_posts()) :
-          while ($zapasy_query->have_posts()) :
-              $zapasy_query->the_post();
-              $datum = esc_html(get_post_meta(get_the_ID(), 'datum_zapasu', true));
-              $cas = esc_html(get_post_meta(get_the_ID(), 'cas_zapasu', true));
-              $domaci = esc_html(get_post_meta(get_the_ID(), 'domaci', true));
-              $hoste = esc_html(get_post_meta(get_the_ID(), 'hoste', true));
-              $skore = get_post_meta(get_the_ID(), 'skore', true);
-              $strelci = esc_html(get_post_meta(get_the_ID(), 'strelci', true));
-              ?>
-              <div class="match-card mb-3 p-3 border rounded-4">
-                <div class="row">
-                  <div class="col-md-3 small text-muted">
-                    <?php echo $datum; ?> v <?php echo $cas; ?><br>
-                    <span class="text-secondary">Střelci: <?php echo $strelci; ?></span>
-                  </div>
-                  <div class="col-md-9 d-flex justify-content-between align-items-center">
-                    <strong><?php echo $domaci; ?></strong>
-                    <span><?php echo $skore ? esc_html($skore) : 'vs'; ?></span>
-                    <strong><?php echo $hoste; ?></strong>
-                  </div>
-                </div>
-                <div class="d-flex justify-content-between small text-muted mt-2">
-                  <span>Domácí</span>
-                  <span>Hosté</span>
-                </div>
-              </div>
-              <?php
+      if ($q->have_posts()) :
+          while ($q->have_posts()) :
+              $q->the_post();
+              $id = get_the_ID();
+
+              $datum   = get_post_meta($id, 'datum_zapasu', true);
+              $cas     = get_post_meta($id, 'cas_zapasu',   true);
+              $domaci  = get_post_meta($id, 'domaci',       true);
+              $hoste   = get_post_meta($id, 'hoste',        true);
+              $skore   = get_post_meta($id, 'skore',        true);
+              $strelci = get_post_meta($id, 'strelci',      true);
+
+              /* Formátování data */
+              $datum_fmt = '';
+              if ($datum) {
+                  $ts = strtotime($datum);
+                  if ($ts) {
+                      $datum_fmt = date_i18n('j. n. Y', $ts);
+                  }
+              }
+
+              /* Výsledek a CSS modifikátory */
+              $je_odehrany = !empty($skore);
+              $vysledek    = $je_odehrany ? slavoj_zapas_vysledek($domaci, $hoste, $skore) : '';
+
+              $card_cls = $je_odehrany ? 'match-card--played' : 'match-card--upcoming';
+              if ($vysledek === 'vyhral')  { $card_cls .= ' match-card--win'; }
+              if ($vysledek === 'prohral') { $card_cls .= ' match-card--loss'; }
+              if ($vysledek === 'remiza')  { $card_cls .= ' match-card--draw'; }
+
+              $score_cls = 'match-card__score';
+              if ($je_odehrany) {
+                  if ($vysledek === 'vyhral')  { $score_cls .= ' match-card__score--win'; }
+                  elseif ($vysledek === 'prohral') { $score_cls .= ' match-card__score--loss'; }
+                  else                             { $score_cls .= ' match-card__score--draw'; }
+              } else {
+                  $score_cls .= ' match-card__score--upcoming';
+              }
+
+              /* Odznak stavu */
+              if ($je_odehrany) {
+                  $badge_cls  = 'badge--neutral';
+                  $badge_text = 'Odehráno';
+              } else {
+                  $badge_cls  = 'badge--primary';
+                  $badge_text = 'Nadcházející';
+              }
+
+              /* Orientace Domácí / Hosté */
+              $slavoj_domaci = slavoj_is_club_team($domaci);
+              $lbl_levy      = $slavoj_domaci ? 'Domácí' : 'Hosté';
+              $lbl_pravy     = $slavoj_domaci ? 'Hosté'  : 'Domácí';
+
+              $home_cls = 'match-card__team match-card__team--home'
+                          . ($slavoj_domaci ? ' match-card__team--slavoj' : '');
+              $away_cls = 'match-card__team match-card__team--away'
+                          . (!$slavoj_domaci && slavoj_is_club_team($hoste) ? ' match-card__team--slavoj' : '');
+
+              get_template_part('template-parts/card', 'match', array(
+                  'datum'      => $datum,
+                  'datum_fmt'  => $datum_fmt,
+                  'cas'        => $cas,
+                  'domaci'     => $domaci,
+                  'hoste'      => $hoste,
+                  'skore'      => $skore,
+                  'strelci'    => $strelci,
+                  'card_cls'   => $card_cls,
+                  'score_cls'  => $score_cls,
+                  'badge_cls'  => $badge_cls,
+                  'badge_text' => $badge_text,
+                  'lbl_levy'   => $lbl_levy,
+                  'lbl_pravy'  => $lbl_pravy,
+                  'home_cls'   => $home_cls,
+                  'away_cls'   => $away_cls,
+              ));
+
           endwhile;
+          wp_reset_postdata();
+
       else :
-          echo '<p class="text-center text-muted">Žádné zápasy nebyly nalezeny.</p>';
+          ?>
+          <div class="empty-state" role="status">
+            <svg class="empty-state__icon" xmlns="http://www.w3.org/2000/svg"
+                 width="48" height="48" fill="none" stroke="currentColor"
+                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                 aria-hidden="true" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8"  y1="2" x2="8"  y2="6"/>
+              <line x1="3"  y1="10" x2="21" y2="10"/>
+              <line x1="10" y1="15" x2="14" y2="19"/>
+              <line x1="14" y1="15" x2="10" y2="19"/>
+            </svg>
+            <p class="empty-state__title">Žádné zápasy nenalezeny</p>
+            <p class="empty-state__text">Zkuste změnit filtry nebo se vraťte později.</p>
+          </div>
+          <?php
+          wp_reset_postdata();
       endif;
-      wp_reset_postdata();
       ?>
-    </div>
+    </div><!-- /.matches__list -->
   </div>
-</div>
+</section>
 
 <?php get_footer(); ?>

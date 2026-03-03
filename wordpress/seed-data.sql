@@ -64,6 +64,20 @@ INSERT IGNORE INTO `wp_term_taxonomy`
   (`term_taxonomy_id`, `term_id`, `taxonomy`, `description`, `parent`, `count`)
 VALUES (1003, 1003, 'stav-zapasu', 'Zápas byl odehrán, skóre zadáno', 0, 0);
 
+INSERT IGNORE INTO `wp_terms` (`term_id`, `name`, `slug`, `term_group`)
+VALUES (1005, 'Nadcházející', 'nadchazejici', 0);
+
+INSERT IGNORE INTO `wp_term_taxonomy`
+  (`term_taxonomy_id`, `term_id`, `taxonomy`, `description`, `parent`, `count`)
+VALUES (1005, 1005, 'stav-zapasu', 'Zápas ještě nebyl odehrán', 0, 0);
+
+INSERT IGNORE INTO `wp_terms` (`term_id`, `name`, `slug`, `term_group`)
+VALUES (1006, 'Zrušený', 'zruseny', 0);
+
+INSERT IGNORE INTO `wp_term_taxonomy`
+  (`term_taxonomy_id`, `term_id`, `taxonomy`, `description`, `parent`, `count`)
+VALUES (1006, 1006, 'stav-zapasu', 'Zápas byl zrušen', 0, 0);
+
 -- ============================================================
 -- 4. TAXONOMIE – POZICE HRÁČE
 -- ============================================================
@@ -714,19 +728,171 @@ INSERT INTO `wp_postmeta` (`post_id`, `meta_key`, `meta_value`) SELECT 5306, 'ty
 INSERT IGNORE INTO `wp_term_relationships` (`object_id`, `term_taxonomy_id`, `term_order`) VALUES (5306, 1000, 0), (5306, 1002, 0), (5306, 1004, 0);
 
 -- ============================================================
--- 9. AKTUALIZACE POČTU TERMÍNŮ V TAXONOMIÍCH (term_taxonomy.count)
+-- 9. NADCHÁZEJÍCÍ ZÁPASY – jaro 2026 (CPT: zapas, stav: nadchazejici)
+--    Muži A: 5 zápasů (ID 5400–5404), Muži B: 4 zápasy (ID 5410–5413)
+--    Žádné skóre ani střelci – jde o budoucí zápasy.
 -- ============================================================
 
--- Sezóna 2025/26: 2 týmy + 28 zápasů + 7 hráčů = 37
-UPDATE `wp_term_taxonomy` SET `count` = 37 WHERE `term_taxonomy_id` = 1000;
--- Kategorie Muži A: 1 tým + 15 zápasů = 16
-UPDATE `wp_term_taxonomy` SET `count` = 16 WHERE `term_taxonomy_id` = 1001;
--- Kategorie Muži B: 1 tým + 13 zápasů + 7 hráčů = 21
-UPDATE `wp_term_taxonomy` SET `count` = 21 WHERE `term_taxonomy_id` = 1002;
+-- Muži A – 5400 – TJ Slavoj Mýto vs FK Rapid Plzeň, 22.3.2026 14:00
+INSERT IGNORE INTO `wp_posts`
+  (`ID`,`post_author`,`post_date`,`post_date_gmt`,`post_content`,`post_title`,
+   `post_excerpt`,`post_status`,`comment_status`,`ping_status`,`post_name`,
+   `post_modified`,`post_modified_gmt`,`post_type`,`to_ping`,`pinged`,
+   `post_content_filtered`,`post_parent`,`guid`,`menu_order`,`comment_count`)
+VALUES (5400,1,'2026-03-22 14:00:00','2026-03-22 14:00:00','',
+  'TJ Slavoj Mýto vs FK Rapid Plzeň','','publish','closed','closed',
+  'tj-slavoj-myto-vs-fk-rapid-plzen-2026-03-22',
+  '2026-03-22 14:00:00','2026-03-22 14:00:00','zapas','','','',0,'',0,0);
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5400,'datum_zapasu','2026-03-22' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5400 AND `meta_key`='datum_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5400,'cas_zapasu','14:00' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5400 AND `meta_key`='cas_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5400,'domaci','TJ Slavoj Mýto' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5400 AND `meta_key`='domaci');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5400,'hoste','FK Rapid Plzeň' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5400 AND `meta_key`='hoste');
+INSERT IGNORE INTO `wp_term_relationships`(`object_id`,`term_taxonomy_id`,`term_order`) VALUES (5400,1000,0),(5400,1001,0),(5400,1005,0);
+
+-- Muži A – 5401 – SK Nepomuk vs TJ Slavoj Mýto, 29.3.2026 10:15
+INSERT IGNORE INTO `wp_posts`
+  (`ID`,`post_author`,`post_date`,`post_date_gmt`,`post_content`,`post_title`,
+   `post_excerpt`,`post_status`,`comment_status`,`ping_status`,`post_name`,
+   `post_modified`,`post_modified_gmt`,`post_type`,`to_ping`,`pinged`,
+   `post_content_filtered`,`post_parent`,`guid`,`menu_order`,`comment_count`)
+VALUES (5401,1,'2026-03-29 10:15:00','2026-03-29 10:15:00','',
+  'SK Nepomuk vs TJ Slavoj Mýto','','publish','closed','closed',
+  'sk-nepomuk-vs-tj-slavoj-myto-2026-03-29',
+  '2026-03-29 10:15:00','2026-03-29 10:15:00','zapas','','','',0,'',0,0);
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5401,'datum_zapasu','2026-03-29' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5401 AND `meta_key`='datum_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5401,'cas_zapasu','10:15' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5401 AND `meta_key`='cas_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5401,'domaci','SK Nepomuk' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5401 AND `meta_key`='domaci');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5401,'hoste','TJ Slavoj Mýto' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5401 AND `meta_key`='hoste');
+INSERT IGNORE INTO `wp_term_relationships`(`object_id`,`term_taxonomy_id`,`term_order`) VALUES (5401,1000,0),(5401,1001,0),(5401,1005,0);
+
+-- Muži A – 5402 – TJ Slavoj Mýto vs TJ Vejprnice, 5.4.2026 14:00
+INSERT IGNORE INTO `wp_posts`
+  (`ID`,`post_author`,`post_date`,`post_date_gmt`,`post_content`,`post_title`,
+   `post_excerpt`,`post_status`,`comment_status`,`ping_status`,`post_name`,
+   `post_modified`,`post_modified_gmt`,`post_type`,`to_ping`,`pinged`,
+   `post_content_filtered`,`post_parent`,`guid`,`menu_order`,`comment_count`)
+VALUES (5402,1,'2026-04-05 14:00:00','2026-04-05 14:00:00','',
+  'TJ Slavoj Mýto vs TJ Vejprnice','','publish','closed','closed',
+  'tj-slavoj-myto-vs-tj-vejprnice-2026-04-05',
+  '2026-04-05 14:00:00','2026-04-05 14:00:00','zapas','','','',0,'',0,0);
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5402,'datum_zapasu','2026-04-05' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5402 AND `meta_key`='datum_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5402,'cas_zapasu','14:00' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5402 AND `meta_key`='cas_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5402,'domaci','TJ Slavoj Mýto' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5402 AND `meta_key`='domaci');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5402,'hoste','TJ Vejprnice' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5402 AND `meta_key`='hoste');
+INSERT IGNORE INTO `wp_term_relationships`(`object_id`,`term_taxonomy_id`,`term_order`) VALUES (5402,1000,0),(5402,1001,0),(5402,1005,0);
+
+-- Muži A – 5403 – FK Měcholupy vs TJ Slavoj Mýto, 19.4.2026 10:15
+INSERT IGNORE INTO `wp_posts`
+  (`ID`,`post_author`,`post_date`,`post_date_gmt`,`post_content`,`post_title`,
+   `post_excerpt`,`post_status`,`comment_status`,`ping_status`,`post_name`,
+   `post_modified`,`post_modified_gmt`,`post_type`,`to_ping`,`pinged`,
+   `post_content_filtered`,`post_parent`,`guid`,`menu_order`,`comment_count`)
+VALUES (5403,1,'2026-04-19 10:15:00','2026-04-19 10:15:00','',
+  'FK Měcholupy vs TJ Slavoj Mýto','','publish','closed','closed',
+  'fk-mecholupy-vs-tj-slavoj-myto-2026-04-19',
+  '2026-04-19 10:15:00','2026-04-19 10:15:00','zapas','','','',0,'',0,0);
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5403,'datum_zapasu','2026-04-19' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5403 AND `meta_key`='datum_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5403,'cas_zapasu','10:15' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5403 AND `meta_key`='cas_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5403,'domaci','FK Měcholupy' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5403 AND `meta_key`='domaci');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5403,'hoste','TJ Slavoj Mýto' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5403 AND `meta_key`='hoste');
+INSERT IGNORE INTO `wp_term_relationships`(`object_id`,`term_taxonomy_id`,`term_order`) VALUES (5403,1000,0),(5403,1001,0),(5403,1005,0);
+
+-- Muži A – 5404 – TJ Slavoj Mýto vs FK Horní Bříza, 26.4.2026 14:00
+INSERT IGNORE INTO `wp_posts`
+  (`ID`,`post_author`,`post_date`,`post_date_gmt`,`post_content`,`post_title`,
+   `post_excerpt`,`post_status`,`comment_status`,`ping_status`,`post_name`,
+   `post_modified`,`post_modified_gmt`,`post_type`,`to_ping`,`pinged`,
+   `post_content_filtered`,`post_parent`,`guid`,`menu_order`,`comment_count`)
+VALUES (5404,1,'2026-04-26 14:00:00','2026-04-26 14:00:00','',
+  'TJ Slavoj Mýto vs FK Horní Bříza','','publish','closed','closed',
+  'tj-slavoj-myto-vs-fk-horni-briza-2026-04-26',
+  '2026-04-26 14:00:00','2026-04-26 14:00:00','zapas','','','',0,'',0,0);
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5404,'datum_zapasu','2026-04-26' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5404 AND `meta_key`='datum_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5404,'cas_zapasu','14:00' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5404 AND `meta_key`='cas_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5404,'domaci','TJ Slavoj Mýto' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5404 AND `meta_key`='domaci');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5404,'hoste','FK Horní Bříza' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5404 AND `meta_key`='hoste');
+INSERT IGNORE INTO `wp_term_relationships`(`object_id`,`term_taxonomy_id`,`term_order`) VALUES (5404,1000,0),(5404,1001,0),(5404,1005,0);
+
+-- Muži B – 5410 – TJ Slavoj Mýto B vs FK Úněšov, 21.3.2026 10:00
+INSERT IGNORE INTO `wp_posts`
+  (`ID`,`post_author`,`post_date`,`post_date_gmt`,`post_content`,`post_title`,
+   `post_excerpt`,`post_status`,`comment_status`,`ping_status`,`post_name`,
+   `post_modified`,`post_modified_gmt`,`post_type`,`to_ping`,`pinged`,
+   `post_content_filtered`,`post_parent`,`guid`,`menu_order`,`comment_count`)
+VALUES (5410,1,'2026-03-21 10:00:00','2026-03-21 10:00:00','',
+  'TJ Slavoj Mýto B vs FK Úněšov','','publish','closed','closed',
+  'tj-slavoj-myto-b-vs-fk-unesov-2026-03-21',
+  '2026-03-21 10:00:00','2026-03-21 10:00:00','zapas','','','',0,'',0,0);
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5410,'datum_zapasu','2026-03-21' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5410 AND `meta_key`='datum_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5410,'cas_zapasu','10:00' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5410 AND `meta_key`='cas_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5410,'domaci','TJ Slavoj Mýto B' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5410 AND `meta_key`='domaci');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5410,'hoste','FK Úněšov' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5410 AND `meta_key`='hoste');
+INSERT IGNORE INTO `wp_term_relationships`(`object_id`,`term_taxonomy_id`,`term_order`) VALUES (5410,1000,0),(5410,1002,0),(5410,1005,0);
+
+-- Muži B – 5411 – FK Všeruby vs TJ Slavoj Mýto B, 28.3.2026 10:15
+INSERT IGNORE INTO `wp_posts`
+  (`ID`,`post_author`,`post_date`,`post_date_gmt`,`post_content`,`post_title`,
+   `post_excerpt`,`post_status`,`comment_status`,`ping_status`,`post_name`,
+   `post_modified`,`post_modified_gmt`,`post_type`,`to_ping`,`pinged`,
+   `post_content_filtered`,`post_parent`,`guid`,`menu_order`,`comment_count`)
+VALUES (5411,1,'2026-03-28 10:15:00','2026-03-28 10:15:00','',
+  'FK Všeruby vs TJ Slavoj Mýto B','','publish','closed','closed',
+  'fk-vseruby-vs-tj-slavoj-myto-b-2026-03-28',
+  '2026-03-28 10:15:00','2026-03-28 10:15:00','zapas','','','',0,'',0,0);
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5411,'datum_zapasu','2026-03-28' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5411 AND `meta_key`='datum_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5411,'cas_zapasu','10:15' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5411 AND `meta_key`='cas_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5411,'domaci','FK Všeruby' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5411 AND `meta_key`='domaci');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5411,'hoste','TJ Slavoj Mýto B' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5411 AND `meta_key`='hoste');
+INSERT IGNORE INTO `wp_term_relationships`(`object_id`,`term_taxonomy_id`,`term_order`) VALUES (5411,1000,0),(5411,1002,0),(5411,1005,0);
+
+-- Muži B – 5412 – TJ Slavoj Mýto B vs FK Ledce, 4.4.2026 10:00
+INSERT IGNORE INTO `wp_posts`
+  (`ID`,`post_author`,`post_date`,`post_date_gmt`,`post_content`,`post_title`,
+   `post_excerpt`,`post_status`,`comment_status`,`ping_status`,`post_name`,
+   `post_modified`,`post_modified_gmt`,`post_type`,`to_ping`,`pinged`,
+   `post_content_filtered`,`post_parent`,`guid`,`menu_order`,`comment_count`)
+VALUES (5412,1,'2026-04-04 10:00:00','2026-04-04 10:00:00','',
+  'TJ Slavoj Mýto B vs FK Ledce','','publish','closed','closed',
+  'tj-slavoj-myto-b-vs-fk-ledce-2026-04-04',
+  '2026-04-04 10:00:00','2026-04-04 10:00:00','zapas','','','',0,'',0,0);
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5412,'datum_zapasu','2026-04-04' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5412 AND `meta_key`='datum_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5412,'cas_zapasu','10:00' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5412 AND `meta_key`='cas_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5412,'domaci','TJ Slavoj Mýto B' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5412 AND `meta_key`='domaci');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5412,'hoste','FK Ledce' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5412 AND `meta_key`='hoste');
+INSERT IGNORE INTO `wp_term_relationships`(`object_id`,`term_taxonomy_id`,`term_order`) VALUES (5412,1000,0),(5412,1002,0),(5412,1005,0);
+
+-- Muži B – 5413 – FK Touškov vs TJ Slavoj Mýto B, 18.4.2026 14:00
+INSERT IGNORE INTO `wp_posts`
+  (`ID`,`post_author`,`post_date`,`post_date_gmt`,`post_content`,`post_title`,
+   `post_excerpt`,`post_status`,`comment_status`,`ping_status`,`post_name`,
+   `post_modified`,`post_modified_gmt`,`post_type`,`to_ping`,`pinged`,
+   `post_content_filtered`,`post_parent`,`guid`,`menu_order`,`comment_count`)
+VALUES (5413,1,'2026-04-18 14:00:00','2026-04-18 14:00:00','',
+  'FK Touškov vs TJ Slavoj Mýto B','','publish','closed','closed',
+  'fk-touskov-vs-tj-slavoj-myto-b-2026-04-18',
+  '2026-04-18 14:00:00','2026-04-18 14:00:00','zapas','','','',0,'',0,0);
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5413,'datum_zapasu','2026-04-18' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5413 AND `meta_key`='datum_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5413,'cas_zapasu','14:00' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5413 AND `meta_key`='cas_zapasu');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5413,'domaci','FK Touškov' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5413 AND `meta_key`='domaci');
+INSERT INTO `wp_postmeta`(`post_id`,`meta_key`,`meta_value`) SELECT 5413,'hoste','TJ Slavoj Mýto B' WHERE NOT EXISTS(SELECT 1 FROM `wp_postmeta` WHERE `post_id`=5413 AND `meta_key`='hoste');
+INSERT IGNORE INTO `wp_term_relationships`(`object_id`,`term_taxonomy_id`,`term_order`) VALUES (5413,1000,0),(5413,1002,0),(5413,1005,0);
+
+-- ============================================================
+-- 10. AKTUALIZACE POČTU TERMÍNŮ V TAXONOMIÍCH
+-- ============================================================
+
+-- Sezóna 2025/26: 2 týmy + 37 zápasů + 7 hráčů = 46
+UPDATE `wp_term_taxonomy` SET `count` = 46 WHERE `term_taxonomy_id` = 1000;
+-- Kategorie Muži A: 1 tým + 20 zápasů = 21
+UPDATE `wp_term_taxonomy` SET `count` = 21 WHERE `term_taxonomy_id` = 1001;
+-- Kategorie Muži B: 1 tým + 17 zápasů + 7 hráčů = 25
+UPDATE `wp_term_taxonomy` SET `count` = 25 WHERE `term_taxonomy_id` = 1002;
 -- Stav Odehraný: 28 zápasů
 UPDATE `wp_term_taxonomy` SET `count` = 28 WHERE `term_taxonomy_id` = 1003;
 -- Pozice Neuvedeno: 7 hráčů
 UPDATE `wp_term_taxonomy` SET `count` = 7  WHERE `term_taxonomy_id` = 1004;
+-- Stav Nadcházející: 9 zápasů (5 Muži A + 4 Muži B)
+UPDATE `wp_term_taxonomy` SET `count` = 9  WHERE `term_taxonomy_id` = 1005;
 
 -- ============================================================
 -- Konec seed scriptu

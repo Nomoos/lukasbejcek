@@ -1,0 +1,96 @@
+/*
+ * assets/css/components/header.css
+ * Přepisuje Bootstrap navbar výchozí hodnoty klubovými barvami.
+ *
+ * Toggle řeší Bootstrap data-bs-toggle="collapse" – žádný custom JS.
+ * Layout: navbar-expand-lg → hamburger pod 992 px, řádek nad 992 px.
+ */
+
+/* ── Obal ── */
+.site-header {
+  background: #E6E6E6;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid #c8c8c8;
+  box-shadow: 0 1px 6px rgba(0,0,0,.08);
+}
+
+/* Bootstrap .navbar přebít padding */
+.site-header .navbar {
+  padding-top: 0;
+  padding-bottom: 0;
+  background: transparent;
+}
+
+.site-header__inner {
+  min-height: 64px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ── Brand / Logo ── */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #111827;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.brand:hover { color: #233D97; }
+
+.brand__logo {
+  width: 40px;
+  height: auto;
+}
+
+.brand__name {
+  font-size: 17px;
+  font-weight: 800;
+  color: inherit;
+  letter-spacing: -.01em;
+}
+
+/* ── Hamburger tlačítko (mobile, min. 44×44 px touch target) ── */
+.site-header .nav-toggle.navbar-toggler {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #cccccc;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  font-family: inherit;
+  transition: background .15s;
+  box-shadow: none;
+}
+
+.site-header .nav-toggle.navbar-toggler:hover  { background: #f0f0f0; }
+.site-header .nav-toggle.navbar-toggler:focus  { outline: none; box-shadow: none; }
+
+.site-header .nav-toggle.navbar-toggler:focus-visible {
+  outline: 2px solid #233D97;
+  outline-offset: 2px;
+}
+
+/* Tři čáry hamburgeru – pure CSS (Bootstrap .navbar-toggler-icon je SVG; nahrazujeme vlastním) */
+.site-header .nav-toggle__icon {
+  width: 18px;
+  height: 12px;
+  flex-shrink: 0;
+  display: inline-block;
+  background:
+    linear-gradient(#111827, #111827) 0 0    / 100% 2px,
+    linear-gradient(#111827, #111827) 0 50%  / 100% 2px,
+    linear-gradient(#111827, #111827) 0 100% / 100% 2px;
+  background-repeat: no-repeat;
+}
