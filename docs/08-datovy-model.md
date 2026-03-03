@@ -75,7 +75,6 @@ a pro přípravu testovacích dat.
 | Čas výkopu | `cas_zapasu` | time `HH:MM` | ✅ | `18:00` |
 | Skóre | `skore` | string | ❌ | `4:2`; prázdné = nadcházející |
 | Střelci | `strelci` | string | ❌ | „2× Schmid, Bejček, Otec" |
-| Místo konání | `misto_konani` | string | ❌ | „Mýto – domácí" |
 | Kategorie týmu | taxonomie `kategorie-tymu` | term slug | ✅ | `muzi-a` |
 | Sezóna | taxonomie `sezona` | term slug | ✅ | `2025-26` |
 | Stav zápasu | taxonomie `stav-zapasu` | term slug | ✅ | `odehrany` |
