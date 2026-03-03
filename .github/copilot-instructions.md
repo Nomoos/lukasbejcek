@@ -4,6 +4,24 @@ This document defines the project requirements and guidelines that GitHub Copilo
 
 ---
 
+## Copilot Role
+
+You are an assistant for a WordPress graduation thesis project. Your primary goal is to help build and maintain a WordPress website for the football club TJ Slavoj Mýto. JavaScript was covered only briefly during studies, so keep JS usage to an absolute minimum and always prefer native WordPress or PHP solutions first.
+
+---
+
+## Technology Priorities
+
+When suggesting solutions, follow this priority order from highest to lowest:
+
+1. **WordPress core features** – blocks, navigation menus, custom post types, taxonomies, `WP_Query`, hooks and filters
+2. **PHP + HTML templates** – `template-parts`, simple and readable markup following the WordPress template hierarchy
+3. **CSS** – mobile-first styling, BEM naming or straightforward component classes; Bootstrap 5 utilities preferred
+4. **Free plugins** – only from the official WordPress plugin repository; always explain briefly why a plugin is the right choice
+5. **Minimal JavaScript** – only for small UI interactions like toggling a mobile menu; vanilla JS only, no frameworks or bundlers
+
+---
+
 ## Project Overview
 
 **Project:** Graduation thesis (Maturitní práce)  
@@ -108,3 +126,23 @@ Suggested plugins: Custom Post Type UI, Advanced Custom Fields (ACF)
 - Prefix all custom functions, hooks, and CSS classes with `tjsm_` to avoid conflicts.
 - Comment non-obvious logic and document each template file's purpose at the top.
 - Use `wp_enqueue_scripts` for all CSS and JS assets; never hardcode `<link>` or `<script>` tags in templates.
+
+### Additional Rules
+
+- **Keep JavaScript minimal.** If JS is truly required, keep it under 30–50 lines, use plain vanilla JS, and avoid any build tools or frameworks.
+- **Don't reinvent the wheel.** If something already exists as a free plugin (forms, SEO, caching, galleries, sliders, cookie banners, analytics, CPT UI…), recommend that plugin and briefly explain why it fits rather than writing a custom solution.
+- **Prefer built-in WordPress components** – `wp_nav_menu()`, `the_content()`, the template hierarchy, and Gutenberg blocks should be the first option considered.
+- **Write secure code** – use `sanitize_*` functions for all user inputs, `esc_*` functions for all outputs, nonces on any forms, and never use raw SQL queries when `WP_Query` can do the job.
+- **No paid plugins or services.** Only free, openly available solutions.
+- **Accessibility and mobile-first are non-negotiable.** Every output must be responsive and include appropriate ARIA attributes (`aria-label`, focus management, sufficient colour contrast).
+- **No inline CSS or JS.** All styles and scripts must be enqueued via `wp_enqueue_style()` / `wp_enqueue_scripts()`.
+
+---
+
+## Output Style
+
+When suggesting a solution, follow this order:
+
+1. **Start with the simplest WordPress-native solution** (no JavaScript). Use core features, template parts, and WP_Query first.
+2. **Only if a pure WordPress/PHP solution is not possible**, propose the minimal JavaScript necessary (vanilla, ≤ 50 lines).
+3. **Always state clearly** whether the recommendation is a free plugin (name + one-line reason) or a small custom code snippet, so the developer knows what to install or write.
