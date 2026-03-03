@@ -17,25 +17,33 @@ Tento dokument navrhuje kompletní postup pro dokončení migrace webu TJ Slavoj
 
 ## Fáze migrace
 
-### Fáze 1: Analýza a příprava (1-2 dny)
+### Fáze 1: Analýza a příprava ✅ (hotovo)
 
 #### 1.1 Inventarizace obsahu
 - [x] Sepsat seznam všech typů obsahu (zápasy, týmy, hráči, galerie, kontakty)
-- [ ] Identifikovat všechna potřebná pole pro každý typ
-- [ ] Vytvořit datový model
-- [ ] Připravit ukázková data pro testování
+- [x] Identifikovat všechna potřebná pole pro každý typ → `docs/06-inventar-obsahu.md`
+- [x] Vytvořit datový model → `docs/08-datovy-model.md`
+- [x] Připravit ukázková data pro testování → `wordpress/seed-data.sql`, `docs/09-ukazková-data.md`
 
 #### 1.2 Nastavení vývojového prostředí
-- [ ] Nainstalovat lokální WordPress (Local, XAMPP, nebo Docker)
-- [ ] Aktivovat téma z `original` složky
-- [ ] Nainstalovat potřebné pluginy (viz níže)
-- [ ] Nastavit Git pro verzování změn
+- [x] Nainstalovat lokální WordPress (wp-env / Docker) → `.wp-env.json`
+- [x] Nové téma ze složky `web/theme/tj-slavoj-myto/` aktivovat místo originálu
+- [x] Nainstalovat potřebné pluginy → `web/plugins/slavoj-custom-fields/`
+- [x] Nastavit Git pro verzování změn
 
-### Fáze 2: Datová struktura (2-3 dny)
+### Fáze 2: Datová struktura ✅ (hotovo)
 
 #### 2.1 Custom Post Types
 
-Vytvořit následující custom post types:
+Registrovány v `web/theme/tj-slavoj-myto/functions.php`:
+- [x] Zápasy (`zapas`) – s meta boxy datum, čas, domácí, hosté, skóre, střelci
+- [x] Týmy (`tym`) – s meta boxy trenér, asistent, zdravotník, tym_slug
+- [x] Hráči (`hrac`) – s meta boxy číslo, rok_narozeni, tym_slug
+- [x] Galerie (`galerie`) – s featured image a post content
+- [x] Sponzoři (`sponzor`) – s meta boxem web_sponzora
+- [x] Kontakty (`kontakt`) – s meta boxy pozice, telefon, email, poradi
+
+Původní specifikace custom post types:
 
 **1. Zápasy (Match)**
 ```php

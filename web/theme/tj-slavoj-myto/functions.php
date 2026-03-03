@@ -696,6 +696,40 @@ add_action('save_post_kontakt', 'slavoj_kontakt_save_meta');
 // =====================================================================
 
 /**
+ * Vrátí výsledek zápasu z pohledu TJ Slavoj Mýto.
+ *
+ * @param string $domaci  Název domácího týmu.
+ * @param string $hoste   Název hostujícího týmu.
+ * @param string $skore   Skóre ve formátu "domácí:hosté", např. "3:1". Prázdný řetězec = nadcházející.
+ * @return string  'vyhral' | 'prohral' | 'remiza' | '' (nezapas/nadcházející)
+ */
+function slavoj_zapas_vysledek($domaci, $hoste, $skore) {
+    if (empty($skore) || !preg_match('/^(\d+):(\d+)$/', $skore, $m)) {
+        return '';
+    }
+    $goly_domaci = (int) $m[1];
+    $goly_hoste  = (int) $m[2];
+
+    $je_domaci = (stripos($domaci, 'Slavoj') !== false || stripos($domaci, 'TJ Mýto') !== false);
+    $je_hoste  = (stripos($hoste,  'Slavoj') !== false || stripos($hoste,  'TJ Mýto') !== false);
+
+    if (!$je_domaci && !$je_hoste) {
+        return '';
+    }
+
+    $nase_goly   = $je_domaci ? $goly_domaci : $goly_hoste;
+    $jejich_goly = $je_domaci ? $goly_hoste  : $goly_domaci;
+
+    if ($nase_goly > $jejich_goly) {
+        return 'vyhral';
+    }
+    if ($nase_goly < $jejich_goly) {
+        return 'prohral';
+    }
+    return 'remiza';
+}
+
+/**
  * Záložní menu pokud není nastaveno v administraci
  */
 function slavoj_fallback_menu() {

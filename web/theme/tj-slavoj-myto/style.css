@@ -308,6 +308,87 @@ h2, h4, h5 {
   background-color: #E6E6E6;
 }
 
+/* Nadcházející zápas – jemně odlišené pozadí */
+.match-card.match-upcoming {
+  background-color: #f0f4ff;
+  border-color: #233D97;
+}
+
+.match-card.match-upcoming:hover {
+  background-color: #e0eaff;
+}
+
+/* Výsledek – barevné skóre */
+.score-win {
+  color: #1a7a3f;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.score-loss {
+  color: #c0392b;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.score-draw {
+  color: #6c757d;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.score-upcoming {
+  color: #233D97;
+  font-weight: bold;
+  font-size: 1.1rem;
+  letter-spacing: 0.05rem;
+}
+
+/* Odznak stavu zápasu */
+.match-status-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03rem;
+}
+
+.badge-odehrany {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.badge-nadchazejici {
+  background-color: #233D97;
+  color: #fff;
+}
+
+.badge-zruseny {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Název sekce týmu pod modrým pruhem */
+.section-team-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000;
+  text-align: center;
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+}
+
+/* Prázdný stav – žádné zápasy */
+.match-empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: #6c757d;
+  background: #f8f9fa;
+  border-radius: 15px;
+  border: 1px dashed #dee2e6;
+}
+
 /* ===== KOMISE KARTY (KONTAKTY) ===== */
 .committee-card {
   background: #fff;
