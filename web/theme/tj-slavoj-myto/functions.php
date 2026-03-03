@@ -10,7 +10,10 @@
 
 function slavoj_menus() {
     register_nav_menus(array(
-        'main_menu' => 'Hlavní menu',
+        'primary'   => 'Hlavní menu',
+        'footer'    => 'Patičkové menu',
+        /* Zpětná kompatibilita se starším názvem */
+        'main_menu' => 'Hlavní menu (legacy)',
     ));
 }
 add_action('after_setup_theme', 'slavoj_menus');
@@ -26,18 +29,54 @@ add_action('after_setup_theme', 'slavoj_theme_support');
 
 // Načtení stylů a skriptů
 function slavoj_enqueue_scripts() {
+    $ver = wp_get_theme()->get('Version');
+
+    // Bootstrap CSS (grid, utilities) + Bootstrap JS bundle (navbar collapse – bez custom JS)
     wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3');
-    wp_enqueue_style('slavoj-style', get_stylesheet_uri(), array('bootstrap'), '2.0');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array(), '5.3.3', true);
-    wp_enqueue_script(
-        'slavoj-nav-toggle',
-        get_template_directory_uri() . '/js/nav-toggle.js',
-        array(),
-        '1.0',
-        true  /* footer */
-    );
+
+    // Hlavní šablona CSS (assets/css/main.css importuje všechny komponenty)
+    wp_enqueue_style('slavoj-main', get_template_directory_uri() . '/assets/css/main.css', array('bootstrap'), $ver);
 }
 add_action('wp_enqueue_scripts', 'slavoj_enqueue_scripts');
+
+// ──────────────────────────────────────────────────────────────────────
+// BOOTSTRAP TŘÍDY PRO wp_nav_menu() (primary lokace)
+// Přidá nav-item na <li> a nav-link na <a> – kompatibilní s Bootstrap navbar.
+// ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Přidá Bootstrap třídu 'nav-item' na <li> položky hlavního menu.
+ */
+function slavoj_bootstrap_nav_item_class( $classes, $item, $args, $depth ) {
+    if ( isset( $args->theme_location ) && 'primary' === $args->theme_location ) {
+        $classes[] = 'nav-item';
+    }
+    return $classes;
+}
+add_filter( 'nav_menu_css_class', 'slavoj_bootstrap_nav_item_class', 10, 4 );
+
+/**
+ * Přidá Bootstrap třídy 'nav-link' (a 'active' pro aktuální stránku) na <a>.
+ */
+function slavoj_bootstrap_nav_link_attrs( $attrs, $item, $args, $depth ) {
+    if ( isset( $args->theme_location ) && 'primary' === $args->theme_location ) {
+        $cls = isset( $attrs['class'] ) ? $attrs['class'] . ' nav-link' : 'nav-link';
+
+        if ( ! empty( $item->classes ) ) {
+            if ( in_array( 'current-menu-item', (array) $item->classes, true ) ) {
+                $cls .= ' active';
+                $attrs['aria-current'] = 'page';
+            } elseif ( array_intersect( array( 'current-page-ancestor', 'current-menu-ancestor' ), (array) $item->classes ) ) {
+                $cls .= ' active';
+                /* Ancestor: active highlight but no aria-current (not the exact page) */
+            }
+        }
+        $attrs['class'] = $cls;
+    }
+    return $attrs;
+}
+add_filter( 'nav_menu_link_attributes', 'slavoj_bootstrap_nav_link_attrs', 10, 4 );
 
 // =====================================================================
 // CUSTOM POST TYPES
@@ -781,6 +820,44 @@ function slavoj_fallback_menu() {
     );
     foreach ($polozky as $label => $url) {
         echo '<li class="nav__item"><a class="nav__link" href="' . esc_url($url) . '">' . esc_html($label) . '</a></li>';
+    }
+    echo '</ul>';
+}
+
+/**
+ * Záložní menu pro Bootstrap navbar (primary) – pokud není menu v administraci.
+ */
+function slavoj_fallback_primary_menu() {
+    $polozky = array(
+        'Domů'     => home_url('/'),
+        'Zápasy'   => home_url('/zapasy/'),
+        'Týmy'     => home_url('/tymy/'),
+        'Galerie'  => home_url('/galerie/'),
+        'Historie' => home_url('/historie/'),
+        'Sponzoři' => home_url('/sponzori/'),
+        'Kontakty' => home_url('/kontakty/'),
+    );
+    echo '<ul class="navbar-nav ms-auto">';
+    foreach ($polozky as $label => $url) {
+        echo '<li class="nav-item"><a class="nav-link" href="' . esc_url($url) . '">' . esc_html($label) . '</a></li>';
+    }
+    echo '</ul>';
+}
+
+/**
+ * Záložní menu pro patičku – pokud není menu v administraci.
+ */
+function slavoj_fallback_footer_menu() {
+    $polozky = array(
+        'Zápasy'   => home_url('/zapasy/'),
+        'Týmy'     => home_url('/tymy/'),
+        'Galerie'  => home_url('/galerie/'),
+        'Kontakty' => home_url('/kontakty/'),
+        'Sponzoři' => home_url('/sponzori/'),
+    );
+    echo '<ul class="footer-nav__list">';
+    foreach ($polozky as $label => $url) {
+        echo '<li><a class="footer-nav__link" href="' . esc_url($url) . '">' . esc_html($label) . '</a></li>';
     }
     echo '</ul>';
 }
