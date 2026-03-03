@@ -58,7 +58,6 @@ Pro maximální kontrolu nad kódem a minimální závislost na externích plugi
 | Hostující tým | `hoste` | text | Název hostujícího týmu |
 | Skóre | `skore` | text | Výsledek ve formátu „3:1" |
 | Střelci | `strelci` | text | Jména střelců, např. „2× Novák, Bejček" |
-| Místo konání | `misto_konani` | text | Název hřiště nebo adresa |
 
 **Pole pro Tým (`tym`):**
 

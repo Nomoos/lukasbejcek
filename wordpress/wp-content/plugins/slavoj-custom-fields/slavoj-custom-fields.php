@@ -59,7 +59,7 @@ function slavoj_cf_setup_page() {
             <td><strong>Zápasy</strong></td>
             <td><code>zapas</code></td>
             <td>Fotbalové zápasy s výsledky a detaily</td>
-            <td>datum_zapasu, cas_zapasu, domaci, hoste, skore, strelci, misto_konani</td>
+            <td>datum_zapasu, cas_zapasu, domaci, hoste, skore, strelci</td>
           </tr>
           <tr>
             <td><strong>Týmy</strong></td>

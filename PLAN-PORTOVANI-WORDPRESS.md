@@ -48,7 +48,6 @@ Pole:
 - Datum a čas (datetime)
 - Sezóna (taxonomie)
 - Střelci (text/textarea)
-- Místo konání (text)
 - Stav (taxonomie: nadcházející/odehraný)
 ```
 

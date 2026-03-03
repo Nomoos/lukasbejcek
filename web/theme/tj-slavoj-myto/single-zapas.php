@@ -12,7 +12,6 @@ while (have_posts()) : the_post();
     $hoste   = get_post_meta(get_the_ID(), 'hoste', true);
     $skore   = get_post_meta(get_the_ID(), 'skore', true);
     $strelci = get_post_meta(get_the_ID(), 'strelci', true);
-    $misto   = get_post_meta(get_the_ID(), 'misto_konani', true);
 
     // Kategorie týmu a sezóna z taxonomií
     $kategorie_tymu = get_the_terms(get_the_ID(), 'kategorie-tymu');
@@ -102,15 +101,6 @@ while (have_posts()) : the_post();
             <div class="border rounded p-3 text-center">
               <div class="text-muted small">Čas výkopu</div>
               <strong><?php echo esc_html($cas); ?></strong>
-            </div>
-          </div>
-        <?php endif; ?>
-
-        <?php if ($misto) : ?>
-          <div class="col-md-4">
-            <div class="border rounded p-3 text-center">
-              <div class="text-muted small">Místo konání</div>
-              <strong><?php echo esc_html($misto); ?></strong>
             </div>
           </div>
         <?php endif; ?>
