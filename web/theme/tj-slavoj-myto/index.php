@@ -17,8 +17,8 @@ get_header();
     ?>
     <img src="<?php echo esc_url($banner_url); ?>" alt="TJ Slavoj Mýto">
     <div class="banner-text">
-      <h1 class="fs-2 fw-bold">TJ Slavoj Mýto</h1>
-      <h2>Fotbalový klub s tradicí od roku 1909</h2>
+      <h1 class="fs-2 fw-bold"><?php bloginfo('name'); ?></h1>
+      <h2><?php bloginfo('description'); ?></h2>
     </div>
   </section>
 

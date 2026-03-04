@@ -8,7 +8,7 @@ get_header();
 ?>
 
 <div class="container py-5 text-center">
-  <h2 class="fw-bold mb-5">Výbor klubu TJ Slavoj Mýto</h2>
+  <h2 class="fw-bold mb-5"><?php echo esc_html(get_the_title(get_queried_object_id())); ?></h2>
 
   <div class="row g-4 justify-content-center">
     <?php
@@ -76,7 +76,7 @@ get_header();
   <!-- MAPA -->
   <div class="map-container">
     <iframe
-      src="https://frame.mapy.cz/s/gusoheruvo"
+      src="<?php echo esc_url(get_theme_mod('tjsm_mapa_url', 'https://frame.mapy.cz/s/gusoheruvo')); ?>"
       allowfullscreen
       loading="lazy"
       title="Mapa – TJ Slavoj Mýto"

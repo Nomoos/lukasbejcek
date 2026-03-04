@@ -38,8 +38,11 @@ $tym_nazev = $filtr_tym ? slavoj_get_team_display_name($filtr_tym) : '';
   <div class="container">
 
     <header class="page-title">
-      <h1 class="page-title__h1">Zápasy</h1>
-      <p class="page-title__subtitle">Přehled všech zápasů TJ Slavoj Mýto</p>
+      <h1 class="page-title__h1"><?php echo esc_html(get_the_title(get_queried_object_id())); ?></h1>
+      <p class="page-title__subtitle"><?php
+          $sub = get_the_excerpt(get_queried_object_id());
+          echo $sub ? esc_html(wp_strip_all_tags($sub)) : esc_html(sprintf('Přehled zápasů %s', get_bloginfo('name')));
+      ?></p>
     </header>
 
     <?php

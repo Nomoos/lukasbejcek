@@ -8,7 +8,7 @@ get_header();
 ?>
 
 <div class="container py-5">
-    <h2 class="mb-4 text-center fw-bold">Historie Klubu</h2>
+    <h2 class="mb-4 text-center fw-bold"><?php echo esc_html(get_the_title(get_queried_object_id())); ?></h2>
     <div class="row align-items-start">
       <div class="col-lg-7">
         <?php

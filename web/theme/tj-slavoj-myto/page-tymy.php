@@ -40,8 +40,11 @@ if ($filtr_sezona && !is_wp_error($dostupne_sezony)) {
 
 <!-- OBSAH -->
 <div class="container py-5">
-    <h2 class="mb-0">Týmy</h2>
-    <p class="text-muted mb-4">Přehled všech týmů TJ Slavoj Mýto</p>
+    <h2 class="mb-0"><?php echo esc_html(get_the_title(get_queried_object_id())); ?></h2>
+    <p class="text-muted mb-4"><?php
+        $sub = get_the_excerpt(get_queried_object_id());
+        echo $sub ? esc_html(wp_strip_all_tags($sub)) : esc_html(sprintf('Přehled týmů %s', get_bloginfo('name')));
+    ?></p>
 
     <!-- FILTRY – selecty odešlou formulář ihned po změně; tlačítko jako záloha bez JS -->
     <form method="get" class="d-flex gap-3 mb-4 flex-wrap">
