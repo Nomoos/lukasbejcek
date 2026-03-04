@@ -16,22 +16,21 @@
 
 setlocal EnableDelayedExpansion
 
+:: -- Prepnout pracovni adresar na slozku tohoto skriptu ----------
+:: Zdrojove cesty jsou relativni vuci teto slozce (web/).
+pushd "%~dp0"
+
 echo.
 echo  ============================================================
 echo   Instalator TJ Slavoj Myto – WordPress tema a plugin
 echo  ============================================================
 echo.
 
-:: -- Zjistit adresar tohoto skriptu (slozka web/) ----------------
-set "SCRIPT_DIR=%~dp0"
-:: Odstranit koncovy lomitko
-if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
+:: -- Zdrojove slozky (relativni cesta od tohoto skriptu) ---------
+set "SRC_THEME=wp-content\themes\tj-slavoj-myto"
+set "SRC_PLUGIN=wp-content\plugins\slavoj-custom-fields"
 
-:: -- Zdrojove slozky ---------------------------------------------
-set "SRC_THEME=%SCRIPT_DIR%\wp-content\themes\tj-slavoj-myto"
-set "SRC_PLUGIN=%SCRIPT_DIR%\wp-content\plugins\slavoj-custom-fields"
-
-:: -- Cil (WordPress instalace) -----------------------------------
+:: -- Cil – absolutni cesta k WordPress instalaci v XAMPP ---------
 set "DEFAULT_WP=C:\xampp\htdocs\fotbal_club"
 set /p "WP_DIR=Zadejte cestu ke WordPress instalaci [%DEFAULT_WP%]: "
 if "!WP_DIR!"=="" set "WP_DIR=%DEFAULT_WP%"
@@ -47,6 +46,7 @@ if not exist "!WP_DIR!\wp-content\" (
     echo          ceste a ze slozka wp-content existuje.
     echo.
     pause
+    popd
     exit /b 1
 )
 
@@ -62,6 +62,7 @@ if exist "!DEST_THEME!\" (
         echo  [CHYBA] Nepodarilo se smazat starou verzi tematu.
         echo          Zkuste spustit skript jako spravce.
         pause
+        popd
         exit /b 1
     )
 )
@@ -70,6 +71,7 @@ xcopy /e /i /q /y "!SRC_THEME!" "!DEST_THEME!" >nul
 if errorlevel 1 (
     echo  [CHYBA] Kopirovani tematu selhalo.
     pause
+    popd
     exit /b 1
 )
 echo       Tema uspesne nainstalovano.
@@ -86,6 +88,7 @@ if exist "!DEST_PLUGIN!\" (
         echo  [CHYBA] Nepodarilo se smazat starou verzi pluginu.
         echo          Zkuste spustit skript jako spravce.
         pause
+        popd
         exit /b 1
     )
 )
@@ -94,6 +97,7 @@ xcopy /e /i /q /y "!SRC_PLUGIN!" "!DEST_PLUGIN!" >nul
 if errorlevel 1 (
     echo  [CHYBA] Kopirovani pluginu selhalo.
     pause
+    popd
     exit /b 1
 )
 echo       Plugin uspesne nainstalovan.
@@ -111,4 +115,5 @@ echo   3. Aktivujte tema:  Vzhled ^> Temata ^> TJ Slavoj Myto
 echo   4. Aktivujte plugin: Pluginy ^> Slavoj Custom Fields
 echo.
 pause
+popd
 endlocal
