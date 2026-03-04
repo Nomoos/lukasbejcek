@@ -68,10 +68,9 @@ if ($filtr_sezona && !is_wp_error($dostupne_sezony)) {
         <?php endforeach; endif; ?>
       </select>
 
-      <button type="submit" class="btn btn-primary">Filtrovat</button>
-    </form>
-
-    <div class="row">
+      <noscript>
+        <button type="submit" class="btn btn-primary">Filtrovat</button>
+      </noscript>
       <div class="col-md-8">
         <h4 class="fw-bold"><?php echo esc_html($nazev_tymu); ?></h4>
         <p class="text-muted"><?php echo esc_html($nazev_sezony); ?></p>

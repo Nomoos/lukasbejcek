@@ -40,7 +40,9 @@ $kategorie = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => fal
       <?php endif; ?>
     </select>
 
-    <button type="submit" class="btn btn-primary">Filtrovat</button>
+    <noscript>
+      <button type="submit" class="btn btn-primary">Filtrovat</button>
+    </noscript>
   </form>
 
   <!-- SEZNAM TÝMŮ -->

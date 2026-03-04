@@ -54,7 +54,9 @@ $dostupne_sezony = get_terms(array(
         <?php endforeach; endif; ?>
       </select>
 
-      <button type="submit" class="btn btn-primary">Filtrovat</button>
+      <noscript>
+        <button type="submit" class="btn btn-primary">Filtrovat</button>
+      </noscript>
     </form>
 </div>
 

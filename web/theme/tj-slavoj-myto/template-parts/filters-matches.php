@@ -48,6 +48,8 @@ $filtr_stav      = isset($args['filtr_stav'])       ? $args['filtr_stav']      :
     <option value="neodehrane" <?php selected($filtr_stav, 'neodehrane'); ?>>Nadcházející</option>
   </select>
 
-  <button type="submit" class="filter filter--submit">Filtrovat</button>
+  <noscript>
+    <button type="submit" class="filter filter--submit">Filtrovat</button>
+  </noscript>
 
 </form>

@@ -48,7 +48,9 @@ $kategorie   = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => f
       <option value="neodehrane" <?php selected($filtr_stav, 'neodehrane'); ?>>Nadcházející</option>
     </select>
 
-    <button type="submit" class="btn btn-primary">Filtrovat</button>
+    <noscript>
+      <button type="submit" class="btn btn-primary">Filtrovat</button>
+    </noscript>
   </form>
 </div>
 
