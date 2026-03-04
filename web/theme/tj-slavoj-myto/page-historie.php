@@ -21,7 +21,7 @@ get_header();
       </div>
 
       <div class="col-lg-5 text-center">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" alt="TJ Slavoj Mýto" class="img-fluid club-logo">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png" alt="TJ Slavoj Mýto" class="img-fluid club-logo">
       </div>
     </div>
 </div>

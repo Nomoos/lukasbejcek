@@ -60,7 +60,7 @@ $kategorie   = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => f
   <div class="row">
     <div class="col-5"><div class="blue-bar-p"></div></div>
     <div class="col-1 text-center">
-      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" alt="TJ Slavoj Mýto" height="50">
+      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png" alt="TJ Slavoj Mýto" height="50">
     </div>
     <div class="col-6"><div class="blue-bar-l"></div></div>
   </div>

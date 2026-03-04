@@ -36,7 +36,7 @@ get_header();
                       'class' => 'committee-photo',
                   )); ?>
                 <?php else : ?>
-                  <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" class="committee-photo" alt="TJ Slavoj Mýto">
+                  <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png" class="committee-photo" alt="TJ Slavoj Mýto">
                 <?php endif; ?>
 
                 <!-- JMÉNO -->

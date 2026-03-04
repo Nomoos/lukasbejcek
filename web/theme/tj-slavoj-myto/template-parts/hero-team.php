@@ -13,7 +13,7 @@ $tym_nazev = isset($args['tym_nazev']) ? $args['tym_nazev'] : '';
 <div class="team-hero">
   <div class="team-hero__bar">
     <img class="team-hero__logo"
-         src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png"
+         src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png"
          alt="TJ Slavoj Mýto">
   </div>
   <?php if ($tym_nazev) : ?>

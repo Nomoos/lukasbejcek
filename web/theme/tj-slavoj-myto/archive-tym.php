@@ -96,7 +96,7 @@ $kategorie = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => fal
                       </div>
                     <?php else : ?>
                       <div class="committee-img-wrapper mb-3">
-                        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png"
+                        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png"
                              class="committee-img" alt="TJ Slavoj Mýto">
                       </div>
                     <?php endif; ?>
