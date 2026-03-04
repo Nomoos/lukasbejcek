@@ -32,7 +32,7 @@
   padding-bottom: 8px;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 576px) {
   .team-hero__bar  { height: 80px; }
   .team-hero__logo { height: 64px; }
   .team-hero__title { font-size: 26px; }
