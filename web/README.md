@@ -10,16 +10,35 @@ Vytvořit plně funkční WordPress téma, které nahradí původní nedokončen
 
 ```
 web/
-├── theme/          # WordPress téma (PHP šablony, CSS, JS)
-├── plugins/        # Vlastní pluginy nebo úpravy
-└── assets/         # Statické soubory (obrázky, fonty apod.)
+├── wp-content/         # WordPress wp-content – kopírujte do WP instalace
+│   ├── themes/         # Téma tj-slavoj-myto
+│   └── plugins/        # Plugin slavoj-custom-fields
+├── theme/              # (starý adresář – pouze pro vývoj, nekopírovat do WP)
+├── plugins/            # (starý adresář – pouze pro vývoj, nekopírovat do WP)
+├── assets/             # (starý adresář – pouze pro vývoj, nekopírovat do WP)
+├── install.bat         # Instalační skript pro Windows / XAMPP
+└── README.md
 ```
+
+## Instalace pomocí install.bat (doporučeno)
+
+Skript automaticky zkopíruje téma a plugin na správná místa a odstraní
+případné starší verze, aby nevznikaly konflikty nebo zbytky souborů.
+
+1. Ujistěte se, že WordPress je nainstalovaný v `C:\xampp\htdocs\fotbal_club`
+   (nebo na jiné cestě).
+2. Poklepejte na **`install.bat`** v této složce.
+3. Potvrďte cestu k WordPress instalaci (nebo zadejte vlastní) a stiskněte Enter.
+4. Skript nainstaluje téma a plugin; na konci se zobrazí pokyny k aktivaci.
+
+> **Poznámka:** Pokud se zobrazí chyba přístupu, spusťte skript jako správce
+> (pravý klik → *Spustit jako správce*).
 
 ## Jak začít
 
 1. Přečtěte si `docs/01-uvod.md` pro přehled projektu.
 2. Postupujte podle fází popsaných v `docs/`.
-3. Téma nainstalujte do lokálního WordPressu ze složky `web/theme/`.
+3. Téma a plugin nainstalujte do lokálního WordPressu pomocí skriptu `install.bat` (viz níže).
 
 ## Stav
 
