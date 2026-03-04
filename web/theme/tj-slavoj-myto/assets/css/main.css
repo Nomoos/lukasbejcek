@@ -218,7 +218,10 @@ h1, h2, h3, h4, h5, h6 { margin: 0; line-height: 1.25; font-weight: 700; color: 
 .aktuality-box { display: flex; flex-direction: column; gap: 24px; }
 .aktualita { background: var(--card); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); }
 .aktualita h4 { color: var(--primary); font-size: 17px; margin-bottom: 8px; }
+.aktualita h4 a.aktualita__link { color: inherit; }
+.aktualita h4 a.aktualita__link:hover { color: var(--primary-dark); }
 .aktualita p  { font-size: 14px; line-height: 1.65; }
+.aktualita__date { font-size: 13px; margin: 0 0 6px; }
 .aktualita.druhy { display: flex; gap: 20px; flex-direction: column; }
 .aktualita.druhy img { width: 100%; border-radius: var(--radius-sm); }
 
