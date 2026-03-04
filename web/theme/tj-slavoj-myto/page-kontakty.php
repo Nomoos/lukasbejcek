@@ -8,7 +8,7 @@ get_header();
 ?>
 
 <div class="container py-5 text-center">
-  <h2 class="fw-bold mb-5">Výbor klubu TJ Slavoj Mýto</h2>
+  <h2 class="fw-bold mb-5"><?php echo esc_html(get_the_title(get_queried_object_id())); ?></h2>
 
   <div class="row g-4 justify-content-center">
     <?php
@@ -31,28 +31,25 @@ get_header();
             <div class="col-md-4 col-lg-3">
               <div class="committee-card p-4">
                 <!-- FOTOGRAFIE / PLACEHOLDER -->
-                <div class="committee-img-wrapper">
-                  <?php if (has_post_thumbnail()) : ?>
-                    <?php the_post_thumbnail('thumbnail', array(
-                        'class' => 'committee-img',
-                        'style' => 'border-radius: 50%; width: 120px; height: 120px; object-fit: cover;',
-                    )); ?>
-                  <?php else : ?>
-                    <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" class="committee-img" alt="TJ Slavoj Mýto">
-                  <?php endif; ?>
-                </div>
+                <?php if (has_post_thumbnail()) : ?>
+                  <?php the_post_thumbnail('thumbnail', array(
+                      'class' => 'committee-photo',
+                  )); ?>
+                <?php else : ?>
+                  <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" class="committee-photo" alt="TJ Slavoj Mýto">
+                <?php endif; ?>
 
                 <!-- JMÉNO -->
                 <h4 class="mb-1"><?php the_title(); ?></h4>
 
                 <!-- POZICE -->
                 <?php if ($pozice) : ?>
-                  <p class="text-muted mb-3" style="font-size: 14px;"><?php echo $pozice; ?></p>
+                  <p class="text-muted small mb-3"><?php echo $pozice; ?></p>
                 <?php endif; ?>
 
                 <!-- TELEFON -->
                 <?php if ($telefon) : ?>
-                  <p class="mb-0" style="font-size: 14px;">
+                  <p class="small mb-0">
                     <strong>Tel.:</strong>
                     <a href="tel:<?php echo esc_attr(preg_replace('/\s+/', '', $telefon)); ?>"><?php echo $telefon; ?></a>
                   </p>
@@ -60,7 +57,7 @@ get_header();
 
                 <!-- EMAIL -->
                 <?php if ($email) : ?>
-                  <p class="mb-0" style="font-size: 14px;">
+                  <p class="small mb-0">
                     <strong>Email:</strong>
                     <a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a>
                   </p>
@@ -79,7 +76,7 @@ get_header();
   <!-- MAPA -->
   <div class="map-container">
     <iframe
-      src="https://frame.mapy.cz/s/gusoheruvo"
+      src="<?php echo esc_url(get_theme_mod('tjsm_mapa_url', 'https://frame.mapy.cz/s/gusoheruvo')); ?>"
       allowfullscreen
       loading="lazy"
       title="Mapa – TJ Slavoj Mýto"

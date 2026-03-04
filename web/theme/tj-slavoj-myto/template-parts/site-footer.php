@@ -18,9 +18,14 @@
 
     <!-- Kontakt -->
     <div class="site-footer__info">
-      <strong>TJ Slavoj Mýto z.s.</strong><br>
-      Mýto 27, 338 05 Mýto<br>
-      <a href="mailto:tjslavojmyto@seznam.cz">tjslavojmyto@seznam.cz</a>
+      <strong><?php bloginfo('name'); ?></strong><br>
+      <?php echo esc_html(get_theme_mod('tjsm_adresa', 'Mýto 27, 338 05 Mýto')); ?><br>
+      <?php
+      $footer_email = sanitize_email(get_theme_mod('tjsm_email', 'tjslavojmyto@seznam.cz'));
+      if ($footer_email) :
+      ?>
+        <a href="mailto:<?php echo esc_attr($footer_email); ?>"><?php echo esc_html($footer_email); ?></a>
+      <?php endif; ?>
     </div>
 
     <!-- Patičkové menu -->

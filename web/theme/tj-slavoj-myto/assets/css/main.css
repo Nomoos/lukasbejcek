@@ -244,11 +244,13 @@ h1, h2, h3, h4, h5, h6 { margin: 0; line-height: 1.25; font-weight: 700; color: 
 .gallery-img { aspect-ratio: 1; object-fit: cover; border-radius: var(--radius); width: 100%; }
 .gallery-placeholder { aspect-ratio: 1; background: var(--card); border-radius: var(--radius); width: 100%; }
 .gallery-logo { width: 100px; background: #fff; padding: 8px; border-radius: var(--radius-sm); }
+.gallery-trigger { cursor: pointer; }
 
 /* Kontakty */
 .committee-card { background: #fff; border: 1.5px solid var(--border); border-radius: 20px; padding: 24px; text-align: center; }
 .committee-img-wrapper { width: 120px; height: 120px; background: var(--card); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
 .committee-img { width: 80px; }
+.committee-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 16px; }
 .committee-card a { color: var(--text); text-decoration: none; }
 .committee-card a:hover { color: var(--primary); }
 
@@ -276,3 +278,13 @@ h1, h2, h3, h4, h5, h6 { margin: 0; line-height: 1.25; font-weight: 700; color: 
 .form-select { border: 1.5px solid var(--border); border-radius: var(--radius-pill); padding: .5rem 1rem; font-size: 15px; background-color: var(--card); }
 .filter-select-team, .filter-select-status { background-color: var(--primary); color: #fff; border-color: var(--primary); }
 .filter-select-season { background-color: var(--header); color: var(--text); }
+
+/* Týmy */
+.club-logo { max-width: 200px; }
+.team-card { transition: box-shadow .2s; }
+.team-thumb { width: 80px; height: 80px; object-fit: cover; }
+
+/* Admin box (single-zapas) */
+.admin-box { border-color: var(--primary) !important; background: #f0f4ff; }
+.admin-box__title { color: var(--primary); }
+.admin-box__badge { font-size: .65rem; vertical-align: middle; }

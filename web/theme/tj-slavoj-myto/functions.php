@@ -1066,3 +1066,49 @@ add_action('admin_post_slavoj_update_zapas', 'slavoj_handle_update_zapas');
 add_action('admin_post_nopriv_slavoj_update_zapas', function () {
     wp_die('Pro tuto akci se musíte přihlásit.', 403);
 });
+
+// =====================================================================
+// CUSTOMIZER – KONTAKTNÍ INFORMACE A NASTAVENÍ WEBU
+// =====================================================================
+
+/**
+ * Registrace nastavení Customizeru: adresa klubu, e-mail a URL mapy.
+ * Editovatelné přes Vzhled → Přizpůsobit v administraci WordPress.
+ */
+function tjsm_customize_register( $wp_customize ) {
+    $wp_customize->add_section( 'tjsm_kontakt', array(
+        'title'    => 'Kontaktní informace klubu',
+        'priority' => 30,
+    ) );
+
+    $wp_customize->add_setting( 'tjsm_adresa', array(
+        'default'           => 'Mýto 27, 338 05 Mýto',
+        'sanitize_callback' => 'sanitize_text_field',
+    ) );
+    $wp_customize->add_control( 'tjsm_adresa', array(
+        'label'   => 'Adresa klubu',
+        'section' => 'tjsm_kontakt',
+        'type'    => 'text',
+    ) );
+
+    $wp_customize->add_setting( 'tjsm_email', array(
+        'default'           => 'tjslavojmyto@seznam.cz',
+        'sanitize_callback' => 'sanitize_email',
+    ) );
+    $wp_customize->add_control( 'tjsm_email', array(
+        'label'   => 'E-mail klubu',
+        'section' => 'tjsm_kontakt',
+        'type'    => 'email',
+    ) );
+
+    $wp_customize->add_setting( 'tjsm_mapa_url', array(
+        'default'           => 'https://frame.mapy.cz/s/gusoheruvo',
+        'sanitize_callback' => 'esc_url_raw',
+    ) );
+    $wp_customize->add_control( 'tjsm_mapa_url', array(
+        'label'   => 'URL embedu mapy (Mapy.cz nebo Google Maps)',
+        'section' => 'tjsm_kontakt',
+        'type'    => 'url',
+    ) );
+}
+add_action( 'customize_register', 'tjsm_customize_register' );

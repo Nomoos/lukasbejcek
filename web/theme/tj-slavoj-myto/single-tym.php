@@ -82,10 +82,10 @@ while (have_posts()) : the_post();
 
     <div class="col-md-4 text-center">
       <?php if (has_post_thumbnail()) : ?>
-        <?php the_post_thumbnail('medium', array('class' => 'img-fluid rounded', 'style' => 'max-width:200px;')); ?>
+        <?php the_post_thumbnail('medium', array('class' => 'img-fluid rounded club-logo')); ?>
       <?php else : ?>
         <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png"
-             alt="TJ Slavoj Mýto" class="img-fluid mt-4" style="max-width:200px;">
+             alt="TJ Slavoj Mýto" class="img-fluid club-logo mt-4">
       <?php endif; ?>
     </div>
   </div>
