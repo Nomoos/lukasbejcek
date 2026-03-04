@@ -205,7 +205,10 @@ h1, h2, h3, h4, h5, h6 { margin: 0; line-height: 1.25; font-weight: 700; color: 
   transform: translateX(-50%);
   color: #fff; text-align: center; white-space: nowrap;
 }
-.banner-text h2 { font-size: 22px; margin: 0; }
+.banner-text h1,
+.banner-text h2,
+.banner-text p { color: #fff; margin: 0; }
+.banner-text h2 { font-size: 22px; }
 
 @media (min-width: 576px) {
   .banner { height: 300px; }
