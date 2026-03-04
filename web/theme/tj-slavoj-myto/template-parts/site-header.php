@@ -27,7 +27,7 @@
         Žádný custom JavaScript.
         min-width/min-height ≥ 44 px pro touch target (řešeno v CSS).
       -->
-      <button class="navbar-toggler nav-toggle"
+      <button class="navbar-toggler nav-toggle d-lg-none"
               type="button"
               data-bs-toggle="collapse"
               data-bs-target="#site-nav"
