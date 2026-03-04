@@ -20,7 +20,7 @@ get_header();
     <img src="<?php echo esc_url( $banner_url ); ?>" alt="<?php bloginfo( 'name' ); ?>">
     <div class="banner-text">
       <h1 class="fs-2 fw-bold"><?php bloginfo( 'name' ); ?></h1>
-      <h2><?php bloginfo( 'description' ); ?></h2>
+      <h5><?php bloginfo( 'description' ); ?></h5>
     </div>
   </section>
 
