@@ -19,7 +19,13 @@ lukasbejcek/
 ├── docs/                  # 🆕 Průběžná dokumentace portování
 │   ├── 01-uvod.md        # Úvod a přehled projektu
 │   ├── 02-analyza-original.md  # Analýza původního kódu
-│   └── 03-nova-struktura.md    # Nová adresářová a datová struktura
+│   ├── 03-nova-struktura.md    # Nová adresářová a datová struktura
+│   ├── 04-lokalni-instalace.md # Lokální instalace (XAMPP)
+│   ├── 05-deployment-ftp.md    # Deployment na hosting přes FTP
+│   ├── 06-inventar-obsahu.md   # Inventář CPT a taxonomií
+│   ├── 07-pluginy.md           # Přehled pluginů
+│   ├── 08-datovy-model.md      # Datový model a ER diagram
+│   └── 09-ukazková-data.md     # Ukázková data + jak provést seed
 ├── notes/                 # 🆕 Pracovní poznámky a nápady
 ├── ZADANI-MATURITNI-PRACE.md    # ✅ Zadání maturitní práce
 ├── DOKUMENTACE-KOD.md    # ✅ Vysvětlení jak funguje současný kód
@@ -77,6 +83,10 @@ Tento dokument obsahuje:
 - [03-nova-struktura.md](./docs/03-nova-struktura.md) – Nová adresářová a datová struktura
 - [04-lokalni-instalace.md](./docs/04-lokalni-instalace.md) – Jak rozchodit projekt lokálně
 - [05-deployment-ftp.md](./docs/05-deployment-ftp.md) – Deployment na hosting přes FTP
+- [06-inventar-obsahu.md](./docs/06-inventar-obsahu.md) – Inventář CPT a taxonomií
+- [07-pluginy.md](./docs/07-pluginy.md) – Přehled pluginů
+- [08-datovy-model.md](./docs/08-datovy-model.md) – Datový model a ER diagram
+- [09-ukazková-data.md](./docs/09-ukazková-data.md) – Ukázková data + jak provést seed
 
 ## 🎯 Současný stav projektu
 
@@ -99,8 +109,9 @@ Tento dokument obsahuje:
 1. **Přečtěte si dokumentaci**: Začněte s [DOKUMENTACE-KOD.md](./DOKUMENTACE-KOD.md) pro pochopení současného stavu
 2. **Prostudujte plán**: Pokračujte s [PLAN-PORTOVANI-WORDPRESS.md](./PLAN-PORTOVANI-WORDPRESS.md)
 3. **Nastavte vývojové prostředí**: Viz [docs/04-lokalni-instalace.md](./docs/04-lokalni-instalace.md)
-4. **Následujte fáze**: Postupujte podle 10 fází v plánu portování
-5. **Nasazení na hosting**: Viz [docs/05-deployment-ftp.md](./docs/05-deployment-ftp.md)
+4. **Naimportujte ukázková data**: Po aktivaci pluginu přejděte v administraci na **Nástroje → Slavoj nastavení** a klikněte „Vytvořit ukázková data (sezóna 2025/26)". Podrobnosti viz [docs/09-ukazková-data.md](./docs/09-ukazková-data.md)
+5. **Následujte fáze**: Postupujte podle 10 fází v plánu portování
+6. **Nasazení na hosting**: Viz [docs/05-deployment-ftp.md](./docs/05-deployment-ftp.md)
 
 ## 💡 Doporučení
 

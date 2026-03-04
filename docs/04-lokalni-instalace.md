@@ -100,6 +100,18 @@ V sekci **Pluginy → Přidat nový** nainstalujte následující pluginy:
 
 Přejděte na **Nastavení → Trvalé odkazy** a zvolte **Název příspěvku** (`/%postname%/`). Uložte.
 
+### Krok 11 – Naimportujte ukázková data (seed)
+
+Po aktivaci pluginu jsou automaticky vytvořeny výchozí hodnoty taxonomií. Chcete-li naplnit web ukázkovými zápasy, týmy a hráči ze sezóny 2025/26:
+
+1. V administraci přejděte na **Nástroje → Slavoj nastavení**.
+2. Klikněte na **„Vytvořit ukázková data (sezóna 2025/26)"**.
+
+Seed vytvoří 2 týmy, 28 zápasů a 7 hráčů. Lze spustit opakovaně – duplicity jsou automaticky přeskočeny.
+
+> **Alternativy:** SQL import (`wordpress/seed-data.sql`) nebo WP-CLI příkaz `wp eval 'slavoj_cf_seed_demo_data();'`.
+> Podrobný popis všech způsobů seedování viz **[docs/09-ukazková-data.md](./09-ukazková-data.md)**.
+
 ---
 
 ## Ověření funkčnosti
@@ -112,6 +124,7 @@ Po instalaci zkontrolujte:
 - [ ] Téma je aktivní
 - [ ] Plugin **Slavoj Custom Fields** (`slavoj-custom-fields`) je aktivní
 - [ ] Permalink struktura je nastavena na **Název příspěvku**
+- [ ] Ukázková data byla vytvořena (**Nástroje → Slavoj nastavení → Vytvořit ukázková data**)
 
 ---
 
