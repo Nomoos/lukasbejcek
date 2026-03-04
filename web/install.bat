@@ -28,11 +28,34 @@ echo.
 
 :: -- Aktualizace repozitare ------------------------------------
 echo  Stahuji nejnovejsi zmeny z repozitare (git pull)...
+
+:: Zapamatuj aktualni HEAD pred pullem
+for /f %%h in ('git rev-parse HEAD 2^>nul') do set "OLD_HEAD=%%h"
+
 git pull
 if errorlevel 1 (
     echo  [UPOZORNENI] git pull selhal. Pokracuji s aktualnimi soubory.
+) else (
+    :: Zjisti novy HEAD
+    for /f %%h in ('git rev-parse HEAD 2^>nul') do set "NEW_HEAD=%%h"
+
+    :: Pokud se HEAD zmenil, over jestli byl aktualizovan install.bat
+    if defined OLD_HEAD if defined NEW_HEAD (
+        if not "!OLD_HEAD!"=="!NEW_HEAD!" (
+            git diff --name-only "!OLD_HEAD!" "!NEW_HEAD!" 2>nul | findstr /e /i /c:"install.bat" >nul
+            if not errorlevel 1 set "SELF_UPDATED=1"
+        )
+    )
 )
 echo.
+
+:: Pokud byl aktualizovan install.bat, spustit novou verzi a ukoncit stary proces
+if defined SELF_UPDATED (
+    echo  Skript install.bat byl aktualizovan. Spoustim novou verzi...
+    echo.
+    start "" "%~f0"
+    goto :end
+)
 
 :: -- Zdrojove slozky (relativni cesta od tohoto skriptu) ---------
 set "SRC_THEME=wp-content\themes\tj-slavoj-myto"
@@ -141,5 +164,6 @@ echo   3. Aktivujte tema:  Vzhled ^> Temata ^> TJ Slavoj Myto
 echo   4. Aktivujte plugin: Pluginy ^> Slavoj Custom Fields
 echo.
 pause
+:end
 popd
 endlocal
