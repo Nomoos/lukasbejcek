@@ -5,7 +5,7 @@
  */
 
 // Výchozí URL embedu mapy (OpenStreetMap – Mýto, okr. Rokycany)
-define( 'TJSM_DEFAULT_MAP_URL', 'https://www.openstreetmap.org/export/embed.html?bbox=13.715%2C49.749%2C13.745%2C49.762&layer=mapnik&marker=49.7541%2C13.7308' );
+define( 'TJSM_DEFAULT_MAP_URL', 'https://www.openstreetmap.org/export/embed.html?bbox=13.710%2C49.748%2C13.750%2C49.760&layer=mapnik&marker=49.7541%2C13.7308' );
 
 // =====================================================================
 // SETUP TÉMATU
