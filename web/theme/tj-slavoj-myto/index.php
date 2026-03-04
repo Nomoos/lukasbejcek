@@ -1,138 +1,47 @@
 <?php
 /**
- * Template Name: Domů
- * Hlavní stránka TJ Slavoj Mýto
- * Obsahuje: úvodní banner, karty nejbližších zápasů, aktuální zprávy
+ * index.php
+ * Záložní šablona – zobrazuje seznam příspěvků (blog).
+ * WordPress ji používá, pokud pro daný typ obsahu neexistuje specifičtější šablona.
  */
 get_header();
 ?>
 
-  <!-- BANNER -->
-  <section class="banner">
+<div class="container py-5">
+  <h1 class="mb-4">
     <?php
-    $banner_url = get_the_post_thumbnail_url(get_queried_object_id(), 'full');
-    if (!$banner_url) {
-        $banner_url = get_template_directory_uri() . '/img/banner.jpg';
+    if ( is_home() && ! is_front_page() ) {
+        single_post_title();
+    } else {
+        esc_html_e( 'Blog', 'tj-slavoj-myto' );
     }
     ?>
-    <img src="<?php echo esc_url($banner_url); ?>" alt="TJ Slavoj Mýto">
-    <div class="banner-text">
-      <h1 class="fs-2 fw-bold"><?php bloginfo('name'); ?></h1>
-      <h2><?php bloginfo('description'); ?></h2>
-    </div>
-  </section>
+  </h1>
 
-  <!-- KARTY NEJBLIŽŠÍCH ZÁPASŮ -->
-  <div class="container zapasy-container">
-    <?php
-    $args = array(
-        'post_type'      => 'zapas',
-        'posts_per_page' => 4,
-        'meta_key'       => 'datum_zapasu',
-        'orderby'        => 'meta_value',
-        'order'          => 'ASC',
-        'meta_query'     => array(
-            array(
-                'key'     => 'datum_zapasu',
-                'value'   => current_time('Y-m-d'),
-                'compare' => '>=',
-                'type'    => 'DATE',
-            ),
-        ),
-    );
-    $zapasy_query = new WP_Query($args);
+  <div class="row g-4">
+    <?php if ( have_posts() ) : ?>
+      <?php while ( have_posts() ) : the_post(); ?>
+        <div class="col-md-6">
+          <div class="aktualita">
+            <h4>
+              <a href="<?php the_permalink(); ?>" class="text-decoration-none">
+                <?php the_title(); ?>
+              </a>
+            </h4>
+            <p class="text-muted small mb-2"><?php echo esc_html( get_the_date( 'j. n. Y' ) ); ?></p>
+            <?php the_excerpt(); ?>
+          </div>
+        </div>
+      <?php endwhile; ?>
 
-    if ($zapasy_query->have_posts()) :
-        while ($zapasy_query->have_posts()) :
-            $zapasy_query->the_post();
-            $tym = esc_html(get_post_meta(get_the_ID(), 'tym', true));
-            $datum = esc_html(get_post_meta(get_the_ID(), 'datum_zapasu', true));
-            $cas = esc_html(get_post_meta(get_the_ID(), 'cas_zapasu', true));
-            $domaci = esc_html(get_post_meta(get_the_ID(), 'domaci', true));
-            $hoste = esc_html(get_post_meta(get_the_ID(), 'hoste', true));
-            ?>
-            <div class="card">
-              <h3 class="h3"><?php echo $tym ? $tym : the_title('', '', false); ?></h3>
-              <p><?php echo $datum; ?> – <?php echo $cas; ?></p>
-              <p><strong><?php echo $domaci; ?></strong><br>vs<br><strong><?php echo $hoste; ?></strong></p>
-            </div>
-            <?php
-        endwhile;
-    else :
-        // Záložní statické karty pokud nejsou k dispozici příspěvky
-        ?>
-        <div class="card">
-          <h3 class="h3">Muži A</h3>
-          <p>Nejsou naplánované zápasy</p>
-        </div>
-        <div class="card">
-          <h3 class="h3">Muži B</h3>
-          <p>Nejsou naplánované zápasy</p>
-        </div>
-        <div class="card">
-          <h3 class="h3">Dorost</h3>
-          <p>Nejsou naplánované zápasy</p>
-        </div>
-        <div class="card">
-          <h3 class="h3">Starší žáci</h3>
-          <p>Nejsou naplánované zápasy</p>
-        </div>
-        <?php
-    endif;
-    wp_reset_postdata();
-    ?>
-  </div>
-
-  <!-- DEKORATIVNÍ PRUHY -->
-  <div class="fluid">
-    <div class="row">
-      <div class="col-9">
-        <div class="blue-bar-p"></div>
+      <div class="col-12 mt-2">
+        <?php the_posts_pagination( array( 'mid_size' => 2 ) ); ?>
       </div>
-    </div>
+    <?php else : ?>
+      <p class="text-muted">Žádné příspěvky nebyly nalezeny.</p>
+    <?php endif; ?>
   </div>
-
-  <br>
-
-  <div class="fluid">
-    <div class="row">
-      <div class="col-3"></div>
-      <div class="col-9">
-        <div class="gray-bar"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- AKTUÁLNÍ ZPRÁVY -->
-  <div class="container">
-    <h2 class="mb-4">Aktuální zprávy</h2>
-
-    <?php
-    $args = array(
-        'category_name'  => 'aktuality',
-        'posts_per_page' => 5,
-    );
-    $aktuality_query = new WP_Query($args);
-
-    if ($aktuality_query->have_posts()) :
-        echo '<div class="row g-4">';
-        while ($aktuality_query->have_posts()) :
-            $aktuality_query->the_post();
-            ?>
-            <div class="col-6">
-              <div class="bg-light border p-3 rounded">
-                <h5 class="text-primary"><?php the_title(); ?></h5>
-                <p><?php the_excerpt(); ?></p>
-              </div>
-            </div>
-            <?php
-        endwhile;
-        echo '</div>';
-    else :
-        echo '<p>Zatím nejsou žádné aktuality.</p>';
-    endif;
-    wp_reset_postdata();
-    ?>
-  </div>
+</div>
 
 <?php get_footer(); ?>
+

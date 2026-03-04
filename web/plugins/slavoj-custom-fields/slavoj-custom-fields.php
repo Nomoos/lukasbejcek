@@ -166,6 +166,23 @@ function slavoj_cf_setup_page() {
       }
       ?>
 
+      <h2>WordPress stránky – vytvoření navigačních stránek</h2>
+      <p>Kliknutím níže automaticky vytvoříte WordPress stránky (<em>Stránky → Všechny stránky</em>) pro každou sekci webu (Domů, Zápasy, Týmy, Galerie, Sponzoři, Kontakty, Historie). Stránkám jsou přiřazeny správné šablony tématu. Duplicity jsou přeskočeny.</p>
+      <form method="post">
+        <?php wp_nonce_field('slavoj_seed_pages', 'slavoj_pages_nonce'); ?>
+        <input type="hidden" name="slavoj_action" value="seed_pages">
+        <?php submit_button('Vytvořit stránky webu', 'primary', 'slavoj_pages_submit'); ?>
+      </form>
+
+      <?php
+      if (isset($_POST['slavoj_action']) && $_POST['slavoj_action'] === 'seed_pages') {
+          if (check_admin_referer('slavoj_seed_pages', 'slavoj_pages_nonce')) {
+              $result = slavoj_cf_seed_pages();
+              echo '<div class="notice notice-success"><p>✅ Stránky webu byly úspěšně vytvořeny! Přidáno: ' . intval($result) . ' nových stránek.</p></div>';
+          }
+      }
+      ?>
+
       <h2>Nápověda</h2>
       <ol>
         <li>Přejděte do menu <strong>Zápasy → Přidat zápas</strong> a vyplňte detaily zápasu.</li>
@@ -579,6 +596,102 @@ function slavoj_cf_seed_demo_data() {
             'post_status'  => 'publish',
         ));
         if ($p_id && !is_wp_error($p_id)) {
+            $created++;
+        }
+    }
+
+    return $created;
+}
+
+// =====================================================================
+// SEED – vytvoření WordPress stránek se šablonami tématu
+// =====================================================================
+
+/**
+ * Vytvoří WordPress stránky (post_type = page) pro každou sekci webu
+ * a přiřadí jim správnou šablonu tématu.
+ *
+ * Volat z administrace přes tlačítko „Vytvořit stránky webu".
+ *
+ * @return int Počet nově vytvořených stránek.
+ */
+function slavoj_cf_seed_pages() {
+    $created = 0;
+
+    /*
+     * Definice stránek: title => template filename
+     * Prázdný řetězec = výchozí šablona WordPress (page.php / front-page.php).
+     */
+    $pages = array(
+        array(
+            'title'    => 'Domů',
+            'template' => '', // front-page.php se načte automaticky pro front page
+            'set_front' => true,
+        ),
+        array(
+            'title'    => 'Zápasy',
+            'template' => 'page-zapasy.php',
+        ),
+        array(
+            'title'    => 'Týmy',
+            'template' => 'page-tymy.php',
+        ),
+        array(
+            'title'    => 'Galerie',
+            'template' => 'page-galerie.php',
+        ),
+        array(
+            'title'    => 'Sponzoři',
+            'template' => 'page-sponzori.php',
+        ),
+        array(
+            'title'    => 'Kontakty',
+            'template' => 'page-kontakty.php',
+        ),
+        array(
+            'title'    => 'Historie',
+            'template' => 'page-historie.php',
+        ),
+    );
+
+    foreach ($pages as $p) {
+        if (slavoj_post_exists($p['title'], 'page')) {
+            // Pokud stránka existuje, ale nastavení static front page chybí, doplníme ho.
+            if (!empty($p['set_front'])) {
+                $existing_pages = get_posts(array(
+                    'post_type'      => 'page',
+                    'post_status'    => 'any',
+                    'title'          => $p['title'],
+                    'posts_per_page' => 1,
+                    'no_found_rows'  => true,
+                ));
+                $existing = !empty($existing_pages) ? $existing_pages[0] : null;
+                if ($existing && (int) get_option('page_on_front') !== $existing->ID) {
+                    update_option('show_on_front', 'page');
+                    update_option('page_on_front', $existing->ID);
+                }
+            }
+            continue;
+        }
+
+        $page_id = wp_insert_post(array(
+            'post_title'  => $p['title'],
+            'post_type'   => 'page',
+            'post_status' => 'publish',
+        ));
+
+        if ($page_id && ! is_wp_error($page_id)) {
+            // Přiřadit šablonu tématu (prázdný řetězec = výchozí / page.php)
+            if (!empty($p['template'])) {
+                update_post_meta($page_id, '_wp_page_template', $p['template']);
+            }
+
+            // Nastavit statickou úvodní stránku (Domů)
+            if (!empty($p['set_front'])) {
+                update_option('show_on_front', 'page');
+                update_option('page_on_front', $page_id);
+            }
+
             $created++;
         }
     }
