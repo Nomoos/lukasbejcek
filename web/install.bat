@@ -26,6 +26,14 @@ echo   Instalator TJ Slavoj Myto – WordPress tema a plugin
 echo  ============================================================
 echo.
 
+:: -- Aktualizace repozitare ------------------------------------
+echo  Stahuji nejnovejsi zmeny z repozitare (git pull)...
+git pull
+if errorlevel 1 (
+    echo  [UPOZORNENI] git pull selhal. Pokracuji s aktualnimi soubory.
+)
+echo.
+
 :: -- Zdrojove slozky (relativni cesta od tohoto skriptu) ---------
 set "SRC_THEME=wp-content\themes\tj-slavoj-myto"
 set "SRC_PLUGIN=wp-content\plugins\slavoj-custom-fields"
