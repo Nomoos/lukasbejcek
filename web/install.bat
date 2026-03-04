@@ -63,6 +63,15 @@ set "DEST_THEME=!WP_DIR!\wp-content\themes\tj-slavoj-myto"
 
 echo  [1/2] Instalace tematu...
 
+if not exist "!SRC_THEME!\" (
+    echo  [CHYBA] Zdrojova slozka tematu nebyla nalezena: !SRC_THEME!
+    echo          Zkontrolujte, ze spoustite skript ze slozky "web" a ze
+    echo          soubory byly stazeny pomoci "git pull".
+    pause
+    popd
+    exit /b 1
+)
+
 if exist "!DEST_THEME!\" (
     echo       Mazani stare verze tematu: !DEST_THEME!
     rd /s /q "!DEST_THEME!"
@@ -88,6 +97,15 @@ echo       Tema uspesne nainstalovano.
 set "DEST_PLUGIN=!WP_DIR!\wp-content\plugins\slavoj-custom-fields"
 
 echo  [2/2] Instalace pluginu...
+
+if not exist "!SRC_PLUGIN!\" (
+    echo  [CHYBA] Zdrojova slozka pluginu nebyla nalezena: !SRC_PLUGIN!
+    echo          Zkontrolujte, ze spoustite skript ze slozky "web" a ze
+    echo          soubory byly stazeny pomoci "git pull".
+    pause
+    popd
+    exit /b 1
+)
 
 if exist "!DEST_PLUGIN!\" (
     echo       Mazani stare verze pluginu: !DEST_PLUGIN!
