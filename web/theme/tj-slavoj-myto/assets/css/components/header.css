@@ -82,6 +82,17 @@
   outline-offset: 2px;
 }
 
+/* ── Desktop (≥ 992px): skrytí hamburgeru ────────────────────────────
+   Bootstrap .navbar-expand-lg .navbar-toggler { display: none } má
+   specificitu 020 a nestačí přebít náš selektor (030). Explicitní
+   pravidlo v médium query to opraví.
+   ─────────────────────────────────────────────────────────────────── */
+@media (min-width: 992px) {
+  .site-header .nav-toggle.navbar-toggler {
+    display: none;
+  }
+}
+
 /* Tři čáry hamburgeru – pure CSS (Bootstrap .navbar-toggler-icon je SVG; nahrazujeme vlastním) */
 .site-header .nav-toggle__icon {
   width: 18px;

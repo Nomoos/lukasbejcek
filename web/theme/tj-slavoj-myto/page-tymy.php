@@ -71,6 +71,10 @@ if ($filtr_sezona && !is_wp_error($dostupne_sezony)) {
       <noscript>
         <button type="submit" class="btn btn-primary">Filtrovat</button>
       </noscript>
+    </form>
+
+    <!-- TÝM INFO + LOGO -->
+    <div class="row mt-2">
       <div class="col-md-8">
         <h4 class="fw-bold"><?php echo esc_html($nazev_tymu); ?></h4>
         <p class="text-muted"><?php echo esc_html($nazev_sezony); ?></p>
