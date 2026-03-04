@@ -8,6 +8,7 @@ get_header();
 $filtr_tym    = isset($_GET['tym']) ? sanitize_text_field(wp_unslash($_GET['tym'])) : '';
 $filtr_sezona = isset($_GET['sezona']) ? sanitize_text_field(wp_unslash($_GET['sezona'])) : '';
 $filtr_stav   = isset($_GET['stav']) ? sanitize_text_field(wp_unslash($_GET['stav'])) : 'vse';
+$paged        = isset($_GET['stranka']) ? max(1, absint($_GET['stranka'])) : 1;
 
 // Načtení dostupných sezón a kategorií z taxonomií
 $sezony      = get_terms(array('taxonomy' => 'sezona', 'hide_empty' => false));
@@ -72,7 +73,8 @@ $kategorie   = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => f
       <?php
       $args = array(
           'post_type'      => 'zapas',
-          'posts_per_page' => 30,
+          'posts_per_page' => 10,
+          'paged'          => $paged,
           'meta_key'       => 'datum_zapasu',
           'orderby'        => 'meta_value',
           'order'          => 'DESC',
@@ -168,6 +170,26 @@ $kategorie   = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => f
       else :
           echo '<p class="text-center text-muted">Žádné zápasy nebyly nalezeny.</p>';
       endif;
+
+      /* ── Stránkování ── */
+      $total_pages = $zapasy_query->max_num_pages;
+      if ($total_pages > 1) {
+          $base_url   = remove_query_arg('stranka');
+          $sep        = strpos($base_url, '?') !== false ? '&' : '?';
+          $pagination = paginate_links(array(
+              'base'      => $base_url . $sep . 'stranka=%#%',
+              'format'    => '',
+              'current'   => $paged,
+              'total'     => $total_pages,
+              'mid_size'  => 2,
+              'prev_text' => '&larr; ' . esc_html__('Předchozí', 'tj-slavoj-myto'),
+              'next_text' => esc_html__('Další', 'tj-slavoj-myto') . ' &rarr;',
+          ));
+          if ($pagination) {
+              echo '<nav class="pagination-nav mt-4" aria-label="' . esc_attr__('Stránkování', 'tj-slavoj-myto') . '">' . wp_kses_post($pagination) . '</nav>';
+          }
+      }
+
       wp_reset_postdata();
       ?>
     </div>

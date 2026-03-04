@@ -12,6 +12,7 @@ get_header();
 $filtr_tym    = isset($_GET['tym'])    ? sanitize_text_field(wp_unslash($_GET['tym']))    : '';
 $filtr_sezona = isset($_GET['sezona']) ? sanitize_text_field(wp_unslash($_GET['sezona'])) : '';
 $filtr_stav   = isset($_GET['stav'])   ? sanitize_text_field(wp_unslash($_GET['stav']))   : 'vse';
+$paged        = isset($_GET['stranka']) ? max(1, absint($_GET['stranka'])) : 1;
 
 /* ── Taxonomie pro filtry ── */
 $dostupne_tymy   = get_terms(array(
@@ -77,7 +78,8 @@ get_template_part('template-parts/hero', 'team', array(
       /* ── WP_Query ── */
       $query_args = array(
           'post_type'      => 'zapas',
-          'posts_per_page' => 40,
+          'posts_per_page' => 10,
+          'paged'          => $paged,
           'meta_key'       => 'datum_zapasu',
           'orderby'        => 'meta_value',
           'order'          => 'DESC',
@@ -197,6 +199,25 @@ get_template_part('template-parts/hero', 'team', array(
 
           endwhile;
           wp_reset_postdata();
+
+          /* ── Stránkování ── */
+          $total_pages = $q->max_num_pages;
+          if ($total_pages > 1) {
+              $base_url   = remove_query_arg('stranka');
+              $sep        = strpos($base_url, '?') !== false ? '&' : '?';
+              $pagination = paginate_links(array(
+                  'base'      => $base_url . $sep . 'stranka=%#%',
+                  'format'    => '',
+                  'current'   => $paged,
+                  'total'     => $total_pages,
+                  'mid_size'  => 2,
+                  'prev_text' => '&larr; ' . esc_html__('Předchozí', 'tj-slavoj-myto'),
+                  'next_text' => esc_html__('Další', 'tj-slavoj-myto') . ' &rarr;',
+              ));
+              if ($pagination) {
+                  echo '<nav class="pagination-nav" aria-label="' . esc_attr__('Stránkování', 'tj-slavoj-myto') . '">' . wp_kses_post($pagination) . '</nav>';
+              }
+          }
 
       else :
           ?>

@@ -103,3 +103,58 @@
     max-width: 240px;
   }
 }
+
+/* ──────────────────────────────────────
+   STRÁNKOVÁNÍ (paginate_links output)
+   ────────────────────────────────────── */
+.pagination-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 32px;
+}
+
+.pagination-nav .page-numbers {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius-pill, 999px);
+  border: 1.5px solid var(--border, #cccccc);
+  background: var(--bg, #ffffff);
+  color: var(--text, #111827);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s, border-color .15s, color .15s;
+  line-height: 1;
+}
+
+.pagination-nav .page-numbers:hover {
+  background: var(--primary-light, #dce5f7);
+  border-color: var(--primary, #233D97);
+  color: var(--primary, #233D97);
+}
+
+.pagination-nav .page-numbers.current {
+  background: var(--primary, #233D97);
+  border-color: var(--primary, #233D97);
+  color: #ffffff;
+  cursor: default;
+}
+
+.pagination-nav .page-numbers.dots {
+  border-color: transparent;
+  background: transparent;
+  cursor: default;
+  color: var(--muted, #6b7280);
+}
+
+.pagination-nav .prev.page-numbers,
+.pagination-nav .next.page-numbers {
+  padding: 0 16px;
+  font-size: 13px;
+}
