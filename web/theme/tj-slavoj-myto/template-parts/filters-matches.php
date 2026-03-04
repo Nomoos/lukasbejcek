@@ -18,11 +18,11 @@ $filtr_tym       = isset($args['filtr_tym'])       ? $args['filtr_tym']       : 
 $filtr_sezona    = isset($args['filtr_sezona'])     ? $args['filtr_sezona']    : '';
 $filtr_stav      = isset($args['filtr_stav'])       ? $args['filtr_stav']      : 'vse';
 ?>
-<!-- Žádný JavaScript – standardní HTML <form method="get"> s tlačítkem Filtrovat -->
+<!-- Selecty odešlou formulář ihned po změně; tlačítko jako záloha bez JS -->
 <form method="get" class="filters" role="search" aria-label="Filtrování zápasů">
 
   <label class="sr-only" for="f-tym">Tým</label>
-  <select id="f-tym" name="tym" class="filter filter--primary">
+  <select id="f-tym" name="tym" class="filter filter--primary" onchange="this.form.submit()">
     <option value="">Všechny týmy</option>
     <?php if (!is_wp_error($dostupne_tymy) && !empty($dostupne_tymy)) : foreach ($dostupne_tymy as $t) : ?>
       <option value="<?php echo esc_attr($t->slug); ?>" <?php selected($filtr_tym, $t->slug); ?>>
@@ -32,7 +32,7 @@ $filtr_stav      = isset($args['filtr_stav'])       ? $args['filtr_stav']      :
   </select>
 
   <label class="sr-only" for="f-sezona">Sezóna</label>
-  <select id="f-sezona" name="sezona" class="filter filter--muted">
+  <select id="f-sezona" name="sezona" class="filter filter--muted" onchange="this.form.submit()">
     <option value="">Všechny sezóny</option>
     <?php if (!is_wp_error($dostupne_sezony) && !empty($dostupne_sezony)) : foreach ($dostupne_sezony as $s) : ?>
       <option value="<?php echo esc_attr($s->slug); ?>" <?php selected($filtr_sezona, $s->slug); ?>>
@@ -42,7 +42,7 @@ $filtr_stav      = isset($args['filtr_stav'])       ? $args['filtr_stav']      :
   </select>
 
   <label class="sr-only" for="f-stav">Stav zápasů</label>
-  <select id="f-stav" name="stav" class="filter filter--primary">
+  <select id="f-stav" name="stav" class="filter filter--primary" onchange="this.form.submit()">
     <option value="vse"        <?php selected($filtr_stav, 'vse'); ?>>Všechny zápasy</option>
     <option value="odehrane"   <?php selected($filtr_stav, 'odehrane'); ?>>Odehrané</option>
     <option value="neodehrane" <?php selected($filtr_stav, 'neodehrane'); ?>>Nadcházející</option>

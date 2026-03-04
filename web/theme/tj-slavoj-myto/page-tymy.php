@@ -43,10 +43,10 @@ if ($filtr_sezona && !is_wp_error($dostupne_sezony)) {
     <h2 class="mb-0">Týmy</h2>
     <p class="text-muted mb-4">Přehled všech týmů TJ Slavoj Mýto</p>
 
-    <!-- FILTRY – žádný JavaScript, standardní submit tlačítko -->
+    <!-- FILTRY – selecty odešlou formulář ihned po změně; tlačítko jako záloha bez JS -->
     <form method="get" class="d-flex gap-3 mb-4 flex-wrap">
       <label class="sr-only" for="f-tym">Tým</label>
-      <select id="f-tym" name="tym" class="form-select bg-light filter-select-team-sm">
+      <select id="f-tym" name="tym" class="form-select bg-light filter-select-team-sm" onchange="this.form.submit()">
         <option value="">Všechny týmy</option>
         <?php if (!is_wp_error($dostupne_tymy) && !empty($dostupne_tymy)) : foreach ($dostupne_tymy as $t) : ?>
           <option value="<?php echo esc_attr($t->slug); ?>" <?php selected($filtr_tym, $t->slug); ?>>
@@ -56,7 +56,7 @@ if ($filtr_sezona && !is_wp_error($dostupne_sezony)) {
       </select>
 
       <label class="sr-only" for="f-sezona">Sezóna</label>
-      <select id="f-sezona" name="sezona" class="form-select bg-light filter-select-season-sm">
+      <select id="f-sezona" name="sezona" class="form-select bg-light filter-select-season-sm" onchange="this.form.submit()">
         <option value="">Všechny sezóny</option>
         <?php if (!is_wp_error($dostupne_sezony) && !empty($dostupne_sezony)) : foreach ($dostupne_sezony as $s) : ?>
           <option value="<?php echo esc_attr($s->slug); ?>" <?php selected($filtr_sezona, $s->slug); ?>>

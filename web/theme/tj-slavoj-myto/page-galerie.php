@@ -27,10 +27,10 @@ $dostupne_sezony = get_terms(array(
     <h2 class="mb-0">Galerie</h2>
     <p class="text-muted mb-4">Fotografie z klubového života TJ Slavoj Mýto</p>
 
-    <!-- FILTRY – žádný JavaScript, standardní submit tlačítko -->
+    <!-- FILTRY – selecty odešlou formulář ihned po změně; tlačítko jako záloha bez JS -->
     <form method="get" class="d-flex gap-3 mb-4 flex-wrap">
       <label class="sr-only" for="f-kategorie">Kategorie</label>
-      <select id="f-kategorie" name="kategorie" class="form-select bg-light filter-select-team-sm">
+      <select id="f-kategorie" name="kategorie" class="form-select bg-light filter-select-team-sm" onchange="this.form.submit()">
         <option value="">Všechny kategorie</option>
         <?php if (!empty($kategorie_tymu_terms) && !is_wp_error($kategorie_tymu_terms)) : ?>
           <?php foreach ($kategorie_tymu_terms as $term) : ?>
@@ -42,7 +42,7 @@ $dostupne_sezony = get_terms(array(
       </select>
 
       <label class="sr-only" for="f-sezona">Sezóna</label>
-      <select id="f-sezona" name="sezona" class="form-select bg-light filter-select-season-sm">
+      <select id="f-sezona" name="sezona" class="form-select bg-light filter-select-season-sm" onchange="this.form.submit()">
         <option value="">Všechny sezóny</option>
         <?php if (!is_wp_error($dostupne_sezony) && !empty($dostupne_sezony)) : foreach ($dostupne_sezony as $s) : ?>
           <option value="<?php echo esc_attr($s->slug); ?>" <?php selected($filtr_sezona, $s->slug); ?>>
