@@ -117,7 +117,7 @@ if ($filtr_sezona && !is_wp_error($dostupne_sezony)) {
       </div>
 
       <div class="col-md-4 text-center">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" alt="TJ Slavoj Mýto" class="img-fluid club-logo mt-4">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png" alt="TJ Slavoj Mýto" class="img-fluid club-logo mt-4">
       </div>
     </div>
 

@@ -11,7 +11,7 @@
     <!-- Brand -->
     <div class="site-footer__brand">
       <img class="site-footer__logo"
-           src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png"
+           src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png"
            alt="TJ Slavoj Mýto – logo">
       <span class="site-footer__name"><?php bloginfo('name'); ?></span>
     </div>

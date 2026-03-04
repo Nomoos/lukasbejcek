@@ -16,7 +16,7 @@
       <!-- Brand / Logo -->
       <a class="navbar-brand brand" href="<?php echo esc_url(home_url('/')); ?>">
         <img class="brand__logo"
-             src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png"
+             src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png"
              alt="">
         <span class="brand__name"><?php bloginfo('name'); ?></span>
       </a>

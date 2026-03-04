@@ -67,7 +67,7 @@ $dostupne_sezony = get_terms(array(
       <div class="blue-bar-p"></div>
     </div>
     <div class="col-1 text-center">
-      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" alt="TJ Slavoj Mýto" class="gallery-logo">
+      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png" alt="TJ Slavoj Mýto" class="gallery-logo">
     </div>
     <div class="col-6">
       <div class="blue-bar-l"></div>

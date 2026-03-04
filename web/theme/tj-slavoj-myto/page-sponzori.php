@@ -38,7 +38,7 @@ get_header();
                         'alt'   => get_the_title(),
                     )); ?>
                   <?php else : ?>
-                    <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png" class="committee-img" alt="<?php the_title(); ?>">
+                    <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png" class="committee-img" alt="<?php the_title(); ?>">
                   <?php endif; ?>
                 </div>
                 <h5 class="mb-1"><?php the_title(); ?></h5>
