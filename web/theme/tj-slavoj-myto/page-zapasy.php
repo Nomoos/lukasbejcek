@@ -202,7 +202,7 @@ get_template_part('template-parts/hero', 'team', array(
 
           /* ── Stránkování ── */
           $total_pages = $q->max_num_pages;
-          if ($total_pages > 1) {
+          if ($total_pages > 1) :
               $base_url   = remove_query_arg('stranka');
               $sep        = strpos($base_url, '?') !== false ? '&' : '?';
               $pagination = paginate_links(array(
@@ -214,10 +214,10 @@ get_template_part('template-parts/hero', 'team', array(
                   'prev_text' => '&larr; ' . esc_html__('Předchozí', 'tj-slavoj-myto'),
                   'next_text' => esc_html__('Další', 'tj-slavoj-myto') . ' &rarr;',
               ));
-              if ($pagination) {
+              if ($pagination) :
                   echo '<nav class="pagination-nav" aria-label="' . esc_attr__('Stránkování', 'tj-slavoj-myto') . '">' . wp_kses_post($pagination) . '</nav>';
-              }
-          }
+              endif;
+          endif;
 
       else :
           ?>
