@@ -35,12 +35,11 @@ get_header();
             'meta_key'       => 'datum_zapasu',
             'orderby'        => 'meta_value',
             'order'          => 'ASC',
-            'meta_query'     => array(
+            'tax_query'      => array(
                 array(
-                    'key'     => 'datum_zapasu',
-                    'value'   => current_time( 'Y-m-d' ),
-                    'compare' => '>=',
-                    'type'    => 'DATE',
+                    'taxonomy' => 'stav-zapasu',
+                    'field'    => 'slug',
+                    'terms'    => 'nadchazejici',
                 ),
             ),
         );
@@ -49,7 +48,6 @@ get_header();
         if ( $zapasy_query->have_posts() ) :
             while ( $zapasy_query->have_posts() ) :
                 $zapasy_query->the_post();
-                $tym    = get_post_meta( get_the_ID(), 'tym', true );
                 $datum  = get_post_meta( get_the_ID(), 'datum_zapasu', true );
                 $cas    = get_post_meta( get_the_ID(), 'cas_zapasu', true );
                 $domaci = get_post_meta( get_the_ID(), 'domaci', true );
@@ -62,10 +60,15 @@ get_header();
                         $datum_fmt = date_i18n( 'j. n. Y', $ts );
                     }
                 }
+                // Kategorie týmu jako nadpis karty
+                $kategorie = get_the_terms( get_the_ID(), 'kategorie-tymu' );
+                $tym_nazev = ( $kategorie && ! is_wp_error( $kategorie ) )
+                    ? $kategorie[0]->name
+                    : get_the_title();
                 ?>
                 <div class="card">
-                  <h3 class="h3"><?php echo $tym ? esc_html( $tym ) : esc_html( get_the_title() ); ?></h3>
-                  <p><?php echo $datum_fmt ? esc_html( $datum_fmt ) : esc_html( $datum ); ?> <?php echo $cas ? '– ' . esc_html( $cas ) : ''; ?></p>
+                  <h3 class="h3"><?php echo esc_html( $tym_nazev ); ?></h3>
+                  <p><?php echo $datum_fmt ? esc_html( $datum_fmt ) : esc_html( $datum ); ?><?php echo $cas ? ' – ' . esc_html( $cas ) : ''; ?></p>
                   <p><strong><?php echo esc_html( $domaci ); ?></strong><br>vs<br><strong><?php echo esc_html( $hoste ); ?></strong></p>
                 </div>
                 <?php
