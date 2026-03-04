@@ -35,10 +35,10 @@ $aktuality_query = new WP_Query( array(
        alt="<?php echo esc_attr( get_the_title( $page_id ) ); ?>">
   <div class="banner-text">
     <h1 class="fs-2 fw-bold"><?php echo esc_html( get_the_title( $page_id ) ); ?></h1>
-    <p><?php
+    <h5><?php
         $sub = get_the_excerpt( $page_id );
         echo $sub ? esc_html( wp_strip_all_tags( $sub ) ) : esc_html( sprintf( 'Nejnovější zprávy %s', get_bloginfo( 'name' ) ) );
-    ?></p>
+    ?></h5>
   </div>
 </section>
 
