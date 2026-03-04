@@ -1,0 +1,160 @@
+/*
+ * assets/css/components/buttons.css
+ * Filtry a tlačítka: .filters, .filter, .filter--primary, .filter--muted
+ * Mobile‑first: stack na mobilu, řádek na desktopu.
+ */
+
+/* ── Kontejner filtrů ── */
+.filters {
+  display: flex;
+  flex-direction: column;   /* mobile: stack */
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* ── Základní filtr (select/button) ── */
+.filter {
+  width: 100%;                /* mobile: full-width */
+  min-height: 44px;           /* touch target */
+  padding: 10px 2.5rem 10px 16px;
+  border-radius: 14px;
+  border: 1.5px solid #cccccc;
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.filter:focus-visible {
+  outline: none;
+  border-color: #233D97;
+  box-shadow: 0 0 0 3px rgba(35, 61, 151, .2);
+}
+
+/* ── Modrá varianta (tým, stav) ── */
+.filter--primary {
+  background-color: #233D97;
+  color: #ffffff;
+  border-color: #233D97;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23ffffff' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+}
+
+.filter--primary:hover {
+  background-color: #1a2e73;
+  border-color: #1a2e73;
+}
+
+.filter--primary option {
+  background: #ffffff;
+  color: #111827;
+}
+
+/* ── Šedá varianta (sezóna) ── */
+.filter--muted {
+  background-color: #E6E6E6;
+  color: #111827;
+  border-color: #cccccc;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23111827' d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+}
+
+.filter--muted:hover {
+  background-color: #d4d4d4;
+}
+
+/* ── Tlačítko Filtrovat ── */
+.filter--submit {
+  background-color: #111827;
+  color: #ffffff;
+  border-color: #111827;
+  background-image: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding-inline: 20px;
+}
+
+.filter--submit:hover {
+  background-color: #233D97;
+  border-color: #233D97;
+}
+
+.filter--submit:focus-visible {
+  outline: 2px solid #233D97;
+  outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .filter {
+    width: auto;
+    min-width: 160px;
+    flex: 1 1 160px;
+    max-width: 240px;
+  }
+}
+
+/* ──────────────────────────────────────
+   STRÁNKOVÁNÍ (paginate_links output)
+   ────────────────────────────────────── */
+.pagination-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 32px;
+}
+
+.pagination-nav .page-numbers {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius-pill, 999px);
+  border: 1.5px solid var(--border, #cccccc);
+  background: var(--bg, #ffffff);
+  color: var(--text, #111827);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s, border-color .15s, color .15s;
+  line-height: 1;
+}
+
+.pagination-nav .page-numbers:hover {
+  background: var(--primary-light, #dce5f7);
+  border-color: var(--primary, #233D97);
+  color: var(--primary, #233D97);
+}
+
+.pagination-nav .page-numbers.current {
+  background: var(--primary, #233D97);
+  border-color: var(--primary, #233D97);
+  color: #ffffff;
+  cursor: default;
+}
+
+.pagination-nav .page-numbers.dots {
+  border-color: transparent;
+  background: transparent;
+  cursor: default;
+  color: var(--muted, #6b7280);
+}
+
+.pagination-nav .prev.page-numbers,
+.pagination-nav .next.page-numbers {
+  padding: 0 16px;
+  font-size: 13px;
+}

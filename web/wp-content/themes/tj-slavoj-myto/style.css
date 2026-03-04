@@ -1,0 +1,14 @@
+/*
+Theme Name: TJ Slavoj Mýto
+Theme URI: https://github.com/Nomoos/lukasbejcek
+Author: Lukáš Bejček
+Description: Vlastní WordPress šablona pro fotbalový klub TJ Slavoj Mýto – mobile-first
+Version: 3.0
+License: GNU General Public License v2 or later
+Text Domain: tj-slavoj-myto
+*/
+
+/*
+ * Všechny styly jsou v assets/css/main.css (enqueued via functions.php).
+ * Tento soubor slouží pouze jako WordPress theme stylesheet identifier.
+ */
