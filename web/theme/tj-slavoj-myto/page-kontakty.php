@@ -76,7 +76,7 @@ get_header();
   <!-- MAPA -->
   <div class="map-container">
     <iframe
-      src="<?php echo esc_url(get_theme_mod('tjsm_mapa_url', 'https://frame.mapy.cz/s/gusoheruvo')); ?>"
+      src="<?php echo esc_url(get_theme_mod('tjsm_mapa_url', TJSM_DEFAULT_MAP_URL)); ?>"
       allowfullscreen
       loading="lazy"
       title="Mapa – TJ Slavoj Mýto"

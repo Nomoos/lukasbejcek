@@ -4,6 +4,9 @@
  * Registrace menu, CPT, taxonomií, meta boxů a pomocných funkcí
  */
 
+// Výchozí URL embedu mapy (OpenStreetMap – Mýto, okr. Rokycany)
+define( 'TJSM_DEFAULT_MAP_URL', 'https://www.openstreetmap.org/export/embed.html?bbox=13.715%2C49.749%2C13.745%2C49.762&layer=mapnik&marker=49.7541%2C13.7308' );
+
 // =====================================================================
 // SETUP TÉMATU
 // =====================================================================
@@ -1102,11 +1105,11 @@ function tjsm_customize_register( $wp_customize ) {
     ) );
 
     $wp_customize->add_setting( 'tjsm_mapa_url', array(
-        'default'           => 'https://frame.mapy.cz/s/gusoheruvo',
+        'default'           => TJSM_DEFAULT_MAP_URL,
         'sanitize_callback' => 'esc_url_raw',
     ) );
     $wp_customize->add_control( 'tjsm_mapa_url', array(
-        'label'   => 'URL embedu mapy (Mapy.cz nebo Google Maps)',
+        'label'   => 'URL embedu mapy (OpenStreetMap, Google Maps apod.)',
         'section' => 'tjsm_kontakt',
         'type'    => 'url',
     ) );
