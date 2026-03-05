@@ -21,24 +21,17 @@ $aktuality_query = new WP_Query( array(
 ?>
 
 <!-- ═════════════════════════════════
-     BANNER
+     ZÁHLAVÍ STRÁNKY
      ═════════════════════════════════ -->
-<section class="banner">
-  <?php
-  $page_id    = get_queried_object_id();
-  $banner_url = get_the_post_thumbnail_url( $page_id, 'full' );
-  if ( ! $banner_url ) {
-      $banner_url = get_template_directory_uri() . '/img/banner.jpg';
-  }
-  ?>
-  <img src="<?php echo esc_url( $banner_url ); ?>"
-       alt="<?php echo esc_attr( get_the_title( $page_id ) ); ?>">
-  <div class="banner-text">
-    <h1 class="fs-2 fw-bold"><?php echo esc_html( get_the_title( $page_id ) ); ?></h1>
-    <h5><?php
-        $sub = get_the_excerpt( $page_id );
-        echo $sub ? esc_html( wp_strip_all_tags( $sub ) ) : esc_html( sprintf( 'Nejnovější zprávy %s', get_bloginfo( 'name' ) ) );
-    ?></h5>
+<section class="section">
+  <div class="container">
+    <header class="page-title">
+      <h1 class="page-title__h1"><?php echo esc_html( get_the_title( get_queried_object_id() ) ); ?></h1>
+      <p class="page-title__subtitle"><?php
+          $sub = get_the_excerpt( get_queried_object_id() );
+          echo $sub ? esc_html( wp_strip_all_tags( $sub ) ) : esc_html( sprintf( 'Nejnovější zprávy %s', get_bloginfo( 'name' ) ) );
+      ?></p>
+    </header>
   </div>
 </section>
 

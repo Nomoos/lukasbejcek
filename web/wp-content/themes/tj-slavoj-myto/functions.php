@@ -38,8 +38,16 @@ function slavoj_enqueue_scripts() {
     wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array(), '5.3.3', true);
 
-    // Hlavní šablona CSS (assets/css/main.css importuje všechny komponenty)
-    wp_enqueue_style('slavoj-main', get_template_directory_uri() . '/assets/css/main.css', array('bootstrap'), $ver);
+    // Komponenty CSS – načítány zvlášť (spolehlivější než @import uvnitř main.css)
+    $css = get_template_directory_uri() . '/assets/css/';
+    wp_enqueue_style('slavoj-utilities',  $css . 'utilities.css',            array('bootstrap'), $ver);
+    wp_enqueue_style('slavoj-header',     $css . 'components/header.css',    array('slavoj-utilities'), $ver);
+    wp_enqueue_style('slavoj-nav-mobile', $css . 'components/nav-mobile.css', array('slavoj-header'), $ver);
+    wp_enqueue_style('slavoj-buttons',    $css . 'components/buttons.css',   array('slavoj-utilities'), $ver);
+    wp_enqueue_style('slavoj-hero',       $css . 'components/hero.css',      array('slavoj-utilities'), $ver);
+    wp_enqueue_style('slavoj-cards',      $css . 'components/cards.css',     array('slavoj-utilities'), $ver);
+    // Hlavní šablona CSS
+    wp_enqueue_style('slavoj-main', $css . 'main.css', array('slavoj-utilities', 'slavoj-buttons', 'slavoj-cards', 'slavoj-header', 'slavoj-hero', 'slavoj-nav-mobile'), $ver);
 }
 add_action('wp_enqueue_scripts', 'slavoj_enqueue_scripts');
 
@@ -1115,3 +1123,207 @@ function tjsm_customize_register( $wp_customize ) {
     ) );
 }
 add_action( 'customize_register', 'tjsm_customize_register' );
+
+// =====================================================================
+// INICIALIZACE STRÁNKY – ADMIN NÁSTROJ
+// =====================================================================
+
+/**
+ * Registrace admin stránky pro inicializaci webu TJ Slavoj Mýto.
+ * Dostupná pod Nástroje → Inicializace webu.
+ */
+function tjsm_init_admin_menu() {
+    add_management_page(
+        'Inicializace webu TJ Slavoj Mýto',
+        'Inicializace webu',
+        'manage_options',
+        'tjsm-inicializace',
+        'tjsm_init_admin_page'
+    );
+}
+add_action( 'admin_menu', 'tjsm_init_admin_menu' );
+
+/**
+ * Zpracuje formulář inicializace a vrátí pole zpráv o výsledcích.
+ *
+ * @return string[]
+ */
+function tjsm_init_handle_form() {
+    if (
+        ! isset( $_POST['tjsm_init_nonce'] ) ||
+        ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['tjsm_init_nonce'] ) ), 'tjsm_init_action' ) ||
+        ! current_user_can( 'manage_options' )
+    ) {
+        return array();
+    }
+
+    $log = array();
+
+    // 1. Stránky (Pages) s přiřazením šablony
+    $pages = array(
+        array( 'title' => 'Úvod',     'slug' => 'uvod',      'template' => '' ),
+        array( 'title' => 'Aktuality','slug' => 'aktuality', 'template' => 'page-aktuality.php' ),
+        array( 'title' => 'Zápasy',   'slug' => 'zapasy',    'template' => 'page-zapasy.php' ),
+        array( 'title' => 'Týmy',     'slug' => 'tymy',      'template' => 'page-tymy.php' ),
+        array( 'title' => 'Galerie',  'slug' => 'galerie',   'template' => 'page-galerie.php' ),
+        array( 'title' => 'Historie', 'slug' => 'historie',  'template' => 'page-historie.php' ),
+        array( 'title' => 'Sponzoři', 'slug' => 'sponzori',  'template' => 'page-sponzori.php' ),
+        array( 'title' => 'Kontakty', 'slug' => 'kontakty',  'template' => 'page-kontakty.php' ),
+    );
+
+    foreach ( $pages as $page_data ) {
+        $exists = get_page_by_path( $page_data['slug'] );
+        if ( $exists ) {
+            $log[] = '✓ Stránka „' . $page_data['title'] . '" již existuje (přeskočena).';
+            continue;
+        }
+        $page_id = wp_insert_post( array(
+            'post_title'   => $page_data['title'],
+            'post_name'    => $page_data['slug'],
+            'post_status'  => 'publish',
+            'post_type'    => 'page',
+            'post_content' => '',
+        ) );
+        if ( is_wp_error( $page_id ) ) {
+            $log[] = '✗ Chyba při vytváření stránky „' . $page_data['title'] . '": ' . $page_id->get_error_message();
+        } else {
+            if ( $page_data['template'] ) {
+                update_post_meta( $page_id, '_wp_page_template', $page_data['template'] );
+            }
+            $log[] = '+ Stránka „' . $page_data['title'] . '" vytvořena (ID: ' . $page_id . ').';
+        }
+    }
+
+    // 2. Nastavení úvodní stránky
+    $front_page = get_page_by_path( 'uvod' );
+    if ( $front_page && (int) get_option( 'page_on_front' ) !== $front_page->ID ) {
+        update_option( 'show_on_front', 'page' );
+        update_option( 'page_on_front', $front_page->ID );
+        $log[] = '+ Úvodní stránka webu nastavena na „Úvod".';
+    }
+
+    // 3. Kategorie příspěvků
+    $categories = array(
+        array( 'name' => 'Aktuality', 'slug' => 'aktuality', 'desc' => 'Aktuality a novinky klubu' ),
+    );
+    foreach ( $categories as $cat ) {
+        if ( term_exists( $cat['slug'], 'category' ) ) {
+            $log[] = '✓ Kategorie „' . $cat['name'] . '" již existuje (přeskočena).';
+        } else {
+            $result = wp_insert_term( $cat['name'], 'category', array(
+                'slug'        => $cat['slug'],
+                'description' => $cat['desc'],
+            ) );
+            if ( is_wp_error( $result ) ) {
+                $log[] = '✗ Chyba při vytváření kategorie „' . $cat['name'] . '": ' . $result->get_error_message();
+            } else {
+                $log[] = '+ Kategorie „' . $cat['name'] . '" vytvořena.';
+            }
+        }
+    }
+
+    // 4. Termíny taxonomií (kategorie-tymu, stav-zapasu, sezona, pozice-hrace)
+    $taxonomy_terms = array(
+        'kategorie-tymu' => array(
+            array( 'name' => 'Muži A',       'slug' => 'muzi-a' ),
+            array( 'name' => 'Muži B',       'slug' => 'muzi-b' ),
+            array( 'name' => 'Dorost',       'slug' => 'dorost' ),
+            array( 'name' => 'Starší žáci',  'slug' => 'starsi-zaci' ),
+            array( 'name' => 'Mladší žáci',  'slug' => 'mladsi-zaci' ),
+            array( 'name' => 'Přípravka',    'slug' => 'pripravka' ),
+        ),
+        'stav-zapasu' => array(
+            array( 'name' => 'Nadcházející', 'slug' => 'nadchazejici' ),
+            array( 'name' => 'Odehraný',     'slug' => 'odehrany' ),
+            array( 'name' => 'Zrušený',      'slug' => 'zruseny' ),
+        ),
+        'sezona' => array(
+            array( 'name' => '2024/2025', 'slug' => '2024-2025' ),
+            array( 'name' => '2025/2026', 'slug' => '2025-2026' ),
+        ),
+        'pozice-hrace' => array(
+            array( 'name' => 'Brankáři',     'slug' => 'brankari' ),
+            array( 'name' => 'Hráči v poli', 'slug' => 'hraci-v-poli' ),
+        ),
+    );
+
+    foreach ( $taxonomy_terms as $taxonomy => $terms ) {
+        foreach ( $terms as $term ) {
+            if ( term_exists( $term['slug'], $taxonomy ) ) {
+                $log[] = '✓ Termín „' . $term['name'] . '" (' . $taxonomy . ') již existuje (přeskočen).';
+            } else {
+                $result = wp_insert_term( $term['name'], $taxonomy, array( 'slug' => $term['slug'] ) );
+                if ( is_wp_error( $result ) ) {
+                    $log[] = '✗ Chyba při vytváření termínu „' . $term['name'] . '" (' . $taxonomy . '): ' . $result->get_error_message();
+                } else {
+                    $log[] = '+ Termín „' . $term['name'] . '" (' . $taxonomy . ') vytvořen.';
+                }
+            }
+        }
+    }
+
+    return $log;
+}
+
+/**
+ * HTML výstup admin stránky inicializace.
+ */
+function tjsm_init_admin_page() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_die( 'Nemáte potřebná oprávnění.', '', array( 'response' => 403 ) );
+    }
+
+    $log = array();
+    if ( isset( $_POST['tjsm_init_nonce'] ) ) {
+        $log = tjsm_init_handle_form();
+    }
+    ?>
+    <div class="wrap">
+      <h1>🚀 Inicializace webu TJ Slavoj Mýto</h1>
+      <p>
+        Toto tlačítko vytvoří všechny potřebné stránky, kategorie a termíny taxonomií
+        pro správný chod webu.<br>
+        Již existující záznamy budou přeskočeny – akci lze bezpečně spustit opakovaně.
+      </p>
+
+      <?php if ( ! empty( $log ) ) : ?>
+        <div class="notice notice-success is-dismissible">
+          <p><strong>Výsledky inicializace:</strong></p>
+          <ul style="margin-left:1.5em;list-style:disc">
+            <?php foreach ( $log as $row ) : ?>
+              <li><?php echo esc_html( $row ); ?></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endif; ?>
+
+      <form method="post">
+        <?php wp_nonce_field( 'tjsm_init_action', 'tjsm_init_nonce' ); ?>
+        <?php submit_button( 'Spustit inicializaci webu', 'primary large' ); ?>
+      </form>
+
+      <hr>
+      <h2>Co bude vytvořeno</h2>
+      <table class="widefat striped">
+        <thead>
+          <tr><th>Typ</th><th>Název / Slug</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Stránka</td><td>Úvod (<code>uvod</code>) – nastavena jako úvodní stránka webu</td></tr>
+          <tr><td>Stránka</td><td>Aktuality (<code>aktuality</code>)</td></tr>
+          <tr><td>Stránka</td><td>Zápasy (<code>zapasy</code>)</td></tr>
+          <tr><td>Stránka</td><td>Týmy (<code>tymy</code>)</td></tr>
+          <tr><td>Stránka</td><td>Galerie (<code>galerie</code>)</td></tr>
+          <tr><td>Stránka</td><td>Historie (<code>historie</code>)</td></tr>
+          <tr><td>Stránka</td><td>Sponzoři (<code>sponzori</code>)</td></tr>
+          <tr><td>Stránka</td><td>Kontakty (<code>kontakty</code>)</td></tr>
+          <tr><td>Kategorie příspěvků</td><td>Aktuality (<code>aktuality</code>)</td></tr>
+          <tr><td>Kategorie týmu</td><td>Muži A, Muži B, Dorost, Starší žáci, Mladší žáci, Přípravka</td></tr>
+          <tr><td>Stav zápasu</td><td>Nadcházející, Odehraný, Zrušený</td></tr>
+          <tr><td>Sezóna</td><td>2024/2025, 2025/2026</td></tr>
+          <tr><td>Pozice hráče</td><td>Brankáři, Hráči v poli</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <?php
+}

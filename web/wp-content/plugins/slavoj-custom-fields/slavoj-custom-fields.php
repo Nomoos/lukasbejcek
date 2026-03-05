@@ -621,12 +621,14 @@ function slavoj_cf_seed_pages() {
     /*
      * Definice stránek: title => template filename
      * Prázdný řetězec = výchozí šablona WordPress (page.php / front-page.php).
+     * Poznámka: nastavení úvodní stránky (show_on_front) je záměrně vynecháno –
+     * toto tlačítko pouze vytváří stránky a nepřepisuje vizuální nastavení webu.
+     * Úvodní stránku nastavte ručně v Nastavení → Čtení.
      */
     $pages = array(
         array(
             'title'    => 'Domů',
             'template' => '', // front-page.php se načte automaticky pro front page
-            'set_front' => true,
         ),
         array(
             'title'    => 'Zápasy',
@@ -656,21 +658,6 @@ function slavoj_cf_seed_pages() {
 
     foreach ($pages as $p) {
         if (slavoj_post_exists($p['title'], 'page')) {
-            // Pokud stránka existuje, ale nastavení static front page chybí, doplníme ho.
-            if (!empty($p['set_front'])) {
-                $existing_pages = get_posts(array(
-                    'post_type'      => 'page',
-                    'post_status'    => 'any',
-                    'title'          => $p['title'],
-                    'posts_per_page' => 1,
-                    'no_found_rows'  => true,
-                ));
-                $existing = !empty($existing_pages) ? $existing_pages[0] : null;
-                if ($existing && (int) get_option('page_on_front') !== $existing->ID) {
-                    update_option('show_on_front', 'page');
-                    update_option('page_on_front', $existing->ID);
-                }
-            }
             continue;
         }
 
@@ -684,12 +671,6 @@ function slavoj_cf_seed_pages() {
             // Přiřadit šablonu tématu (prázdný řetězec = výchozí / page.php)
             if (!empty($p['template'])) {
                 update_post_meta($page_id, '_wp_page_template', $p['template']);
-            }
-
-            // Nastavit statickou úvodní stránku (Domů)
-            if (!empty($p['set_front'])) {
-                update_option('show_on_front', 'page');
-                update_option('page_on_front', $page_id);
             }
 
             $created++;

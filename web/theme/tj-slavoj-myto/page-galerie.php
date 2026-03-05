@@ -23,17 +23,20 @@ $dostupne_sezony = get_terms(array(
 ));
 ?>
 
-<div class="container py-5">
-    <h2 class="mb-0"><?php echo esc_html(get_the_title(get_queried_object_id())); ?></h2>
-    <p class="text-muted mb-4"><?php
-        $sub = get_the_excerpt(get_queried_object_id());
-        echo $sub ? esc_html(wp_strip_all_tags($sub)) : esc_html(sprintf('Fotografie z klubového života %s', get_bloginfo('name')));
-    ?></p>
+<section class="section">
+  <div class="container">
+    <header class="page-title">
+      <h1 class="page-title__h1"><?php echo esc_html(get_the_title(get_queried_object_id())); ?></h1>
+      <p class="page-title__subtitle"><?php
+          $sub = get_the_excerpt(get_queried_object_id());
+          echo $sub ? esc_html(wp_strip_all_tags($sub)) : esc_html(sprintf('Fotografie z klubového života %s', get_bloginfo('name')));
+      ?></p>
+    </header>
 
     <!-- FILTRY – selecty odešlou formulář ihned po změně; tlačítko jako záloha bez JS -->
-    <form method="get" class="d-flex gap-3 mb-4 flex-wrap">
+    <form method="get" class="filters" role="search" aria-label="Filtrování galerie">
       <label class="sr-only" for="f-kategorie">Kategorie</label>
-      <select id="f-kategorie" name="kategorie" class="form-select bg-light filter-select-team-sm" onchange="this.form.submit()">
+      <select id="f-kategorie" name="kategorie" class="filter filter--primary" onchange="this.form.submit()">
         <option value="">Všechny kategorie</option>
         <?php if (!empty($kategorie_tymu_terms) && !is_wp_error($kategorie_tymu_terms)) : ?>
           <?php foreach ($kategorie_tymu_terms as $term) : ?>
@@ -45,7 +48,7 @@ $dostupne_sezony = get_terms(array(
       </select>
 
       <label class="sr-only" for="f-sezona">Sezóna</label>
-      <select id="f-sezona" name="sezona" class="form-select bg-light filter-select-season-sm" onchange="this.form.submit()">
+      <select id="f-sezona" name="sezona" class="filter filter--muted" onchange="this.form.submit()">
         <option value="">Všechny sezóny</option>
         <?php if (!is_wp_error($dostupne_sezony) && !empty($dostupne_sezony)) : foreach ($dostupne_sezony as $s) : ?>
           <option value="<?php echo esc_attr($s->slug); ?>" <?php selected($filtr_sezona, $s->slug); ?>>
@@ -55,85 +58,97 @@ $dostupne_sezony = get_terms(array(
       </select>
 
       <noscript>
-        <button type="submit" class="btn btn-primary">Filtrovat</button>
+        <button type="submit" class="filter filter--submit">Filtrovat</button>
       </noscript>
     </form>
-</div>
+  </div>
+</section>
 
 <!-- MODRÝ PRUH S LOGEM -->
-<div class="fluid">
-  <div class="row">
-    <div class="col-5">
-      <div class="blue-bar-p"></div>
-    </div>
-    <div class="col-1 text-center">
-      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png" alt="TJ Slavoj Mýto" class="gallery-logo">
-    </div>
-    <div class="col-6">
-      <div class="blue-bar-l"></div>
-    </div>
+<div class="team-hero">
+  <div class="team-hero__bar">
+    <img class="team-hero__logo"
+         src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png"
+         alt="TJ Slavoj Mýto">
   </div>
 </div>
 
 <!-- GRID GALERIE -->
-<div class="container py-5">
-  <div class="row g-4">
-    <?php
-    $args = array(
-        'post_type'      => 'galerie',
-        'posts_per_page' => -1,
-    );
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <?php
+      $args = array(
+          'post_type'      => 'galerie',
+          'posts_per_page' => -1,
+      );
 
-    // Taxonomy query pro filtrování
-    $tax_query = array();
+      $tax_query = array();
 
-    if ($filtr_kategorie) {
-        $tax_query[] = array(
-            'taxonomy' => 'kategorie-tymu',
-            'field'    => 'slug',
-            'terms'    => $filtr_kategorie,
-        );
-    }
+      if ($filtr_kategorie) {
+          $tax_query[] = array(
+              'taxonomy' => 'kategorie-tymu',
+              'field'    => 'slug',
+              'terms'    => $filtr_kategorie,
+          );
+      }
 
-    if ($filtr_sezona) {
-        $tax_query[] = array(
-            'taxonomy' => 'sezona',
-            'field'    => 'slug',
-            'terms'    => $filtr_sezona,
-        );
-    }
+      if ($filtr_sezona) {
+          $tax_query[] = array(
+              'taxonomy' => 'sezona',
+              'field'    => 'slug',
+              'terms'    => $filtr_sezona,
+          );
+      }
 
-    if (!empty($tax_query)) {
-        $tax_query['relation'] = 'AND';
-        $args['tax_query'] = $tax_query;
-    }
+      if (!empty($tax_query)) {
+          $tax_query['relation'] = 'AND';
+          $args['tax_query'] = $tax_query;
+      }
 
-    $galerie_query = new WP_Query($args);
+      $galerie_query = new WP_Query($args);
 
-    if ($galerie_query->have_posts()) :
-        while ($galerie_query->have_posts()) :
-            $galerie_query->the_post();
-            ?>
-            <div class="col-6 col-md-3 text-center">
-              <a href="<?php the_permalink(); ?>" class="text-decoration-none">
-                <?php if (has_post_thumbnail()) : ?>
-                  <?php the_post_thumbnail('medium', array(
-                      'class' => 'img-fluid gallery-img',
-                  )); ?>
-                <?php else : ?>
-                  <div class="gallery-card mb-2"></div>
-                <?php endif; ?>
-                <p class="mt-2 text-dark"><?php the_title(); ?></p>
-              </a>
+      if ($galerie_query->have_posts()) :
+          while ($galerie_query->have_posts()) :
+              $galerie_query->the_post();
+              ?>
+              <div class="col-6 col-md-3 text-center">
+                <a href="<?php the_permalink(); ?>" class="text-decoration-none">
+                  <?php if (has_post_thumbnail()) : ?>
+                    <?php the_post_thumbnail('medium', array(
+                        'class' => 'img-fluid gallery-img',
+                        'loading' => 'lazy',
+                    )); ?>
+                  <?php else : ?>
+                    <div class="gallery-placeholder mb-2"></div>
+                  <?php endif; ?>
+                  <p class="mt-2 text-dark"><?php the_title(); ?></p>
+                </a>
+              </div>
+              <?php
+          endwhile;
+      else :
+          ?>
+          <div class="col-12">
+            <div class="empty-state">
+              <svg class="empty-state__icon" xmlns="http://www.w3.org/2000/svg"
+                   width="48" height="48" fill="none" stroke="currentColor"
+                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                   aria-hidden="true" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p class="empty-state__title">Žádná fotoalba nebyla nalezena</p>
+              <p class="empty-state__text">Zkuste změnit filtry nebo se vraťte později.</p>
             </div>
-            <?php
-        endwhile;
-    else :
-        echo '<p class="text-center text-muted">Žádná fotoalba nebyla nalezena.</p>';
-    endif;
-    wp_reset_postdata();
-    ?>
+          </div>
+          <?php
+      endif;
+      wp_reset_postdata();
+      ?>
+    </div>
   </div>
-</div>
+</section>
 
 <?php get_footer(); ?>

@@ -38,8 +38,16 @@ function slavoj_enqueue_scripts() {
     wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array(), '5.3.3', true);
 
-    // Hlavní šablona CSS (assets/css/main.css importuje všechny komponenty)
-    wp_enqueue_style('slavoj-main', get_template_directory_uri() . '/assets/css/main.css', array('bootstrap'), $ver);
+    // Komponenty CSS – načítány zvlášť (spolehlivější než @import uvnitř main.css)
+    $css = get_template_directory_uri() . '/assets/css/';
+    wp_enqueue_style('slavoj-utilities',  $css . 'utilities.css',            array('bootstrap'), $ver);
+    wp_enqueue_style('slavoj-header',     $css . 'components/header.css',    array('slavoj-utilities'), $ver);
+    wp_enqueue_style('slavoj-nav-mobile', $css . 'components/nav-mobile.css', array('slavoj-header'), $ver);
+    wp_enqueue_style('slavoj-buttons',    $css . 'components/buttons.css',   array('slavoj-utilities'), $ver);
+    wp_enqueue_style('slavoj-hero',       $css . 'components/hero.css',      array('slavoj-utilities'), $ver);
+    wp_enqueue_style('slavoj-cards',      $css . 'components/cards.css',     array('slavoj-utilities'), $ver);
+    // Hlavní šablona CSS
+    wp_enqueue_style('slavoj-main', $css . 'main.css', array('slavoj-utilities', 'slavoj-buttons', 'slavoj-cards', 'slavoj-header', 'slavoj-hero', 'slavoj-nav-mobile'), $ver);
 }
 add_action('wp_enqueue_scripts', 'slavoj_enqueue_scripts');
 
