@@ -159,11 +159,7 @@ $kategorie   = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => f
                     <strong><?php echo $hoste ? $hoste : '—'; ?></strong>
                   </div>
                 </div>
-                <div class="d-flex justify-content-between small text-muted mt-2">
-                  <a href="<?php the_permalink(); ?>" class="text-decoration-none text-muted">
-                    Detail zápasu &rarr;
-                  </a>
-                </div>
+
               </div>
               <?php
           endwhile;
