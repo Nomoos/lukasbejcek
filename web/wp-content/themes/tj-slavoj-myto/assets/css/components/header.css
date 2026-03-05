@@ -4,6 +4,7 @@
  *
  * Toggle řeší Bootstrap data-bs-toggle="collapse" – žádný custom JS.
  * Layout: navbar-expand-lg → hamburger pod 992 px, řádek nad 992 px.
+ * Brand/logo je horizontálně vycentrováno na všech šířkách.
  */
 
 /* ── Obal ── */
@@ -27,9 +28,12 @@
   min-height: 64px;
   align-items: center;
   flex-wrap: wrap;
+  /* Brand bude absolutně vycentrováno, ostatní prvky jdou doprava */
+  position: relative;
+  justify-content: flex-end;
 }
 
-/* ── Brand / Logo ── */
+/* ── Brand / Logo – absolutně vycentrované ── */
 .brand {
   display: flex;
   align-items: center;
@@ -38,6 +42,10 @@
   color: #111827;
   flex-shrink: 0;
   padding: 0;
+  /* Vycentrování v navbaru */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .brand:hover { color: #233D97; }
