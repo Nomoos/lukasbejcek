@@ -22,7 +22,7 @@ $filtr_stav      = isset($args['filtr_stav'])       ? $args['filtr_stav']      :
 <form method="get" class="filters" role="search" aria-label="Filtrování zápasů">
 
   <label class="sr-only" for="f-tym">Tým</label>
-  <select id="f-tym" name="tym" class="filter filter--primary" onchange="this.form.submit()">
+  <select id="f-kat" name="kat" class="filter filter--primary" onchange="this.form.submit()">
     <?php if (!is_wp_error($dostupne_tymy) && !empty($dostupne_tymy)) : foreach ($dostupne_tymy as $t) : ?>
       <option value="<?php echo esc_attr($t->slug); ?>" <?php selected($filtr_tym, $t->slug); ?>>
         <?php echo esc_html($t->name); ?>

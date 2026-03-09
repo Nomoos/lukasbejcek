@@ -6,7 +6,7 @@
 get_header();
 
 /* Výchozí: Muži A + nejnovější sezóna */
-$filtr_tym    = isset($_GET['tym'])     ? sanitize_text_field(wp_unslash($_GET['tym']))    : 'muzi-a';
+$filtr_tym    = isset($_GET['kat'])     ? sanitize_text_field(wp_unslash($_GET['kat']))    : 'muzi-a';
 $filtr_sezona = isset($_GET['sezona'])  ? sanitize_text_field(wp_unslash($_GET['sezona'])) : slavoj_get_latest_sezona_slug();
 $filtr_stav   = isset($_GET['stav'])    ? sanitize_text_field(wp_unslash($_GET['stav']))   : 'vse';
 $paged        = isset($_GET['stranka']) ? max(1, absint($_GET['stranka']))                 : 1;
@@ -27,8 +27,8 @@ $kategorie = slavoj_sort_tymy(get_terms(array('taxonomy' => 'kategorie-tymu', 'h
     <div class="row g-2 mb-4">
 
       <div class="col-12 col-md-4">
-        <label class="visually-hidden" for="f-tym">Tým</label>
-        <select id="f-tym" name="tym" class="form-select filter-select-team" onchange="this.form.submit()">
+        <label class="visually-hidden" for="f-kat">Tým</label>
+        <select id="f-kat" name="kat" class="form-select filter-select-team" onchange="this.form.submit()">
           <?php if (!is_wp_error($kategorie)) : foreach ($kategorie as $kat) : ?>
             <option value="<?php echo esc_attr($kat->slug); ?>" <?php selected($filtr_tym, $kat->slug); ?>>
               <?php echo esc_html($kat->name); ?>

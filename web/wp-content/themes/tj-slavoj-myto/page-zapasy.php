@@ -9,7 +9,7 @@
 get_header();
 
 /* ── Sanitace GET parametrů (výchozí: Muži A + nejnovější sezóna) ── */
-$filtr_tym    = isset($_GET['tym'])     ? sanitize_text_field(wp_unslash($_GET['tym']))     : 'muzi-a';
+$filtr_tym    = isset($_GET['kat'])     ? sanitize_text_field(wp_unslash($_GET['kat']))     : 'muzi-a';
 $filtr_sezona = isset($_GET['sezona'])  ? sanitize_text_field(wp_unslash($_GET['sezona']))  : slavoj_get_latest_sezona_slug();
 $filtr_stav   = isset($_GET['stav'])    ? sanitize_text_field(wp_unslash($_GET['stav']))    : 'vse';
 $paged        = isset($_GET['stranka']) ? max(1, absint($_GET['stranka']))                  : 1;
@@ -200,7 +200,7 @@ get_template_part('template-parts/hero', 'team', array(
               /* Čistý permalink stránky + zachované filtry (bez stranka) */
               $base_url = get_permalink(get_queried_object_id());
               $params   = array_filter(array(
-                  'tym'    => $filtr_tym,
+                  'kat'    => $filtr_tym,
                   'sezona' => $filtr_sezona,
                   'stav'   => ($filtr_stav !== 'vse') ? $filtr_stav : '',
               ));
