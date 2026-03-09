@@ -1314,86 +1314,146 @@ function tjsm_init_handle_form() {
 }
 
 /**
- * HTML výstup admin stránky inicializace.
+ * HTML výstup admin stránky inicializace + importu dat.
  */
 function tjsm_init_admin_page() {
     if ( ! current_user_can( 'manage_options' ) ) {
         wp_die( 'Nemáte potřebná oprávnění.', '', array( 'response' => 403 ) );
     }
 
-    $log = array();
+    $log_init   = array();
+    $log_import = array();
+
     if ( isset( $_POST['tjsm_init_nonce'] ) ) {
-        $log = tjsm_init_handle_form();
+        $log_init = tjsm_init_handle_form();
+    }
+    if ( isset( $_POST['tjsm_import_nonce'] ) ) {
+        $log_import = tjsm_import_handle_form();
     }
     ?>
     <div class="wrap">
-      <h1>🚀 Inicializace webu TJ Slavoj Mýto</h1>
-      <p>
-        Toto tlačítko vytvoří všechny potřebné stránky, kategorie a termíny taxonomií
-        pro správný chod webu.<br>
-        Již existující záznamy budou přeskočeny – akci lze bezpečně spustit opakovaně.
-      </p>
+      <h1>🚀 Nástroje webu – TJ Slavoj Mýto</h1>
 
-      <?php if ( ! empty( $log ) ) : ?>
+      <?php if ( ! empty( $log_init ) ) : ?>
         <div class="notice notice-success is-dismissible">
           <p><strong>Výsledky inicializace:</strong></p>
           <ul style="margin-left:1.5em;list-style:disc">
-            <?php foreach ( $log as $row ) : ?>
+            <?php foreach ( $log_init as $row ) : ?>
               <li><?php echo esc_html( $row ); ?></li>
             <?php endforeach; ?>
           </ul>
         </div>
       <?php endif; ?>
 
+      <?php if ( ! empty( $log_import ) ) : ?>
+        <div class="notice notice-success is-dismissible">
+          <p><strong>Výsledky importu:</strong></p>
+          <ul style="margin-left:1.5em;list-style:disc">
+            <?php foreach ( $log_import as $row ) : ?>
+              <li><?php echo esc_html( $row ); ?></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endif; ?>
+
+      <!-- SEKCE 1: Inicializace -->
+      <h2>1. Inicializace webu</h2>
+      <p>
+        Vytvoří všechny potřebné stránky, kategorie a termíny taxonomií pro správný chod webu.<br>
+        Již existující záznamy budou přeskočeny – akci lze bezpečně spustit opakovaně.
+      </p>
+
       <form method="post">
         <?php wp_nonce_field( 'tjsm_init_action', 'tjsm_init_nonce' ); ?>
         <?php submit_button( 'Spustit inicializaci webu', 'primary large' ); ?>
       </form>
 
+      <details style="margin-top:.5em">
+        <summary style="cursor:pointer;color:#2271b1">Co bude vytvořeno</summary>
+        <table class="widefat striped" style="margin-top:.5em">
+          <thead><tr><th>Typ</th><th>Název / Slug</th></tr></thead>
+          <tbody>
+            <tr><td>Stránka</td><td>Úvod (<code>uvod</code>) – nastavena jako úvodní stránka webu</td></tr>
+            <tr><td>Stránka</td><td>Aktuality (<code>aktuality</code>)</td></tr>
+            <tr><td>Stránka</td><td>Zápasy (<code>zapasy</code>)</td></tr>
+            <tr><td>Stránka</td><td>Týmy (<code>tymy</code>)</td></tr>
+            <tr><td>Stránka</td><td>Galerie (<code>galerie</code>)</td></tr>
+            <tr><td>Stránka</td><td>Historie (<code>historie</code>)</td></tr>
+            <tr><td>Stránka</td><td>Sponzoři (<code>sponzori</code>)</td></tr>
+            <tr><td>Stránka</td><td>Kontakty (<code>kontakty</code>)</td></tr>
+            <tr><td>Kategorie příspěvků</td><td>Aktuality (<code>aktuality</code>)</td></tr>
+            <tr><td>Kategorie týmu</td><td>Muži A, Muži B, Dorost, Starší žáci, Mladší žáci, Přípravka</td></tr>
+            <tr><td>Stav zápasu</td><td>Nadcházející, Odehraný, Zrušený</td></tr>
+            <tr><td>Sezóna</td><td>2024/2025, 2025/2026</td></tr>
+            <tr><td>Pozice hráče</td><td>Brankáři, Hráči v poli</td></tr>
+          </tbody>
+        </table>
+      </details>
+
       <hr>
-      <h2>Co bude vytvořeno</h2>
-      <table class="widefat striped">
+
+      <!-- SEKCE 2: Import ukázkových dat -->
+      <h2>2. Import ukázkových dat</h2>
+      <p>
+        Importuje reálná data z veřejných zdrojů (fotbalunas.cz, Rokycanský deník).<br>
+        Již existující záznamy jsou přeskočeny – akce lze bezpečně spustit opakovaně.
+      </p>
+
+      <table class="widefat striped" style="max-width:700px">
         <thead>
-          <tr><th>Typ</th><th>Název / Slug</th></tr>
+          <tr><th>Dataset</th><th>Obsah</th><th>Akce</th></tr>
         </thead>
         <tbody>
-          <tr><td>Stránka</td><td>Úvod (<code>uvod</code>) – nastavena jako úvodní stránka webu</td></tr>
-          <tr><td>Stránka</td><td>Aktuality (<code>aktuality</code>)</td></tr>
-          <tr><td>Stránka</td><td>Zápasy (<code>zapasy</code>)</td></tr>
-          <tr><td>Stránka</td><td>Týmy (<code>tymy</code>)</td></tr>
-          <tr><td>Stránka</td><td>Galerie (<code>galerie</code>)</td></tr>
-          <tr><td>Stránka</td><td>Historie (<code>historie</code>)</td></tr>
-          <tr><td>Stránka</td><td>Sponzoři (<code>sponzori</code>)</td></tr>
-          <tr><td>Stránka</td><td>Kontakty (<code>kontakty</code>)</td></tr>
-          <tr><td>Kategorie příspěvků</td><td>Aktuality (<code>aktuality</code>)</td></tr>
-          <tr><td>Kategorie týmu</td><td>Muži A, Muži B, Dorost, Starší žáci, Mladší žáci, Přípravka</td></tr>
-          <tr><td>Stav zápasu</td><td>Nadcházející, Odehraný, Zrušený</td></tr>
-          <tr><td>Sezóna</td><td>2024/2025, 2025/2026</td></tr>
-          <tr><td>Pozice hráče</td><td>Brankáři, Hráči v poli</td></tr>
+
+          <tr>
+            <td><strong>Zápasy Muži A</strong></td>
+            <td>16 odehraných + 6 nadcházejících<br><small>Plzeňský krajský přebor 2025/2026</small></td>
+            <td>
+              <form method="post" style="display:inline">
+                <?php wp_nonce_field( 'tjsm_import_action', 'tjsm_import_nonce' ); ?>
+                <input type="hidden" name="tjsm_import_action" value="zapasy_muzi_a">
+                <?php submit_button( 'Importovat', 'primary', 'submit', false ); ?>
+              </form>
+            </td>
+          </tr>
+
+          <tr>
+            <td><strong>Zápasy Muži B</strong></td>
+            <td>13 odehraných + 3 nadcházející<br><small>1. B třída Plzeňský kraj, sk. C, 2025/2026</small></td>
+            <td>
+              <form method="post" style="display:inline">
+                <?php wp_nonce_field( 'tjsm_import_action', 'tjsm_import_nonce' ); ?>
+                <input type="hidden" name="tjsm_import_action" value="zapasy_muzi_b">
+                <?php submit_button( 'Importovat', 'primary', 'submit', false ); ?>
+              </form>
+            </td>
+          </tr>
+
+          <tr>
+            <td><strong>Hráči Muži A</strong></td>
+            <td>19 hráčů (2 brankáři, 17 hráčů v poli)<br><small>Soupiska 2025/2026</small></td>
+            <td>
+              <form method="post" style="display:inline">
+                <?php wp_nonce_field( 'tjsm_import_action', 'tjsm_import_nonce' ); ?>
+                <input type="hidden" name="tjsm_import_action" value="hraci_muzi_a">
+                <?php submit_button( 'Importovat', 'primary', 'submit', false ); ?>
+              </form>
+            </td>
+          </tr>
+
         </tbody>
       </table>
+      <p class="description" style="margin-top:.5em">
+        <strong>Zdroje dat:</strong> fotbalunas.cz · fotbal.cz (FAČR) · sportmap.cz · Rokycanský deník
+      </p>
+
     </div>
     <?php
 }
 
 // =====================================================================
-// IMPORT UKÁZKOVÝCH DAT – ADMIN NÁSTROJ
+// IMPORT UKÁZKOVÝCH DAT – POMOCNÉ FUNKCE
 // =====================================================================
-
-/**
- * Registrace admin stránky pro import reálných ukázkových dat.
- * Dostupná pod Nástroje → Import dat.
- */
-function tjsm_import_admin_menu() {
-    add_management_page(
-        'Import dat TJ Slavoj Mýto',
-        'Import dat',
-        'manage_options',
-        'tjsm-import',
-        'tjsm_import_admin_page'
-    );
-}
-add_action( 'admin_menu', 'tjsm_import_admin_menu' );
 
 /**
  * Pomocná funkce – vloží jeden zápas jako CPT 'zapas'.
@@ -1661,86 +1721,3 @@ function tjsm_import_handle_form() {
     }
 }
 
-/**
- * HTML výstup admin stránky importu ukázkových dat.
- */
-function tjsm_import_admin_page() {
-    if ( ! current_user_can( 'manage_options' ) ) {
-        wp_die( 'Nemáte potřebná oprávnění.', '', array( 'response' => 403 ) );
-    }
-
-    $log = array();
-    if ( isset( $_POST['tjsm_import_nonce'] ) ) {
-        $log = tjsm_import_handle_form();
-    }
-    ?>
-    <div class="wrap">
-      <h1>📥 Import ukázkových dat – TJ Slavoj Mýto</h1>
-      <p>
-        Importuje reálná data z veřejných zdrojů (fotbalunas.cz, Rokycanský deník).<br>
-        Již existující záznamy jsou přeskočeny – akce lze bezpečně spustit opakovaně.
-      </p>
-
-      <?php if ( ! empty( $log ) ) : ?>
-        <div class="notice notice-success is-dismissible">
-          <p><strong>Výsledky importu:</strong></p>
-          <ul style="margin-left:1.5em;list-style:disc">
-            <?php foreach ( $log as $row ) : ?>
-              <li><?php echo esc_html( $row ); ?></li>
-            <?php endforeach; ?>
-          </ul>
-        </div>
-      <?php endif; ?>
-
-      <table class="widefat striped" style="max-width:700px">
-        <thead>
-          <tr><th>Dataset</th><th>Obsah</th><th>Akce</th></tr>
-        </thead>
-        <tbody>
-
-          <tr>
-            <td><strong>Zápasy Muži A</strong></td>
-            <td>16 odehraných + 6 nadcházejících<br><small>Plzeňský krajský přebor 2025/2026</small></td>
-            <td>
-              <form method="post" style="display:inline">
-                <?php wp_nonce_field( 'tjsm_import_action', 'tjsm_import_nonce' ); ?>
-                <input type="hidden" name="tjsm_import_action" value="zapasy_muzi_a">
-                <?php submit_button( 'Importovat', 'primary', 'submit', false ); ?>
-              </form>
-            </td>
-          </tr>
-
-          <tr>
-            <td><strong>Zápasy Muži B</strong></td>
-            <td>13 odehraných + 3 nadcházející<br><small>1. B třída Plzeňský kraj, sk. C, 2025/2026</small></td>
-            <td>
-              <form method="post" style="display:inline">
-                <?php wp_nonce_field( 'tjsm_import_action', 'tjsm_import_nonce' ); ?>
-                <input type="hidden" name="tjsm_import_action" value="zapasy_muzi_b">
-                <?php submit_button( 'Importovat', 'primary', 'submit', false ); ?>
-              </form>
-            </td>
-          </tr>
-
-          <tr>
-            <td><strong>Hráči Muži A</strong></td>
-            <td>19 hráčů (2 brankáři, 17 hráčů v poli)<br><small>Soupiska 2025/2026</small></td>
-            <td>
-              <form method="post" style="display:inline">
-                <?php wp_nonce_field( 'tjsm_import_action', 'tjsm_import_nonce' ); ?>
-                <input type="hidden" name="tjsm_import_action" value="hraci_muzi_a">
-                <?php submit_button( 'Importovat', 'primary', 'submit', false ); ?>
-              </form>
-            </td>
-          </tr>
-
-        </tbody>
-      </table>
-
-      <hr>
-      <p class="description">
-        <strong>Zdroje dat:</strong> fotbalunas.cz · fotbal.cz (FAČR) · sportmap.cz · Rokycanský deník
-      </p>
-    </div>
-    <?php
-}
