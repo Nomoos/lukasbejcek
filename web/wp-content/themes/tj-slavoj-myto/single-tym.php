@@ -105,62 +105,54 @@ while (have_posts()) : the_post();
   <!-- ZÁPASY TÝMU -->
   <div class="row mt-4">
     <div class="col-md-12">
-      <h5 class="fw-bold mb-3">Nejbližší zápasy</h5>
+      <h5 class="fw-bold mb-3">Nadcházející zápas</h5>
       <?php
       $zapasy_args = array(
           'post_type'      => 'zapas',
-          'posts_per_page' => 5,
+          'posts_per_page' => 1,
           'meta_key'       => 'datum_zapasu',
           'orderby'        => 'meta_value',
           'order'          => 'ASC',
-          'meta_query'     => array(
-              array(
-                  'key'     => 'datum_zapasu',
-                  'value'   => current_time('Y-m-d'),
-                  'compare' => '>=',
-                  'type'    => 'DATE',
-              ),
+          'tax_query'      => array(
+              'relation' => 'AND',
+              array('taxonomy' => 'stav-zapasu', 'field' => 'slug', 'terms' => 'nadchazejici'),
           ),
       );
 
       if ($kat_terms && !is_wp_error($kat_terms)) {
-          $zapasy_args['tax_query'] = array(
-              array(
-                  'taxonomy' => 'kategorie-tymu',
-                  'field'    => 'term_id',
-                  'terms'    => wp_list_pluck($kat_terms, 'term_id'),
-              ),
+          $zapasy_args['tax_query'][] = array(
+              'taxonomy' => 'kategorie-tymu',
+              'field'    => 'term_id',
+              'terms'    => wp_list_pluck($kat_terms, 'term_id'),
           );
       }
 
       $zapasy_q = new WP_Query($zapasy_args);
       if ($zapasy_q->have_posts()) :
-          while ($zapasy_q->have_posts()) :
-              $zapasy_q->the_post();
-              $datum  = get_post_meta(get_the_ID(), 'datum_zapasu', true);
-              $cas    = get_post_meta(get_the_ID(), 'cas_zapasu', true);
-              $domaci = esc_html(get_post_meta(get_the_ID(), 'domaci', true));
-              $hoste  = esc_html(get_post_meta(get_the_ID(), 'hoste', true));
-              $skore  = get_post_meta(get_the_ID(), 'skore', true);
-              $dt     = $datum ? DateTime::createFromFormat('Y-m-d', $datum) : null;
-              ?>
-              <div class="match-card mb-2 p-3 border rounded-4">
-                <div class="row">
-                  <div class="col-md-3 small text-muted">
-                    <?php echo $dt ? esc_html($dt->format('j. n. Y')) : esc_html($datum); ?>
-                    <?php echo $cas ? ' v ' . esc_html($cas) : ''; ?>
-                  </div>
-                  <div class="col-md-9 d-flex justify-content-between align-items-center">
-                    <strong><?php echo $domaci ?: '—'; ?></strong>
-                    <span><?php echo $skore ? esc_html($skore) : 'vs'; ?></span>
-                    <strong><?php echo $hoste ?: '—'; ?></strong>
-                  </div>
-                </div>
+          $zapasy_q->the_post();
+          $datum  = get_post_meta(get_the_ID(), 'datum_zapasu', true);
+          $cas    = get_post_meta(get_the_ID(), 'cas_zapasu',   true);
+          $domaci = get_post_meta(get_the_ID(), 'domaci',       true);
+          $hoste  = get_post_meta(get_the_ID(), 'hoste',        true);
+          $datum_fmt = $datum ? date_i18n('j. n. Y', strtotime($datum)) : '';
+          ?>
+          <div class="card border-start border-4 border-primary shadow-sm">
+            <div class="card-body py-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <small class="text-muted"><?php echo esc_html($datum_fmt); ?><?php echo $cas ? ' &bull; ' . esc_html($cas) : ''; ?></small>
+                <span class="badge bg-primary">Nadcházející</span>
               </div>
-              <?php
-          endwhile;
+              <div class="d-flex align-items-center justify-content-between gap-2">
+                <span class="fw-bold flex-fill text-start"><?php echo esc_html($domaci ?: '—'); ?></span>
+                <span class="fw-bold px-3 text-primary">vs</span>
+                <span class="fw-bold flex-fill text-end"><?php echo esc_html($hoste ?: '—'); ?></span>
+              </div>
+            </div>
+          </div>
+          <?php
+          wp_reset_postdata();
       else :
-          echo '<p class="text-muted">Žádné nadcházející zápasy.</p>';
+          echo '<p class="text-muted small">Žádný nadcházející zápas.</p>';
       endif;
       wp_reset_postdata();
       ?>
