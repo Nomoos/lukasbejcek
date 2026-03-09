@@ -143,6 +143,49 @@ if ($filtr_sezona && !is_wp_error($dostupne_sezony)) {
     <div class="p-3 border rounded-3">
       <?php slavoj_vypis_hrace_tymu($filtr_tym); ?>
     </div>
+
+    <!-- NEJBLIŽŠÍ NADCHÁZEJÍCÍ ZÁPAS -->
+    <?php
+    $q_zapas = new WP_Query(array(
+        'post_type'      => 'zapas',
+        'posts_per_page' => 1,
+        'meta_key'       => 'datum_zapasu',
+        'orderby'        => 'meta_value',
+        'order'          => 'ASC',
+        'tax_query'      => array(
+            'relation' => 'AND',
+            array('taxonomy' => 'stav-zapasu',    'field' => 'slug', 'terms' => 'nadchazejici'),
+            array('taxonomy' => 'kategorie-tymu', 'field' => 'slug', 'terms' => $filtr_tym),
+        ),
+    ));
+    if ($q_zapas->have_posts()) :
+        $q_zapas->the_post();
+        $id        = get_the_ID();
+        $datum     = get_post_meta($id, 'datum_zapasu', true);
+        $cas       = get_post_meta($id, 'cas_zapasu',   true);
+        $domaci    = get_post_meta($id, 'domaci',       true);
+        $hoste     = get_post_meta($id, 'hoste',        true);
+        $datum_fmt = $datum ? date_i18n('j. n. Y', strtotime($datum)) : '';
+        wp_reset_postdata();
+    ?>
+    <h2 class="h5 fw-bold mt-4 mb-3">Nadcházející zápas</h2>
+    <div class="card border-start border-4 border-primary shadow-sm">
+      <div class="card-body py-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <small class="text-muted"><?php echo esc_html($datum_fmt); ?><?php echo $cas ? ' &bull; ' . esc_html($cas) : ''; ?></small>
+          <span class="badge bg-primary">Nadcházející</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between gap-2">
+          <span class="fw-bold flex-fill text-start"><?php echo esc_html($domaci ?: '—'); ?></span>
+          <span class="fw-bold px-3 text-primary">vs</span>
+          <span class="fw-bold flex-fill text-end"><?php echo esc_html($hoste ?: '—'); ?></span>
+        </div>
+      </div>
+    </div>
+    <?php else : ?>
+    <p class="text-muted mt-4 small">Žádný nadcházející zápas nenalezen.</p>
+    <?php endif; ?>
+
   </div>
 </section>
 

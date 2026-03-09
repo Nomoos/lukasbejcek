@@ -29,8 +29,13 @@ get_header();
     <div class="container">
       <div class="zapasy-container">
         <?php
-        // Pořadí kategorií – vždy zobrazíme 1 nejbližší zápas za každou (dle slavoj_kategorie_poradi)
-        $kategorie_poradi = slavoj_kategorie_poradi();
+        // Na homepage zobrazíme jen 4 hlavní kategorie
+        $kategorie_poradi = array(
+            'muzi-a'      => 'Muži A',
+            'muzi-b'      => 'Muži B',
+            'dorost'      => 'Dorost',
+            'starsi-zaci' => 'Starší žáci',
+        );
 
         foreach ( $kategorie_poradi as $slug => $nazev ) :
             $q = new WP_Query( array(
