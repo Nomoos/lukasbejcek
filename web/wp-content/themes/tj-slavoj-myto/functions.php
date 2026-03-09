@@ -1375,3 +1375,372 @@ function tjsm_init_admin_page() {
     </div>
     <?php
 }
+
+// =====================================================================
+// IMPORT UKÁZKOVÝCH DAT – ADMIN NÁSTROJ
+// =====================================================================
+
+/**
+ * Registrace admin stránky pro import reálných ukázkových dat.
+ * Dostupná pod Nástroje → Import dat.
+ */
+function tjsm_import_admin_menu() {
+    add_management_page(
+        'Import dat TJ Slavoj Mýto',
+        'Import dat',
+        'manage_options',
+        'tjsm-import',
+        'tjsm_import_admin_page'
+    );
+}
+add_action( 'admin_menu', 'tjsm_import_admin_menu' );
+
+/**
+ * Pomocná funkce – vloží jeden zápas jako CPT 'zapas'.
+ * Přeskočí pokud již existuje zápas se stejným názvem a datem.
+ */
+function tjsm_insert_zapas( $data ) {
+    $existing = get_posts( array(
+        'post_type'   => 'zapas',
+        'post_status' => 'publish',
+        'title'       => $data['title'],
+        'numberposts' => 1,
+        'meta_query'  => array( array(
+            'key'   => 'datum_zapasu',
+            'value' => $data['datum'],
+        ) ),
+    ) );
+    if ( $existing ) {
+        return '✓ Zápas „' . $data['title'] . '" již existuje (přeskočen).';
+    }
+
+    $post_id = wp_insert_post( array(
+        'post_title'  => $data['title'],
+        'post_type'   => 'zapas',
+        'post_status' => 'publish',
+    ) );
+    if ( is_wp_error( $post_id ) ) {
+        return '✗ Chyba: ' . $post_id->get_error_message();
+    }
+
+    update_post_meta( $post_id, 'datum_zapasu', $data['datum'] );
+    update_post_meta( $post_id, 'cas_zapasu',   $data['cas'] ?? '' );
+    update_post_meta( $post_id, 'domaci',       $data['domaci'] );
+    update_post_meta( $post_id, 'hoste',        $data['hoste'] );
+    update_post_meta( $post_id, 'skore',        $data['skore'] ?? '' );
+    update_post_meta( $post_id, 'strelci',      $data['strelci'] ?? '' );
+
+    wp_set_object_terms( $post_id, $data['kategorie'], 'kategorie-tymu' );
+    wp_set_object_terms( $post_id, '2025-2026',         'sezona' );
+    wp_set_object_terms( $post_id, $data['stav'],       'stav-zapasu' );
+
+    return '+ Zápas „' . $data['title'] . '" (' . $data['datum'] . ') vytvořen.';
+}
+
+/**
+ * Pomocná funkce – vloží jednoho hráče jako CPT 'hrac'.
+ */
+function tjsm_insert_hrac( $data ) {
+    $existing = get_posts( array(
+        'post_type'   => 'hrac',
+        'post_status' => 'publish',
+        'title'       => $data['name'],
+        'numberposts' => 1,
+    ) );
+    if ( $existing ) {
+        return '✓ Hráč „' . $data['name'] . '" již existuje (přeskočen).';
+    }
+
+    $post_id = wp_insert_post( array(
+        'post_title'  => $data['name'],
+        'post_type'   => 'hrac',
+        'post_status' => 'publish',
+    ) );
+    if ( is_wp_error( $post_id ) ) {
+        return '✗ Chyba: ' . $post_id->get_error_message();
+    }
+
+    update_post_meta( $post_id, 'cislo',        $data['cislo'] ?? '' );
+    update_post_meta( $post_id, 'rok_narozeni', $data['rok_narozeni'] ?? '' );
+    update_post_meta( $post_id, 'tym_slug',     $data['tym_slug'] );
+
+    wp_set_object_terms( $post_id, $data['kategorie'], 'kategorie-tymu' );
+    wp_set_object_terms( $post_id, $data['pozice'],    'pozice-hrace' );
+
+    return '+ Hráč „' . $data['name'] . '" vytvořen.';
+}
+
+/**
+ * Import zápasů Muži A – sezóna 2025/2026.
+ * Zdroj: fotbalunas.cz, Plzeňský krajský přebor.
+ */
+function tjsm_import_zapasy_muzi_a() {
+    $log  = array();
+    $myto = 'TJ Slavoj Mýto';
+
+    $odehrane = array(
+        array( 'datum' => '2025-08-08', 'domaci' => 'SK Rapid Plzeň',           'hoste' => $myto,                     'skore' => '4:2' ),
+        array( 'datum' => '2025-08-17', 'domaci' => $myto,                      'hoste' => 'FK Nepomuk',              'skore' => '4:0' ),
+        array( 'datum' => '2025-08-23', 'domaci' => 'SK Slavia Vejprnice',      'hoste' => $myto,                     'skore' => '2:3' ),
+        array( 'datum' => '2025-08-30', 'domaci' => $myto,                      'hoste' => 'TJ Měcholupy',            'skore' => '5:2' ),
+        array( 'datum' => '2025-09-06', 'domaci' => 'SK Horní Bříza',           'hoste' => $myto,                     'skore' => '3:0' ),
+        array( 'datum' => '2025-09-13', 'domaci' => 'TJ Sokol Lhota',           'hoste' => $myto,                     'skore' => '4:0' ),
+        array( 'datum' => '2025-09-21', 'domaci' => $myto,                      'hoste' => 'FC Dynamo Horšovský Týn', 'skore' => '3:2' ),
+        array( 'datum' => '2025-09-27', 'domaci' => 'TJ Chotěšov',              'hoste' => $myto,                     'skore' => '2:2' ),
+        array( 'datum' => '2025-10-04', 'domaci' => $myto,                      'hoste' => 'TJ Keramika Chlumčany',  'skore' => '3:2' ),
+        array( 'datum' => '2025-10-12', 'domaci' => 'TJ Slavoj Koloveč',        'hoste' => $myto,                     'skore' => '0:1' ),
+        array( 'datum' => '2025-10-18', 'domaci' => $myto,                      'hoste' => 'FK Bohemia Kaznějov',    'skore' => '2:1' ),
+        array( 'datum' => '2025-10-26', 'domaci' => 'TJ Sokol Radnice',         'hoste' => $myto,                     'skore' => '0:6' ),
+        array( 'datum' => '2025-11-01', 'domaci' => $myto,                      'hoste' => 'FK Okula Nýrsko',        'skore' => '0:1' ),
+        array( 'datum' => '2025-11-09', 'domaci' => 'FK Holýšov',               'hoste' => $myto,                     'skore' => '0:2' ),
+        array( 'datum' => '2025-11-15', 'domaci' => $myto,                      'hoste' => 'TJ Start Luby',          'skore' => '1:1' ),
+        array( 'datum' => '2026-03-08', 'domaci' => $myto,                      'hoste' => 'SK Rapid Plzeň',         'skore' => '2:2' ),
+    );
+
+    foreach ( $odehrane as $z ) {
+        $log[] = tjsm_insert_zapas( array(
+            'title'     => $z['domaci'] . ' vs ' . $z['hoste'],
+            'datum'     => $z['datum'],
+            'cas'       => '10:30',
+            'domaci'    => $z['domaci'],
+            'hoste'     => $z['hoste'],
+            'skore'     => $z['skore'],
+            'kategorie' => 'muzi-a',
+            'stav'      => 'odehrany',
+        ) );
+    }
+
+    $nadchazejici = array(
+        array( 'datum' => '2026-03-22', 'cas' => '15:00', 'domaci' => $myto, 'hoste' => 'SK Slavia Vejprnice' ),
+        array( 'datum' => '2026-04-05', 'cas' => '16:30', 'domaci' => $myto, 'hoste' => 'SK Horní Bříza' ),
+        array( 'datum' => '2026-04-11', 'cas' => '16:30', 'domaci' => $myto, 'hoste' => 'TJ Sokol Lhota' ),
+        array( 'datum' => '2026-04-26', 'cas' => '17:00', 'domaci' => $myto, 'hoste' => 'TJ Chotěšov' ),
+        array( 'datum' => '2026-05-09', 'cas' => '17:30', 'domaci' => $myto, 'hoste' => 'TJ Slavoj Koloveč' ),
+        array( 'datum' => '2026-05-23', 'cas' => '18:00', 'domaci' => $myto, 'hoste' => 'TJ Sokol Radnice' ),
+    );
+
+    foreach ( $nadchazejici as $z ) {
+        $log[] = tjsm_insert_zapas( array(
+            'title'     => $z['domaci'] . ' vs ' . $z['hoste'],
+            'datum'     => $z['datum'],
+            'cas'       => $z['cas'],
+            'domaci'    => $z['domaci'],
+            'hoste'     => $z['hoste'],
+            'skore'     => '',
+            'kategorie' => 'muzi-a',
+            'stav'      => 'nadchazejici',
+        ) );
+    }
+
+    return $log;
+}
+
+/**
+ * Import zápasů Muži B – sezóna 2025/2026.
+ * Zdroj: fotbalunas.cz, 1. B třída Plzeňský kraj, sk. C.
+ */
+function tjsm_import_zapasy_muzi_b() {
+    $log  = array();
+    $myto = 'TJ Slavoj Mýto B';
+
+    $odehrane = array(
+        array( 'datum' => '2025-08-24', 'domaci' => $myto,                   'hoste' => 'SK Úněšov',          'skore' => '4:3' ),
+        array( 'datum' => '2025-08-27', 'domaci' => 'TJ Všeruby',            'hoste' => $myto,                'skore' => '2:2' ),
+        array( 'datum' => '2025-08-31', 'domaci' => 'FK Ledce',              'hoste' => $myto,                'skore' => '6:0' ),
+        array( 'datum' => '2025-09-07', 'domaci' => $myto,                   'hoste' => 'TJ Touškov',         'skore' => '1:3' ),
+        array( 'datum' => '2025-09-13', 'domaci' => 'TJ Město Zbiroh',       'hoste' => $myto,                'skore' => '7:2' ),
+        array( 'datum' => '2025-09-21', 'domaci' => $myto,                   'hoste' => 'TJ Plasy',           'skore' => '1:2' ),
+        array( 'datum' => '2025-09-27', 'domaci' => $myto,                   'hoste' => 'TJ Raková',          'skore' => '0:1' ),
+        array( 'datum' => '2025-10-05', 'domaci' => 'SK SENCO Doubravka B',  'hoste' => $myto,                'skore' => '5:2' ),
+        array( 'datum' => '2025-10-11', 'domaci' => $myto,                   'hoste' => 'TJ Volduchy',        'skore' => '5:2' ),
+        array( 'datum' => '2025-10-19', 'domaci' => 'SK Rapid Plzeň B',      'hoste' => $myto,                'skore' => '7:2' ),
+        array( 'datum' => '2025-10-25', 'domaci' => $myto,                   'hoste' => 'SK Horní Bříza B',   'skore' => '2:4' ),
+        array( 'datum' => '2025-11-01', 'domaci' => 'TJ Bolevec',            'hoste' => $myto,                'skore' => '3:0' ),
+        array( 'datum' => '2025-11-08', 'domaci' => $myto,                   'hoste' => 'TJ Příkosice',       'skore' => '3:2' ),
+    );
+
+    foreach ( $odehrane as $z ) {
+        $log[] = tjsm_insert_zapas( array(
+            'title'     => $z['domaci'] . ' vs ' . $z['hoste'],
+            'datum'     => $z['datum'],
+            'cas'       => '10:30',
+            'domaci'    => $z['domaci'],
+            'hoste'     => $z['hoste'],
+            'skore'     => $z['skore'],
+            'kategorie' => 'muzi-b',
+            'stav'      => 'odehrany',
+        ) );
+    }
+
+    $nadchazejici = array(
+        array( 'datum' => '2026-03-28', 'cas' => '10:30', 'domaci' => $myto, 'hoste' => 'FK Ledce' ),
+        array( 'datum' => '2026-04-12', 'cas' => '16:30', 'domaci' => $myto, 'hoste' => 'TJ Město Zbiroh' ),
+        array( 'datum' => '2026-05-03', 'cas' => '17:30', 'domaci' => $myto, 'hoste' => 'SK SENCO Doubravka B' ),
+    );
+
+    foreach ( $nadchazejici as $z ) {
+        $log[] = tjsm_insert_zapas( array(
+            'title'     => $z['domaci'] . ' vs ' . $z['hoste'],
+            'datum'     => $z['datum'],
+            'cas'       => $z['cas'],
+            'domaci'    => $z['domaci'],
+            'hoste'     => $z['hoste'],
+            'skore'     => '',
+            'kategorie' => 'muzi-b',
+            'stav'      => 'nadchazejici',
+        ) );
+    }
+
+    return $log;
+}
+
+/**
+ * Import hráčů Muži A – soupiska 2025/2026.
+ * Zdroj: fotbalunas.cz, Transfermarkt, Rokycanský deník.
+ */
+function tjsm_import_hraci_muzi_a() {
+    $log = array();
+
+    $hraci = array(
+        // Brankáři
+        array( 'name' => 'Jan Vild',           'cislo' => 1,  'rok_narozeni' => 1987, 'pozice' => 'brankari' ),
+        array( 'name' => 'Milan Navrátil',      'cislo' => 12, 'rok_narozeni' => 1990, 'pozice' => 'brankari' ),
+        // Hráči v poli
+        array( 'name' => 'Michal Ineman',       'cislo' => 2,  'rok_narozeni' => 1990, 'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Ondřej Lang',         'cislo' => 3,  'rok_narozeni' => 0,    'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Marek Šobáň',         'cislo' => 4,  'rok_narozeni' => 0,    'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Martin Drábek',       'cislo' => 5,  'rok_narozeni' => 0,    'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Jiří Drábek',         'cislo' => 6,  'rok_narozeni' => 2001, 'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Vojtech Krejca',      'cislo' => 7,  'rok_narozeni' => 2002, 'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Filip Stejskal',      'cislo' => 8,  'rok_narozeni' => 2000, 'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Daniel Skopový',      'cislo' => 9,  'rok_narozeni' => 1998, 'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Alexandr Čajkovskij', 'cislo' => 10, 'rok_narozeni' => 0,    'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Matěj Tůma',          'cislo' => 11, 'rok_narozeni' => 0,    'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Matyáš Mařík',        'cislo' => 13, 'rok_narozeni' => 2001, 'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Jan Mašek',           'cislo' => 14, 'rok_narozeni' => 2003, 'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Ondřej Mašek',        'cislo' => 15, 'rok_narozeni' => 2003, 'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Jakub Lenk',          'cislo' => 16, 'rok_narozeni' => 2003, 'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Marek Lupáč',         'cislo' => 17, 'rok_narozeni' => 1998, 'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Filip Renza',         'cislo' => 18, 'rok_narozeni' => 2002, 'pozice' => 'hraci-v-poli' ),
+        array( 'name' => 'Martin Patrovský',    'cislo' => 19, 'rok_narozeni' => 2002, 'pozice' => 'hraci-v-poli' ),
+    );
+
+    foreach ( $hraci as $h ) {
+        $log[] = tjsm_insert_hrac( array(
+            'name'         => $h['name'],
+            'cislo'        => $h['cislo'],
+            'rok_narozeni' => $h['rok_narozeni'] > 0 ? $h['rok_narozeni'] : '',
+            'tym_slug'     => 'muzi-a',
+            'kategorie'    => 'muzi-a',
+            'pozice'       => $h['pozice'],
+        ) );
+    }
+
+    return $log;
+}
+
+/**
+ * Zpracuje formulář importu ukázkových dat.
+ */
+function tjsm_import_handle_form() {
+    if (
+        ! isset( $_POST['tjsm_import_nonce'] ) ||
+        ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['tjsm_import_nonce'] ) ), 'tjsm_import_action' ) ||
+        ! current_user_can( 'manage_options' )
+    ) {
+        return array();
+    }
+
+    $action = isset( $_POST['tjsm_import_action'] ) ? sanitize_key( $_POST['tjsm_import_action'] ) : '';
+
+    switch ( $action ) {
+        case 'zapasy_muzi_a': return tjsm_import_zapasy_muzi_a();
+        case 'zapasy_muzi_b': return tjsm_import_zapasy_muzi_b();
+        case 'hraci_muzi_a':  return tjsm_import_hraci_muzi_a();
+        default:              return array( '✗ Neznámá akce.' );
+    }
+}
+
+/**
+ * HTML výstup admin stránky importu ukázkových dat.
+ */
+function tjsm_import_admin_page() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_die( 'Nemáte potřebná oprávnění.', '', array( 'response' => 403 ) );
+    }
+
+    $log = array();
+    if ( isset( $_POST['tjsm_import_nonce'] ) ) {
+        $log = tjsm_import_handle_form();
+    }
+    ?>
+    <div class="wrap">
+      <h1>📥 Import ukázkových dat – TJ Slavoj Mýto</h1>
+      <p>
+        Importuje reálná data z veřejných zdrojů (fotbalunas.cz, Rokycanský deník).<br>
+        Již existující záznamy jsou přeskočeny – akce lze bezpečně spustit opakovaně.
+      </p>
+
+      <?php if ( ! empty( $log ) ) : ?>
+        <div class="notice notice-success is-dismissible">
+          <p><strong>Výsledky importu:</strong></p>
+          <ul style="margin-left:1.5em;list-style:disc">
+            <?php foreach ( $log as $row ) : ?>
+              <li><?php echo esc_html( $row ); ?></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endif; ?>
+
+      <table class="widefat striped" style="max-width:700px">
+        <thead>
+          <tr><th>Dataset</th><th>Obsah</th><th>Akce</th></tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <td><strong>Zápasy Muži A</strong></td>
+            <td>16 odehraných + 6 nadcházejících<br><small>Plzeňský krajský přebor 2025/2026</small></td>
+            <td>
+              <form method="post" style="display:inline">
+                <?php wp_nonce_field( 'tjsm_import_action', 'tjsm_import_nonce' ); ?>
+                <input type="hidden" name="tjsm_import_action" value="zapasy_muzi_a">
+                <?php submit_button( 'Importovat', 'primary', 'submit', false ); ?>
+              </form>
+            </td>
+          </tr>
+
+          <tr>
+            <td><strong>Zápasy Muži B</strong></td>
+            <td>13 odehraných + 3 nadcházející<br><small>1. B třída Plzeňský kraj, sk. C, 2025/2026</small></td>
+            <td>
+              <form method="post" style="display:inline">
+                <?php wp_nonce_field( 'tjsm_import_action', 'tjsm_import_nonce' ); ?>
+                <input type="hidden" name="tjsm_import_action" value="zapasy_muzi_b">
+                <?php submit_button( 'Importovat', 'primary', 'submit', false ); ?>
+              </form>
+            </td>
+          </tr>
+
+          <tr>
+            <td><strong>Hráči Muži A</strong></td>
+            <td>19 hráčů (2 brankáři, 17 hráčů v poli)<br><small>Soupiska 2025/2026</small></td>
+            <td>
+              <form method="post" style="display:inline">
+                <?php wp_nonce_field( 'tjsm_import_action', 'tjsm_import_nonce' ); ?>
+                <input type="hidden" name="tjsm_import_action" value="hraci_muzi_a">
+                <?php submit_button( 'Importovat', 'primary', 'submit', false ); ?>
+              </form>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <hr>
+      <p class="description">
+        <strong>Zdroje dat:</strong> fotbalunas.cz · fotbal.cz (FAČR) · sportmap.cz · Rokycanský deník
+      </p>
+    </div>
+    <?php
+}
