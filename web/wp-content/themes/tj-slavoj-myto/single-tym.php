@@ -102,10 +102,10 @@ while (have_posts()) : the_post();
     </div>
   <?php endif; ?>
 
-  <!-- ZÁPASY TÝMU -->
+  <!-- PŘÍŠTÍ ZÁPAS -->
   <div class="row mt-4">
     <div class="col-md-12">
-      <h5 class="fw-bold mb-3">Nadcházející zápas</h5>
+      <h5 class="fw-bold mb-3">Příští zápas</h5>
       <?php
       $zapasy_args = array(
           'post_type'      => 'zapas',
@@ -135,24 +135,27 @@ while (have_posts()) : the_post();
           $domaci = get_post_meta(get_the_ID(), 'domaci',       true);
           $hoste  = get_post_meta(get_the_ID(), 'hoste',        true);
           $datum_fmt = $datum ? date_i18n('j. n. Y', strtotime($datum)) : '';
-          ?>
-          <div class="card border-start border-4 border-primary shadow-sm">
-            <div class="card-body py-3">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <small class="text-muted"><?php echo esc_html($datum_fmt); ?><?php echo $cas ? ' &bull; ' . esc_html($cas) : ''; ?></small>
-                <span class="badge bg-primary">Nadcházející</span>
-              </div>
-              <div class="d-flex align-items-center justify-content-between gap-2">
-                <span class="fw-bold flex-fill text-start"><?php echo esc_html($domaci ?: '—'); ?></span>
-                <span class="fw-bold px-3 text-primary">vs</span>
-                <span class="fw-bold flex-fill text-end"><?php echo esc_html($hoste ?: '—'); ?></span>
-              </div>
-            </div>
-          </div>
-          <?php
+          $slavoj_domaci = slavoj_is_club_team($domaci);
+          $home_cls = 'match-card__team match-card__team--home' . ($slavoj_domaci ? ' match-card__team--slavoj' : '');
+          $away_cls = 'match-card__team match-card__team--away' . (!$slavoj_domaci && slavoj_is_club_team($hoste) ? ' match-card__team--slavoj' : '');
           wp_reset_postdata();
+          get_template_part('template-parts/card', 'match', array(
+              'datum'      => $datum,
+              'datum_fmt'  => $datum_fmt,
+              'cas'        => $cas,
+              'domaci'     => $domaci,
+              'hoste'      => $hoste,
+              'skore'      => '',
+              'strelci'    => '',
+              'card_cls'   => 'match-card--upcoming',
+              'score_cls'  => 'match-card__score match-card__score--upcoming',
+              'badge_cls'  => 'badge--primary',
+              'badge_text' => 'Nadcházející',
+              'home_cls'   => $home_cls,
+              'away_cls'   => $away_cls,
+          ));
       else :
-          echo '<p class="text-muted small">Žádný nadcházející zápas.</p>';
+          echo '<p class="text-muted small">Žádný příští zápas.</p>';
       endif;
       wp_reset_postdata();
       ?>

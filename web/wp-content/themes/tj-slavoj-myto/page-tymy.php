@@ -7,15 +7,14 @@
 get_header();
 
 // Získání filtrů z GET parametrů
-$filtr_tym    = isset($_GET['tym'])    ? sanitize_text_field(wp_unslash($_GET['tym']))    : '';
+// Poznámka: parametr 'kat' místo 'tym' – 'tym' koliduje s CPT 'tym' a způsobuje přesměrování
+$filtr_tym    = isset($_GET['kat'])    ? sanitize_text_field(wp_unslash($_GET['kat']))    : '';
 $filtr_sezona = isset($_GET['sezona']) ? sanitize_text_field(wp_unslash($_GET['sezona'])) : '';
 
-$dostupne_tymy   = get_terms(array(
+$dostupne_tymy   = slavoj_sort_tymy(get_terms(array(
     'taxonomy'   => 'kategorie-tymu',
     'hide_empty' => false,
-    'orderby'    => 'name',
-    'order'      => 'ASC',
-));
+)));
 $dostupne_sezony = get_terms(array(
     'taxonomy'   => 'sezona',
     'hide_empty' => false,
@@ -49,30 +48,36 @@ if ($filtr_sezona && !is_wp_error($dostupne_sezony)) {
     </header>
 
     <!-- FILTRY – selecty odešlou formulář ihned po změně; tlačítko jako záloha bez JS -->
-    <form method="get" class="filters" role="search" aria-label="Filtrování týmů">
-      <label class="sr-only" for="f-tym">Tým</label>
-      <select id="f-tym" name="tym" class="filter filter--primary" onchange="this.form.submit()">
-        <option value="">Všechny týmy</option>
-        <?php if (!is_wp_error($dostupne_tymy) && !empty($dostupne_tymy)) : foreach ($dostupne_tymy as $t) : ?>
-          <option value="<?php echo esc_attr($t->slug); ?>" <?php selected($filtr_tym, $t->slug); ?>>
-            <?php echo esc_html($t->name); ?>
-          </option>
-        <?php endforeach; endif; ?>
-      </select>
-
-      <label class="sr-only" for="f-sezona">Sezóna</label>
-      <select id="f-sezona" name="sezona" class="filter filter--muted" onchange="this.form.submit()">
-        <option value="">Všechny sezóny</option>
-        <?php if (!is_wp_error($dostupne_sezony) && !empty($dostupne_sezony)) : foreach ($dostupne_sezony as $s) : ?>
-          <option value="<?php echo esc_attr($s->slug); ?>" <?php selected($filtr_sezona, $s->slug); ?>>
-            Sezóna <?php echo esc_html($s->name); ?>
-          </option>
-        <?php endforeach; endif; ?>
-      </select>
-
-      <noscript>
-        <button type="submit" class="filter filter--submit">Filtrovat</button>
-      </noscript>
+    <form method="get" action="<?php echo esc_url(get_permalink(get_queried_object_id())); ?>" role="search" aria-label="Filtrování týmů">
+      <div class="row g-2 mb-4">
+        <div class="col-12 col-md-5">
+          <label class="sr-only" for="f-kat">Tým</label>
+          <select id="f-kat" name="kat" class="form-select" onchange="this.form.submit()">
+            <option value="">Všechny týmy</option>
+            <?php if (!is_wp_error($dostupne_tymy) && !empty($dostupne_tymy)) : foreach ($dostupne_tymy as $t) : ?>
+              <option value="<?php echo esc_attr($t->slug); ?>" <?php selected($filtr_tym, $t->slug); ?>>
+                <?php echo esc_html($t->name); ?>
+              </option>
+            <?php endforeach; endif; ?>
+          </select>
+        </div>
+        <div class="col-12 col-md-5">
+          <label class="sr-only" for="f-sezona">Sezóna</label>
+          <select id="f-sezona" name="sezona" class="form-select" onchange="this.form.submit()">
+            <option value="">Všechny sezóny</option>
+            <?php if (!is_wp_error($dostupne_sezony) && !empty($dostupne_sezony)) : foreach ($dostupne_sezony as $s) : ?>
+              <option value="<?php echo esc_attr($s->slug); ?>" <?php selected($filtr_sezona, $s->slug); ?>>
+                Sezóna <?php echo esc_html($s->name); ?>
+              </option>
+            <?php endforeach; endif; ?>
+          </select>
+        </div>
+        <div class="col-12 col-md-2">
+          <noscript>
+            <button type="submit" class="btn btn-primary w-100">Filtrovat</button>
+          </noscript>
+        </div>
+      </div>
     </form>
   </div>
 </section>
@@ -144,7 +149,7 @@ if ($filtr_sezona && !is_wp_error($dostupne_sezony)) {
       <?php slavoj_vypis_hrace_tymu($filtr_tym); ?>
     </div>
 
-    <!-- NEJBLIŽŠÍ NADCHÁZEJÍCÍ ZÁPAS -->
+    <!-- PŘÍŠTÍ ZÁPAS -->
     <?php
     $q_zapas = new WP_Query(array(
         'post_type'      => 'zapas',
@@ -166,24 +171,31 @@ if ($filtr_sezona && !is_wp_error($dostupne_sezony)) {
         $domaci    = get_post_meta($id, 'domaci',       true);
         $hoste     = get_post_meta($id, 'hoste',        true);
         $datum_fmt = $datum ? date_i18n('j. n. Y', strtotime($datum)) : '';
+        $slavoj_domaci = slavoj_is_club_team($domaci);
+        $home_cls = 'match-card__team match-card__team--home' . ($slavoj_domaci ? ' match-card__team--slavoj' : '');
+        $away_cls = 'match-card__team match-card__team--away' . (!$slavoj_domaci && slavoj_is_club_team($hoste) ? ' match-card__team--slavoj' : '');
         wp_reset_postdata();
     ?>
-    <h2 class="h5 fw-bold mt-4 mb-3">Nadcházející zápas</h2>
-    <div class="card border-start border-4 border-primary shadow-sm">
-      <div class="card-body py-3">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <small class="text-muted"><?php echo esc_html($datum_fmt); ?><?php echo $cas ? ' &bull; ' . esc_html($cas) : ''; ?></small>
-          <span class="badge bg-primary">Nadcházející</span>
-        </div>
-        <div class="d-flex align-items-center justify-content-between gap-2">
-          <span class="fw-bold flex-fill text-start"><?php echo esc_html($domaci ?: '—'); ?></span>
-          <span class="fw-bold px-3 text-primary">vs</span>
-          <span class="fw-bold flex-fill text-end"><?php echo esc_html($hoste ?: '—'); ?></span>
-        </div>
-      </div>
-    </div>
+    <h2 class="h5 fw-bold mt-4 mb-3">Příští zápas</h2>
+    <?php
+        get_template_part('template-parts/card', 'match', array(
+            'datum'      => $datum,
+            'datum_fmt'  => $datum_fmt,
+            'cas'        => $cas,
+            'domaci'     => $domaci,
+            'hoste'      => $hoste,
+            'skore'      => '',
+            'strelci'    => '',
+            'card_cls'   => 'match-card--upcoming',
+            'score_cls'  => 'match-card__score match-card__score--upcoming',
+            'badge_cls'  => 'badge--primary',
+            'badge_text' => 'Nadcházející',
+            'home_cls'   => $home_cls,
+            'away_cls'   => $away_cls,
+        ));
+    ?>
     <?php else : ?>
-    <p class="text-muted mt-4 small">Žádný nadcházející zápas nenalezen.</p>
+    <p class="text-muted mt-4 small">Žádný příští zápas nenalezen.</p>
     <?php endif; ?>
 
   </div>
