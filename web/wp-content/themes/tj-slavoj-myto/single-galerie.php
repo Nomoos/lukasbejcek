@@ -11,10 +11,14 @@ get_header();
 
   <?php
   $kategorie_tymu = get_the_terms(get_the_ID(), 'kategorie-tymu');
-  $sezona = esc_html(get_post_meta(get_the_ID(), 'sezona', true));
+  $sezona_terms   = get_the_terms(get_the_ID(), 'sezona');
   $kategorie_nazev = '';
+  $sezona          = '';
   if (!empty($kategorie_tymu) && !is_wp_error($kategorie_tymu)) {
       $kategorie_nazev = esc_html($kategorie_tymu[0]->name);
+  }
+  if (!empty($sezona_terms) && !is_wp_error($sezona_terms)) {
+      $sezona = esc_html($sezona_terms[0]->name);
   }
   if ($kategorie_nazev || $sezona) :
   ?>

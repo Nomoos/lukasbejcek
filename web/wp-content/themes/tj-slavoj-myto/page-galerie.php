@@ -80,7 +80,7 @@ $dostupne_sezony = get_terms(array(
       <?php
       $args = array(
           'post_type'      => 'galerie',
-          'posts_per_page' => -1,
+          'posts_per_page' => 24,
       );
 
       $tax_query = array();

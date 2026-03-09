@@ -1,97 +1,116 @@
 /*
  * assets/css/components/cards.css
- * Karty zápasů: .match-card a všechny varianty + .badge
- * Mobile‑first: na mobilu týmy v sloupci, na desktopu v řádku.
+ * Karty zápasů – fotbalový styl inspirovaný livesport.cz / fotbal.cz
+ * Mobile‑first.
  */
 
 /* ── Seznam zápasů ── */
-.matches {
-  padding-top: 24px;
-  padding-bottom: 48px;
-}
+.matches { padding-top: 24px; padding-bottom: 48px; }
 
 .matches__list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-width: 780px;
+  gap: 10px;
+  max-width: 860px;
   margin-inline: auto;
 }
 
 /* ── Základní karta ── */
 .match-card {
   background: #ffffff;
-  border: 1px solid #cccccc;
-  border-left: 4px solid #cccccc;  /* přepíše varianta */
-  border-radius: 16px;
-  padding: 14px;
-  transition: box-shadow .18s;
+  border-radius: 12px;
+  overflow: hidden;                     /* strip se ořízne na rohách */
+  box-shadow: 0 2px 8px rgba(0,0,0,.07);
+  transition: box-shadow .18s, transform .18s;
 }
 
 .match-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .09);
+  box-shadow: 0 6px 20px rgba(0,0,0,.12);
+  transform: translateY(-1px);
 }
 
-/* ── Stavové varianty ── */
-.match-card--upcoming {
-  background: #eef2ff;
-  border-color: rgba(35, 61, 151, .3);
-  border-left-color: #233D97;
+/* ── Barevný proužek nahoře ── */
+.match-card__strip {
+  height: 5px;
+  background: #cccccc;
 }
 
-.match-card--played    { border-left-color: #cccccc; }
-.match-card--win       { border-left-color: #15803d; }
-.match-card--loss      { border-left-color: #b91c1c; }
-.match-card--draw      { border-left-color: #6b7280; }
+.match-card--upcoming  .match-card__strip { background: var(--primary, #233D97); }
+.match-card--win       .match-card__strip { background: #16a34a; }
+.match-card--loss      .match-card__strip { background: #dc2626; }
+.match-card--draw      .match-card__strip { background: #6b7280; }
 
-/* ── Meta řádek: datum • čas + odznak ── */
+/* ── Tělo karty ── */
+.match-card__body {
+  padding: 12px 14px 14px;
+}
+
+/* ── Meta řádek: datum + badge ── */
 .match-card__meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .match-card__time {
   color: #6b7280;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
+.match-card__time::before {
+  content: '';
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #cccccc;
+  flex-shrink: 0;
+}
+
+.match-card--upcoming .match-card__time::before { background: var(--primary, #233D97); }
+.match-card--win      .match-card__time::before { background: #16a34a; }
+.match-card--loss     .match-card__time::before { background: #dc2626; }
+.match-card--draw     .match-card__time::before { background: #6b7280; }
+
+/* ── Odznak stavu ── */
 .match-card__badge {
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid #cccccc;
-  background: #ffffff;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: .06em;
+  padding: 3px 10px;
+  border-radius: 999px;
   white-space: nowrap;
 }
 
-/* Varianty odznaku */
 .match-card__badge.badge--primary {
   background: #233D97;
   color: #fff;
-  border-color: transparent;
 }
 
 .match-card__badge.badge--neutral {
-  background: #f5f6fa;
+  background: #f3f4f6;
   color: #6b7280;
-  border-color: #cccccc;
+  border: 1px solid #e5e7eb;
 }
 
-/* ── Hlavní řádek: týmy + skóre ── */
-.match-card__main {
-  /* na mobilu: sub je pod týmy */
-}
-
+/* ── Hlavní část: tým – skóre – tým ── */
 .match-card__teams {
   display: flex;
-  flex-direction: column;   /* MOBILE: stack */
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+/* Řádek týmu na mobilu */
+.match-card__team-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
 }
 
@@ -99,64 +118,62 @@
   font-size: 15px;
   font-weight: 700;
   color: #111827;
+  flex: 1;
   line-height: 1.3;
 }
 
-.match-card__team--slavoj {
-  color: #233D97;
-}
+.match-card__team--home { text-align: left; }
+.match-card__team--away { text-align: left; }
 
-/* Skóre / VS badge */
-.match-card__score {
-  align-self: flex-start;
-  font-size: 15px;
+.match-card__team--slavoj { color: var(--primary, #233D97); }
+
+/* Skóre vedlejší (v řádku týmu na mobilu) */
+.match-card__score-inline {
+  font-size: 14px;
   font-weight: 800;
-  padding: 6px 12px;
-  border-radius: 10px;
-  background: #f5f6fa;
-  border: 1px solid #cccccc;
-  color: #111827;
-  letter-spacing: .02em;
-  white-space: nowrap;
-}
-
-/* Výsledkové varianty skóre */
-.match-card__score--win  { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
-.match-card__score--loss { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
-.match-card__score--draw { background: #f3f4f6; color: #6b7280; border-color: #e5e7eb; }
-.match-card__score--upcoming {
-  background: rgba(35, 61, 151, .1);
-  color: #233D97;
-  border-color: rgba(35, 61, 151, .2);
-  font-size: 13px;
-  letter-spacing: .06em;
-}
-
-/* ── Sub: popisky Domácí / Hosté ── */
-.match-card__sub {
-  display: flex;
-  justify-content: space-between;
+  min-width: 42px;
+  text-align: center;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #f3f4f6;
   color: #6b7280;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  margin-top: 10px;
+  flex-shrink: 0;
 }
+
+.match-card__score-inline--home-win  { background: #dcfce7; color: #16a34a; }
+.match-card__score-inline--home-loss { background: #fee2e2; color: #dc2626; }
+.match-card__score-inline--draw      { background: #f3f4f6; color: #6b7280; }
+.match-card__score-inline--upcoming  { background: transparent; color: transparent; }
+
+/* Oddělovač */
+.match-card__divider {
+  height: 1px;
+  background: #f3f4f6;
+  margin: 6px 0;
+}
+
+/* ── Popisky Domácí / Hosté – skryté na mobilu ── */
+.match-card__sub { display: none; }
 
 /* ── Střelci ── */
 .match-card__scorers {
-  margin-top: 12px;
-  font-size: 13px;
-  color: #374151;
+  margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid #f3f4f6;
+  font-size: 12px;
+  color: #6b7280;
 }
 
-/* ── Desktop (≥ 768px): týmy do řádku ── */
-@media (min-width: 768px) {
-  .match-card { padding: 18px 20px; }
+/* ── Desktop (≥ 640px): klasický fotbalový layout ── */
+@media (min-width: 640px) {
 
+  .match-card__body { padding: 14px 20px 16px; }
+
+  /* Skryjeme mobilní layout */
+  .match-card__team-row,
+  .match-card__divider { display: none; }
+
+  /* Zobrazíme desktop layout */
   .match-card__teams {
     flex-direction: row;
     align-items: center;
@@ -164,15 +181,54 @@
     gap: 12px;
   }
 
-  .match-card__team { flex: 1; }
+  .match-card__team {
+    font-size: 16px;
+    flex: 1;
+  }
+
   .match-card__team--home { text-align: left; }
   .match-card__team--away { text-align: right; }
 
+  /* Velké skóre uprostřed */
   .match-card__score {
     flex-shrink: 0;
-    align-self: center;
-    font-size: 17px;
+    font-size: 22px;
+    font-weight: 900;
+    min-width: 80px;
+    text-align: center;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    color: #111827;
+    letter-spacing: .02em;
+    border: none;
   }
+
+  .match-card__score--win    { background: #dcfce7; color: #16a34a; }
+  .match-card__score--loss   { background: #fee2e2; color: #dc2626; }
+  .match-card__score--draw   { background: #f3f4f6; color: #6b7280; }
+  .match-card__score--upcoming {
+    background: rgba(35, 61, 151, .08);
+    color: #233D97;
+    font-size: 13px;
+    letter-spacing: .1em;
+    font-weight: 700;
+  }
+
+  /* Popisky Domácí / Hosté */
+  .match-card__sub {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  .match-card__sub > span:last-child { text-align: right; flex: 1; }
+  .match-card__sub > span:first-child { flex: 1; }
 }
 
 /* ── Badge (obecné) ── */
@@ -188,7 +244,7 @@
   line-height: 1.5;
 }
 .badge--primary { background: #233D97; color: #fff; }
-.badge--neutral { background: #f5f6fa; color: #6b7280; border: 1px solid #cccccc; }
-.badge--success { background: #dcfce7; color: #15803d; }
-.badge--danger  { background: #fee2e2; color: #b91c1c; }
+.badge--neutral { background: #f5f6fa; color: #6b7280; border: 1px solid #e5e7eb; }
+.badge--success { background: #dcfce7; color: #16a34a; }
+.badge--danger  { background: #fee2e2; color: #dc2626; }
 .badge--warning { background: #fef3c7; color: #92400e; }

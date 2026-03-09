@@ -23,7 +23,6 @@ $filtr_stav      = isset($args['filtr_stav'])       ? $args['filtr_stav']      :
 
   <label class="sr-only" for="f-tym">Tým</label>
   <select id="f-tym" name="tym" class="filter filter--primary" onchange="this.form.submit()">
-    <option value="">Všechny týmy</option>
     <?php if (!is_wp_error($dostupne_tymy) && !empty($dostupne_tymy)) : foreach ($dostupne_tymy as $t) : ?>
       <option value="<?php echo esc_attr($t->slug); ?>" <?php selected($filtr_tym, $t->slug); ?>>
         <?php echo esc_html($t->name); ?>
@@ -33,7 +32,6 @@ $filtr_stav      = isset($args['filtr_stav'])       ? $args['filtr_stav']      :
 
   <label class="sr-only" for="f-sezona">Sezóna</label>
   <select id="f-sezona" name="sezona" class="filter filter--muted" onchange="this.form.submit()">
-    <option value="">Všechny sezóny</option>
     <?php if (!is_wp_error($dostupne_sezony) && !empty($dostupne_sezony)) : foreach ($dostupne_sezony as $s) : ?>
       <option value="<?php echo esc_attr($s->slug); ?>" <?php selected($filtr_sezona, $s->slug); ?>>
         Sezóna <?php echo esc_html($s->name); ?>

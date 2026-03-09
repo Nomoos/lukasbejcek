@@ -764,20 +764,68 @@ function slavoj_is_club_team($nazev_tymu) {
 }
 
 /**
+ * Vrátí slug nejnovější sezóny (podle term_id – nejvyšší = naposledy přidaná).
+ * Používá se jako výchozí hodnota filtru sezóny.
+ *
+ * @return string  Slug sezóny (např. '2025-26'), nebo '' pokud žádná neexistuje.
+ */
+function slavoj_get_latest_sezona_slug() {
+    $terms = get_terms(array(
+        'taxonomy'   => 'sezona',
+        'hide_empty' => true,
+        'orderby'    => 'name',
+        'order'      => 'DESC',
+        'number'     => 1,
+    ));
+    return (!empty($terms) && !is_wp_error($terms)) ? $terms[0]->slug : '';
+}
+
+/**
+ * Vrátí kanonické pořadí kategorií týmů (slug => název) od nejvyšší ligy.
+ * Používá se pro řazení filtrů, dropdown seznamů i karet na homepage.
+ *
+ * @return array  Asociativní pole slug => název v požadovaném pořadí.
+ */
+function slavoj_kategorie_poradi() {
+    return array(
+        'muzi-a'            => 'Muži A',
+        'muzi-b'            => 'Muži B',
+        'dorost'            => 'Dorost',
+        'starsi-zaci'       => 'Starší žáci',
+        'mladsi-zaci'       => 'Mladší žáci',
+        'starsi-pripravka'  => 'Starší přípravka',
+        'mladsi-pripravka'  => 'Mladší přípravka',
+        'mini-pripravka'    => 'Minipřípravka',
+    );
+}
+
+/**
+ * Seřadí pole WP_Term objektů (taxonomie kategorie-tymu) dle kanonického pořadí.
+ *
+ * @param array $terms  Pole WP_Term objektů.
+ * @return array  Seřazené pole.
+ */
+function slavoj_sort_tymy($terms) {
+    if (empty($terms) || is_wp_error($terms)) return $terms;
+    $poradi = array_keys(slavoj_kategorie_poradi());
+    usort($terms, function($a, $b) use ($poradi) {
+        $ia = array_search($a->slug, $poradi);
+        $ib = array_search($b->slug, $poradi);
+        $ia = ($ia === false) ? 999 : $ia;
+        $ib = ($ib === false) ? 999 : $ib;
+        return $ia - $ib;
+    });
+    return $terms;
+}
+
+/**
  * Vrátí zobrazovaný název kategorie týmu podle jeho slugu.
  *
  * @param string $slug  Slug taxonomie kategorie-tymu (např. 'muzi-a').
  * @return string  Zobrazovaný název (např. 'Muži A'), nebo samotný slug pokud není nalezen.
  */
 function slavoj_get_team_display_name($slug) {
-    $mapa = array(
-        'muzi-a'      => 'Muži A',
-        'muzi-b'      => 'Muži B',
-        'dorost'      => 'Dorost',
-        'starsi-zaci' => 'Starší žáci',
-        'mladsi-zaci' => 'Mladší žáci',
-        'pripravka'   => 'Přípravka',
-    );
+    $mapa = slavoj_kategorie_poradi();
     return isset($mapa[$slug]) ? $mapa[$slug] : $slug;
 }
 

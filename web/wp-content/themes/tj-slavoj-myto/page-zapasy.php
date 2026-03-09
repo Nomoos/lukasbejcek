@@ -8,19 +8,17 @@
  */
 get_header();
 
-/* ── Sanitace GET parametrů ── */
-$filtr_tym    = isset($_GET['tym'])    ? sanitize_text_field(wp_unslash($_GET['tym']))    : '';
-$filtr_sezona = isset($_GET['sezona']) ? sanitize_text_field(wp_unslash($_GET['sezona'])) : '';
-$filtr_stav   = isset($_GET['stav'])   ? sanitize_text_field(wp_unslash($_GET['stav']))   : 'vse';
-$paged        = isset($_GET['stranka']) ? max(1, absint($_GET['stranka'])) : 1;
+/* ── Sanitace GET parametrů (výchozí: Muži A + nejnovější sezóna) ── */
+$filtr_tym    = isset($_GET['tym'])     ? sanitize_text_field(wp_unslash($_GET['tym']))     : 'muzi-a';
+$filtr_sezona = isset($_GET['sezona'])  ? sanitize_text_field(wp_unslash($_GET['sezona']))  : slavoj_get_latest_sezona_slug();
+$filtr_stav   = isset($_GET['stav'])    ? sanitize_text_field(wp_unslash($_GET['stav']))    : 'vse';
+$paged        = isset($_GET['stranka']) ? max(1, absint($_GET['stranka']))                  : 1;
 
 /* ── Taxonomie pro filtry ── */
-$dostupne_tymy   = get_terms(array(
+$dostupne_tymy = slavoj_sort_tymy(get_terms(array(
     'taxonomy'   => 'kategorie-tymu',
     'hide_empty' => true,
-    'orderby'    => 'name',
-    'order'      => 'ASC',
-));
+)));
 $dostupne_sezony = get_terms(array(
     'taxonomy'   => 'sezona',
     'hide_empty' => true,
@@ -169,10 +167,8 @@ get_template_part('template-parts/hero', 'team', array(
                   $badge_text = 'Nadcházející';
               }
 
-              /* Orientace Domácí / Hosté */
+              /* Zvýraznění Slavoje – domácí jsou vždy vlevo, hosté vpravo */
               $slavoj_domaci = slavoj_is_club_team($domaci);
-              $lbl_levy      = $slavoj_domaci ? 'Domácí' : 'Hosté';
-              $lbl_pravy     = $slavoj_domaci ? 'Hosté'  : 'Domácí';
 
               $home_cls = 'match-card__team match-card__team--home'
                           . ($slavoj_domaci ? ' match-card__team--slavoj' : '');
@@ -191,8 +187,6 @@ get_template_part('template-parts/hero', 'team', array(
                   'score_cls'  => $score_cls,
                   'badge_cls'  => $badge_cls,
                   'badge_text' => $badge_text,
-                  'lbl_levy'   => $lbl_levy,
-                  'lbl_pravy'  => $lbl_pravy,
                   'home_cls'   => $home_cls,
                   'away_cls'   => $away_cls,
               ));
@@ -203,8 +197,17 @@ get_template_part('template-parts/hero', 'team', array(
           /* ── Stránkování ── */
           $total_pages = $q->max_num_pages;
           if ($total_pages > 1) :
-              $base_url   = remove_query_arg('stranka');
-              $sep        = strpos($base_url, '?') !== false ? '&' : '?';
+              /* Čistý permalink stránky + zachované filtry (bez stranka) */
+              $base_url = get_permalink(get_queried_object_id());
+              $params   = array_filter(array(
+                  'tym'    => $filtr_tym,
+                  'sezona' => $filtr_sezona,
+                  'stav'   => ($filtr_stav !== 'vse') ? $filtr_stav : '',
+              ));
+              if (!empty($params)) {
+                  $base_url = add_query_arg($params, $base_url);
+              }
+              $sep = strpos($base_url, '?') !== false ? '&' : '?';
               $pagination = paginate_links(array(
                   'base'      => $base_url . $sep . 'stranka=%#%',
                   'format'    => '',

@@ -136,8 +136,6 @@ h1, h2, h3, h4, h5, h6 { margin: 0; line-height: 1.25; font-weight: 700; color: 
 }
 .site-footer__logo {
   height: 44px;
-  filter: brightness(0) invert(1);
-  opacity: .9;
 }
 .site-footer__name { font-size: 18px; font-weight: 800; color: #fff; }
 
@@ -193,24 +191,31 @@ h1, h2, h3, h4, h5, h6 { margin: 0; line-height: 1.25; font-weight: 700; color: 
    ─────────────────────────────────────── */
 
 /* Banner */
-.banner { position: relative; height: 260px; overflow: hidden; }
+.banner { position: relative; height: 200px; overflow: hidden; }
+
+@media (min-width: 576px) { .banner { height: 280px; } }
+@media (min-width: 992px) { .banner { height: 420px; } }
+
 .banner img {
-  position: absolute; top: -150px; left: 0;
-  width: 100%; height: calc(100% + 256px);
-  object-fit: cover; object-position: center top;
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center 25%;
   filter: brightness(60%);
 }
 .banner-text {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  color: #fff; text-align: center; white-space: nowrap;
+  color: #fff; text-align: center;
+  width: 90%;
 }
 .banner-text h1,
 .banner-text h5 { color: #fff; margin: 0; }
-.banner-text h5 { font-size: 16px; font-weight: 400; margin-top: 6px; }
+.banner-text h1 { font-size: 1.6rem; }
+.banner-text h5 { font-size: 14px; font-weight: 400; margin-top: 6px; }
 
 @media (min-width: 576px) {
-  .banner-text h5 { font-size: 20px; }
+  .banner-text h1 { font-size: 2rem; }
+  .banner-text h5 { font-size: 18px; }
 }
 
 /* Aktuality */
@@ -235,7 +240,7 @@ h1, h2, h3, h4, h5, h6 { margin: 0; line-height: 1.25; font-weight: 700; color: 
 /* Domovská karta (záměrně scoped na .zapasy-container, aby nepřepisovala Bootstrap .card) */
 .zapasy-container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (min-width: 992px) { .zapasy-container { grid-template-columns: repeat(4, 1fr); } }
-.zapasy-container .card { background: var(--card); border-radius: 0 var(--radius) 0 0; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+.zapasy-container .card { background: var(--card); border: none; border-radius: 0 var(--radius) 0 0; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
 .zapasy-container .card h3 { color: var(--primary); font-size: 15px; margin: 8px 0; }
 .zapasy-container .card p  { font-size: 14px; margin: 4px 0; }
 
