@@ -1211,8 +1211,8 @@ function tjsm_init_handle_form() {
     $pages = array(
         array( 'title' => 'Úvod',     'slug' => 'uvod',      'template' => '' ),
         array( 'title' => 'Aktuality','slug' => 'aktuality', 'template' => 'page-aktuality.php' ),
-        array( 'title' => 'Zápasy',   'slug' => 'zapasy',    'template' => 'page-zapasy.php' ),
-        array( 'title' => 'Týmy',     'slug' => 'tymy',      'template' => 'page-tymy.php' ),
+        array( 'title' => 'Zápasy',   'slug' => 'zapasy',    'template' => '' ), // URL obsluhuje CPT archive (archive-zapas.php)
+        array( 'title' => 'Týmy',     'slug' => 'tymy',      'template' => '' ), // URL obsluhuje CPT archive (archive-tym.php)
         array( 'title' => 'Galerie',  'slug' => 'galerie',   'template' => 'page-galerie.php' ),
         array( 'title' => 'Historie', 'slug' => 'historie',  'template' => 'page-historie.php' ),
         array( 'title' => 'Sponzoři', 'slug' => 'sponzori',  'template' => 'page-sponzori.php' ),
