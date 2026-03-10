@@ -2,35 +2,45 @@
 
 ## O projektu
 
-Cílem je přenést web fotbalového klubu **TJ Slavoj Mýto** ze stávajícího, nedokončeného WordPress tématu (složka `original/`) do plně funkčního a spravovatelného WordPress webu (složka `web/`).
+Cílem bylo přenést web fotbalového klubu **TJ Slavoj Mýto** ze stávajícího, nedokončeného WordPress tématu (složka `original/`) do plně funkčního a spravovatelného WordPress webu.
 
-## Výchozí stav
-
-- Složka `original/` obsahuje rozpracované WordPress téma s PHP šablonami.
-- Velká část obsahu je hardcoded přímo v PHP souborech.
-- Interaktivní prvky (filtry, formuláře) jsou nefunkční.
-- Chybí custom post types pro správu dat přes admin rozhraní.
-
-## Cílový stav
-
-- Plně funkční WordPress téma ve složce `web/theme/`.
-- Veškerý obsah spravovatelný přes WordPress admin.
-- Custom post types: Zápasy, Týmy, Hráči, Galerie, Kontakty, Sponzoři.
-- Responzivní design (mobile-first).
-- SEO optimalizace.
+**Stav k březnu 2026:** Projekt je funkční a nasazený lokálně (XAMPP).
 
 ## Technologie
 
-- **CMS**: WordPress (nejnovější stabilní verze)
-- **Jazyk**: PHP 8.x
-- **Frontend**: Bootstrap 5, vlastní CSS/JS
-- **Verzování**: Git (tento repozitář)
+| Vrstva | Technologie |
+|--------|-------------|
+| CMS | WordPress 6.x |
+| Backend | PHP 8.x |
+| Frontend | Bootstrap 5.3.3 (CDN), vlastní CSS (mobile-first) |
+| JavaScript | Minimální — pouze tam kde Bootstrap nebo CSS nestačí |
+| Verzování | Git → GitHub (Nomoos/lukasbejcek) |
 
-## Časový odhad
+## Adresářová struktura
 
-Celkem přibližně **14–23 dní** čistého vývoje rozdělených do 10 fází.  
-Podrobnosti viz `PLAN-PORTOVANI-WORDPRESS.md` v kořeni repozitáře.
+```
+lukasbejcek/
+├── web/                              # WordPress instalace
+│   └── wp-content/
+│       └── themes/tj-slavoj-myto/   # ← aktivní téma
+├── original/                         # Původní téma (referenční, neměnit)
+├── docs/                             # Dokumentace
+└── notes/                            # Pracovní poznámky
+```
+
+## Klíčová rozhodnutí
+
+- **Minimální JS** — filtry fungují jako HTML `<form method="get">`, bez AJAXu
+- **Bootstrap 5 grid** — responzivní layout bez vlastního CSS frameworku
+- **CPT místo custom tabulek** — veškerý obsah (zápasy, týmy, hráči) v nativních WP post types
+- **Žádné page templates pro CPT URL** — `/zapasy/` a `/tymy/` obsluhují `archive-*.php`, ne `page-*.php`
+
+## Lokální prostředí
+
+- XAMPP: `C:\xampp\htdocs\fotbal_club`
+- URL: `http://localhost/fotbal_club`
+- Admin: `http://localhost/fotbal_club/wp-admin`
 
 ---
 
-*Vytvořeno: únor 2026*
+*Aktualizováno: březen 2026*
