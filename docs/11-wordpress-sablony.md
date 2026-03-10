@@ -1,5 +1,33 @@
 # 11 – WordPress šablony: CPT Archive vs Page Template
 
+## Přehled všech typů šablon WordPress
+
+WordPress vybírá šablonu podle tzv. **Template Hierarchy** — prioritního seznamu souborů od nejkonkrétnějšího po nejobecnější fallback.
+
+| Typ šablony | Soubor | URL vzor | Příklad v projektu |
+|---|---|---|---|
+| **Homepage** | `front-page.php` | `/` | Úvodní stránka s bannerem a kartami zápasů |
+| **Stránka (obecná)** | `page.php` | `/cokoliv/` | Fallback pro stránky bez vlastní šablony |
+| **Stránka (dle slugu)** | `page-{slug}.php` | `/sponzori/` | `page-sponzori.php`, `page-galerie.php` |
+| **CPT archiv** | `archive-{cpt}.php` | `/zapasy/` | `archive-zapas.php`, `archive-tym.php` |
+| **CPT detail** | `single-{cpt}.php` | `/zapasy/muj-zapas/` | `single-zapas.php`, `single-tym.php`, `single-galerie.php` |
+| **Příspěvek blogu** | `single.php` | `/aktuality/clanek/` | `single.php` — aktuality klubu |
+| **Archiv (obecný)** | `archive.php` | `/aktuality/` | Fallback pro archivy bez vlastního souboru |
+| **Fallback** | `index.php` | cokoliv | Poslední záchrana — WordPress vždy najde tento soubor |
+
+### Priorita výběru šablony (WordPress Template Hierarchy)
+
+WordPress prochází soubory od **nejkonkrétnějšího** k nejobecnějšímu a použije první který existuje:
+
+```
+/zapasy/              → archive-zapas.php → archive.php → index.php
+/zapasy/muzi-vs-x/   → single-zapas.php  → single.php  → index.php
+/sponzori/            → page-sponzori.php → page.php    → index.php
+/                     → front-page.php    → home.php    → index.php
+```
+
+---
+
 ## Základní rozdíl
 
 WordPress má dva různé způsoby jak zobrazit obsah na dané URL. Je důležité vědět který se používá, protože úprava špatného souboru nemá žádný efekt.
