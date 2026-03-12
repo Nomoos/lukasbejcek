@@ -1,14 +1,13 @@
 <?php
 /**
- * Template Name: Galerie
- * Stránka s fotoalbami TJ Slavoj Mýto
+ * Archiv galerie – seznam fotoalb TJ Slavoj Mýto
  * Obsahuje: filtry (tým, sezóna), mřížka fotoalb s náhledem a názvem
  */
 get_header();
 
 // Získání filtrů z GET parametrů
 $filtr_kategorie = isset($_GET['kategorie']) ? sanitize_text_field(wp_unslash($_GET['kategorie'])) : '';
-$filtr_sezona = isset($_GET['sezona']) ? sanitize_text_field(wp_unslash($_GET['sezona'])) : '';
+$filtr_sezona    = isset($_GET['sezona'])    ? sanitize_text_field(wp_unslash($_GET['sezona']))    : '';
 
 $kategorie_tymu_terms = get_terms(array(
     'taxonomy'   => 'kategorie-tymu',
@@ -26,40 +25,49 @@ $dostupne_sezony = get_terms(array(
 <section class="section">
   <div class="container">
     <header class="page-title">
-      <h1 class="page-title__h1"><?php echo esc_html(get_the_title(get_queried_object_id())); ?></h1>
-      <p class="page-title__subtitle"><?php
-          $sub = get_the_excerpt(get_queried_object_id());
-          echo $sub ? esc_html(wp_strip_all_tags($sub)) : esc_html(sprintf('Fotografie z klubového života %s', get_bloginfo('name')));
-      ?></p>
+      <h1 class="page-title__h1">Galerie</h1>
+      <p class="page-title__subtitle">
+        Fotografie z klubového života<br><?php echo esc_html(get_bloginfo('name')); ?>
+      </p>
     </header>
 
     <!-- FILTRY – selecty odešlou formulář ihned po změně; tlačítko jako záloha bez JS -->
-    <form method="get" class="filters" role="search" aria-label="Filtrování galerie">
-      <label class="sr-only" for="f-kategorie">Kategorie</label>
-      <select id="f-kategorie" name="kategorie" class="filter filter--primary" onchange="this.form.submit()">
-        <option value="">Všechny kategorie</option>
-        <?php if (!empty($kategorie_tymu_terms) && !is_wp_error($kategorie_tymu_terms)) : ?>
-          <?php foreach ($kategorie_tymu_terms as $term) : ?>
-            <option value="<?php echo esc_attr($term->slug); ?>" <?php selected($filtr_kategorie, $term->slug); ?>>
-              <?php echo esc_html($term->name); ?>
-            </option>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </select>
+    <form method="get" action="<?php echo esc_url(get_post_type_archive_link('galerie')); ?>" aria-label="Filtrování galerie">
+      <div class="row g-2 mb-4">
 
-      <label class="sr-only" for="f-sezona">Sezóna</label>
-      <select id="f-sezona" name="sezona" class="filter filter--muted" onchange="this.form.submit()">
-        <option value="">Všechny sezóny</option>
-        <?php if (!is_wp_error($dostupne_sezony) && !empty($dostupne_sezony)) : foreach ($dostupne_sezony as $s) : ?>
-          <option value="<?php echo esc_attr($s->slug); ?>" <?php selected($filtr_sezona, $s->slug); ?>>
-            Sezóna <?php echo esc_html($s->name); ?>
-          </option>
-        <?php endforeach; endif; ?>
-      </select>
+        <div class="col-12 col-md-4">
+          <label class="visually-hidden" for="f-kategorie">Kategorie týmu</label>
+          <select id="f-kategorie" name="kategorie" class="form-select filter-select-team" onchange="this.form.submit()">
+            <option value="">Všechny kategorie</option>
+            <?php if (!empty($kategorie_tymu_terms) && !is_wp_error($kategorie_tymu_terms)) : ?>
+              <?php foreach ($kategorie_tymu_terms as $term) : ?>
+                <option value="<?php echo esc_attr($term->slug); ?>" <?php selected($filtr_kategorie, $term->slug); ?>>
+                  <?php echo esc_html($term->name); ?>
+                </option>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </select>
+        </div>
 
-      <noscript>
-        <button type="submit" class="filter filter--submit">Filtrovat</button>
-      </noscript>
+        <div class="col-12 col-md-4">
+          <label class="visually-hidden" for="f-sezona">Sezóna</label>
+          <select id="f-sezona" name="sezona" class="form-select filter-select-season" onchange="this.form.submit()">
+            <option value="">Všechny sezóny</option>
+            <?php if (!is_wp_error($dostupne_sezony) && !empty($dostupne_sezony)) : foreach ($dostupne_sezony as $s) : ?>
+              <option value="<?php echo esc_attr($s->slug); ?>" <?php selected($filtr_sezona, $s->slug); ?>>
+                Sezóna <?php echo esc_html($s->name); ?>
+              </option>
+            <?php endforeach; endif; ?>
+          </select>
+        </div>
+
+        <noscript>
+          <div class="col-12 col-md-auto">
+            <button type="submit" class="btn btn-primary">Filtrovat</button>
+          </div>
+        </noscript>
+
+      </div>
     </form>
   </div>
 </section>
@@ -116,7 +124,7 @@ $dostupne_sezony = get_terms(array(
                 <a href="<?php the_permalink(); ?>" class="text-decoration-none">
                   <?php if (has_post_thumbnail()) : ?>
                     <?php the_post_thumbnail('medium', array(
-                        'class' => 'img-fluid gallery-img',
+                        'class'   => 'img-fluid gallery-img',
                         'loading' => 'lazy',
                     )); ?>
                   <?php else : ?>

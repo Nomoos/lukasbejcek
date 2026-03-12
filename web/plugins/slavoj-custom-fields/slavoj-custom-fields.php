@@ -640,7 +640,7 @@ function slavoj_cf_seed_pages() {
         ),
         array(
             'title'    => 'Galerie',
-            'template' => 'page-galerie.php',
+            'template' => '',
         ),
         array(
             'title'    => 'Sponzoři',

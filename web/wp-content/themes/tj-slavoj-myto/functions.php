@@ -1213,7 +1213,7 @@ function tjsm_init_handle_form() {
         array( 'title' => 'Aktuality','slug' => 'aktuality', 'template' => 'page-aktuality.php' ),
         array( 'title' => 'Zápasy',   'slug' => 'zapasy',    'template' => '' ), // URL obsluhuje CPT archive (archive-zapas.php)
         array( 'title' => 'Týmy',     'slug' => 'tymy',      'template' => '' ), // URL obsluhuje CPT archive (archive-tym.php)
-        array( 'title' => 'Galerie',  'slug' => 'galerie',   'template' => 'page-galerie.php' ),
+        array( 'title' => 'Galerie',  'slug' => 'galerie',   'template' => '' ), // URL obsluhuje CPT archive (archive-galerie.php)
         array( 'title' => 'Historie', 'slug' => 'historie',  'template' => 'page-historie.php' ),
         array( 'title' => 'Sponzoři', 'slug' => 'sponzori',  'template' => 'page-sponzori.php' ),
         array( 'title' => 'Kontakty', 'slug' => 'kontakty',  'template' => 'page-kontakty.php' ),
