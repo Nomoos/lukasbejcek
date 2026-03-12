@@ -83,7 +83,7 @@ $kategorie = slavoj_sort_tymy(get_terms(array('taxonomy' => 'kategorie-tymu', 'h
           'paged'          => $paged,
           'meta_key'       => 'datum_zapasu',
           'orderby'        => 'meta_value',
-          'order'          => 'DESC',
+          'order'          => 'ASC',
       );
 
       $tax_query  = array();

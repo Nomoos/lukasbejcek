@@ -1,50 +1,37 @@
 <?php
 /**
  * Archiv týmů CPT (archive-tym.php)
- * Zobrazuje seznam týmů s filtrováním podle kategorie a sezóny
+ * Zobrazuje seznam týmů s filtrováním podle sezóny (toggle pills)
  */
 get_header();
 
-$filtr_kategorie = isset($_GET['kategorie']) ? sanitize_text_field(wp_unslash($_GET['kategorie'])) : '';
-$filtr_sezona    = isset($_GET['sezona'])    ? sanitize_text_field(wp_unslash($_GET['sezona']))    : slavoj_get_latest_sezona_slug();
-
-$sezony    = get_terms(array('taxonomy' => 'sezona',        'hide_empty' => true, 'orderby' => 'name', 'order' => 'DESC'));
-$kategorie = slavoj_sort_tymy(get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => true)));
+$filtr_sezona = isset($_GET['sezona']) ? sanitize_text_field(wp_unslash($_GET['sezona'])) : slavoj_get_latest_sezona_slug();
+$sezony       = get_terms(array('taxonomy' => 'sezona', 'hide_empty' => true, 'orderby' => 'name', 'order' => 'DESC'));
+$base_url     = get_post_type_archive_link('tym');
 ?>
 
 <div class="container py-4">
   <h1 class="fw-bold mb-1"><?php post_type_archive_title(); ?></h1>
   <p class="text-muted mb-4">Přehled týmů <?php bloginfo('name'); ?></p>
 
-  <!-- FILTRY -->
-  <form method="get" action="<?php echo esc_url(get_post_type_archive_link('tym')); ?>" aria-label="Filtrování týmů">
-    <div class="row g-2 mb-4">
-      <div class="col-12 col-md-6">
-        <label class="visually-hidden" for="f-kategorie">Kategorie</label>
-        <select id="f-kategorie" name="kategorie" class="form-select filter-select-team" onchange="this.form.submit()">
-          <option value="">Všechny kategorie</option>
-          <?php if (!is_wp_error($kategorie)) : foreach ($kategorie as $kat) : ?>
-            <option value="<?php echo esc_attr($kat->slug); ?>" <?php selected($filtr_kategorie, $kat->slug); ?>>
-              <?php echo esc_html($kat->name); ?>
-            </option>
-          <?php endforeach; endif; ?>
-        </select>
-      </div>
-      <div class="col-12 col-md-6">
-        <label class="visually-hidden" for="f-sezona">Sezóna</label>
-        <select id="f-sezona" name="sezona" class="form-select filter-select-season" onchange="this.form.submit()">
-          <?php if (!is_wp_error($sezony)) : foreach ($sezony as $sez) : ?>
-            <option value="<?php echo esc_attr($sez->slug); ?>" <?php selected($filtr_sezona, $sez->slug); ?>>
-              Sezóna <?php echo esc_html($sez->name); ?>
-            </option>
-          <?php endforeach; endif; ?>
-        </select>
-      </div>
-    </div>
-    <noscript>
-      <button type="submit" class="btn btn-primary mb-3">Filtrovat</button>
-    </noscript>
-  </form>
+  <!-- FILTR SEZÓN (toggle pills) -->
+  <?php if (!is_wp_error($sezony) && $sezony) : ?>
+    <nav class="filter-pills mb-4" aria-label="Filtrování podle sezóny">
+      <?php foreach ($sezony as $sez) :
+          $is_active = ($filtr_sezona === $sez->slug);
+          $href      = $is_active
+              ? esc_url($base_url)
+              : esc_url(add_query_arg('sezona', $sez->slug, $base_url));
+          $cls       = 'filter-pill' . ($is_active ? ' filter-pill--active' : '');
+      ?>
+        <a href="<?php echo $href; ?>"
+           class="<?php echo esc_attr($cls); ?>"
+           <?php if ($is_active) echo 'aria-current="true"'; ?>>
+          <?php echo esc_html($sez->name); ?>
+        </a>
+      <?php endforeach; ?>
+    </nav>
+  <?php endif; ?>
 
   <!-- SEZNAM TÝMŮ -->
   <div class="row g-4">
@@ -54,26 +41,14 @@ $kategorie = slavoj_sort_tymy(get_terms(array('taxonomy' => 'kategorie-tymu', 'h
         'posts_per_page' => -1,
     );
 
-    $tax_query = array('relation' => 'AND');
-
-    if ($filtr_kategorie) {
-        $tax_query[] = array(
-            'taxonomy' => 'kategorie-tymu',
-            'field'    => 'slug',
-            'terms'    => $filtr_kategorie,
-        );
-    }
-
     if ($filtr_sezona) {
-        $tax_query[] = array(
-            'taxonomy' => 'sezona',
-            'field'    => 'slug',
-            'terms'    => $filtr_sezona,
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'sezona',
+                'field'    => 'slug',
+                'terms'    => $filtr_sezona,
+            ),
         );
-    }
-
-    if (count($tax_query) > 1) {
-        $args['tax_query'] = $tax_query;
     }
 
     $tymy_query = new WP_Query($args);

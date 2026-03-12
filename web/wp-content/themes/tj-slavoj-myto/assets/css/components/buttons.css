@@ -104,6 +104,56 @@
 }
 
 /* ──────────────────────────────────────
+   FILTER PILLS (toggle tlačítka sezón)
+   ────────────────────────────────────── */
+.filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 20px;
+  border-radius: var(--radius-pill, 999px);
+  border: 1.5px solid var(--border, #cccccc);
+  background: var(--header, #E6E6E6);
+  color: var(--text, #111827);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+}
+
+.filter-pill:hover {
+  background: var(--primary-light, #dce5f7);
+  border-color: var(--primary, #233D97);
+  color: var(--primary, #233D97);
+}
+
+.filter-pill--active {
+  background: var(--primary, #233D97);
+  border-color: var(--primary, #233D97);
+  color: #ffffff;
+}
+
+.filter-pill--active:hover {
+  background: var(--primary-dark, #1a2e73);
+  border-color: var(--primary-dark, #1a2e73);
+  color: #ffffff;
+}
+
+.filter-pill:focus-visible {
+  outline: 2px solid var(--primary, #233D97);
+  outline-offset: 2px;
+}
+
+/* ──────────────────────────────────────
    STRÁNKOVÁNÍ (paginate_links output)
    ────────────────────────────────────── */
 .pagination-nav {
