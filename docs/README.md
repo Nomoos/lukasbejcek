@@ -18,3 +18,4 @@ Průběžná dokumentace vývoje WordPress tématu pro fotbalový klub TJ Slavoj
 | [10-review-kod.md](./10-review-kod.md) | Review kódu – problémy, opravy, hodnocení | ✅ aktuální |
 | [11-wordpress-sablony.md](./11-wordpress-sablony.md) | CPT archive vs Page template – rozdíl a mapování | ✅ aktuální |
 | [12-javascript.md](./12-javascript.md) | Inventář JS v projektu, hodnocení, alternativy | ✅ aktuální |
+| [13-typy-obsahu.md](./13-typy-obsahu.md) | Přehled všech typů obsahu – CPT, taxonomie, nativní WP | ✅ aktuální |
