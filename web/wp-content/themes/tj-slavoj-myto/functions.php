@@ -1721,3 +1721,76 @@ function tjsm_import_handle_form() {
     }
 }
 
+// =====================================================================
+// UŽIVATELSKÉ ROLE
+// =====================================================================
+
+/**
+ * Registrace vlastní role "Správce obsahu" (slavoj_editor).
+ *
+ * Oprávnění:
+ *   - Může spravovat všechny vlastní CPT (zápasy, týmy, hráče, galerie,
+ *     sponzory, kontakty) a přiřazovat taxonomie (sezóny, kategorie).
+ *   - Může nahrávat soubory (obrázky do galerie, loga sponzorů).
+ *   - Může spravovat běžné příspěvky a stránky.
+ *   - Nemůže měnit téma, pluginy, uživatele ani nastavení webu.
+ *
+ * Role se vytvoří/aktualizuje jednou – uloží se do databáze (wp_options).
+ * Verze (TJSM_ROLE_VERSION) zajistí přeregistraci při změně capabilities.
+ */
+define('TJSM_ROLE_VERSION', 1);
+
+function slavoj_register_roles() {
+    if ((int) get_option('tjsm_role_version') === TJSM_ROLE_VERSION) {
+        return;
+    }
+
+    // Smazat starou verzi role (pokud existuje) a vytvořit znovu
+    remove_role('slavoj_editor');
+
+    add_role('slavoj_editor', 'Správce obsahu', array(
+        // Čtení
+        'read'                   => true,
+
+        // Příspěvky a stránky
+        'edit_posts'             => true,
+        'edit_others_posts'      => true,
+        'edit_published_posts'   => true,
+        'publish_posts'          => true,
+        'delete_posts'           => true,
+        'delete_others_posts'    => true,
+        'delete_published_posts' => true,
+        'edit_pages'             => true,
+        'edit_others_pages'      => true,
+        'edit_published_pages'   => true,
+        'publish_pages'          => true,
+        'delete_pages'           => true,
+        'delete_others_pages'    => true,
+        'delete_published_pages' => true,
+
+        // Média (nahrávání obrázků)
+        'upload_files'           => true,
+
+        // Taxonomie (kategorie, štítky, vlastní taxonomie)
+        'manage_categories'      => true,
+        'assign_categories'      => true,
+
+        // Moderování komentářů
+        'moderate_comments'      => true,
+        'edit_comment'           => true,
+
+        // Zakázáno: témata, pluginy, uživatelé, nastavení
+        'manage_options'         => false,
+        'install_plugins'        => false,
+        'edit_plugins'           => false,
+        'install_themes'         => false,
+        'edit_themes'            => false,
+        'edit_users'             => false,
+        'create_users'           => false,
+        'delete_users'           => false,
+    ));
+
+    update_option('tjsm_role_version', TJSM_ROLE_VERSION);
+}
+add_action('init', 'slavoj_register_roles');
+
