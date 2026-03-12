@@ -64,14 +64,26 @@ $kategorie = slavoj_sort_tymy(get_terms(array('taxonomy' => 'kategorie-tymu', 'h
 
 <!-- MODRÝ PRUH S LOGEM -->
 <div class="fluid">
-  <div class="row">
+  <div class="row align-items-center g-0">
     <div class="col-5"><div class="blue-bar-p"></div></div>
-    <div class="col-1 text-center">
+    <div class="col-2 d-flex justify-content-center">
       <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png" alt="TJ Slavoj Mýto" height="50">
     </div>
-    <div class="col-6"><div class="blue-bar-l"></div></div>
+    <div class="col-5"><div class="blue-bar-l"></div></div>
   </div>
 </div>
+
+<!-- NÁZEV VYBRANÉHO TÝMU -->
+<?php
+$active_team = null;
+if ($filtr_tym && !is_wp_error($kategorie)) {
+    foreach ($kategorie as $kat) {
+        if ($kat->slug === $filtr_tym) { $active_team = $kat->name; break; }
+    }
+}
+if ($active_team) : ?>
+  <h2 class="text-center fw-bold my-3"><?php echo esc_html($active_team); ?></h2>
+<?php endif; ?>
 
 <!-- SEZNAM ZÁPASŮ -->
 <div class="container">
