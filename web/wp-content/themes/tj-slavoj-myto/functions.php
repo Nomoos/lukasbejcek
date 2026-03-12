@@ -118,6 +118,8 @@ function slavoj_register_post_types() {
         'menu_icon'           => 'dashicons-awards',
         'show_in_rest'        => true,
         'taxonomies'          => array('sezona', 'kategorie-tymu', 'stav-zapasu'),
+        'capability_type'     => array('zapas', 'zapasy'),
+        'map_meta_cap'        => true,
     ));
 
     // --- TÝMY ---
@@ -143,6 +145,8 @@ function slavoj_register_post_types() {
         'menu_icon'           => 'dashicons-groups',
         'show_in_rest'        => true,
         'taxonomies'          => array('sezona', 'kategorie-tymu'),
+        'capability_type'     => array('tym', 'tymy'),
+        'map_meta_cap'        => true,
     ));
 
     // --- HRÁČI ---
@@ -164,6 +168,8 @@ function slavoj_register_post_types() {
         'menu_icon'           => 'dashicons-id',
         'show_in_rest'        => true,
         'taxonomies'          => array('sezona', 'kategorie-tymu', 'pozice-hrace'),
+        'capability_type'     => array('hrac', 'hraci'),
+        'map_meta_cap'        => true,
     ));
 
     // --- GALERIE ---
@@ -185,6 +191,8 @@ function slavoj_register_post_types() {
         'menu_icon'           => 'dashicons-format-gallery',
         'show_in_rest'        => true,
         'taxonomies'          => array('sezona', 'kategorie-tymu'),
+        'capability_type'     => array('album', 'alba'),
+        'map_meta_cap'        => true,
     ));
 
     // --- SPONZOŘI ---
@@ -204,6 +212,8 @@ function slavoj_register_post_types() {
         'supports'            => array('title', 'thumbnail'),
         'menu_icon'           => 'dashicons-star-filled',
         'show_in_rest'        => true,
+        'capability_type'     => array('sponzor', 'sponzori'),
+        'map_meta_cap'        => true,
     ));
 
     // --- KONTAKTY ---
@@ -223,6 +233,8 @@ function slavoj_register_post_types() {
         'supports'            => array('title', 'thumbnail'),
         'menu_icon'           => 'dashicons-phone',
         'show_in_rest'        => true,
+        'capability_type'     => array('kontakt', 'kontakty'),
+        'map_meta_cap'        => true,
     ));
 }
 add_action('init', 'slavoj_register_post_types');
@@ -1726,68 +1738,138 @@ function tjsm_import_handle_form() {
 // =====================================================================
 
 /**
- * Registrace vlastní role "Správce obsahu" (slavoj_editor).
+ * Vlastní capability typy jsou nastavené na každém CPT (capability_type +
+ * map_meta_cap). WordPress z nich generuje capabilities ve tvaru:
+ *   edit_{singular}, edit_{plural}, edit_others_{plural}, publish_{plural},
+ *   delete_{plural}, delete_others_{plural}, read_private_{plural} …
  *
- * Oprávnění:
- *   - Může spravovat všechny vlastní CPT (zápasy, týmy, hráče, galerie,
- *     sponzory, kontakty) a přiřazovat taxonomie (sezóny, kategorie).
- *   - Může nahrávat soubory (obrázky do galerie, loga sponzorů).
- *   - Může spravovat běžné příspěvky a stránky.
- *   - Nemůže měnit téma, pluginy, uživatele ani nastavení webu.
+ * Přehled rolí:
+ *   1. Správce obsahu (slavoj_editor)   – vše kromě nastavení webu
+ *   2. Zapisovatel    (slavoj_zapisovatel) – pouze editace zápasů
+ *   3. Trenér         (slavoj_trener)      – hráči + týmy
+ *   4. Fotograf       (slavoj_fotograf)    – galerie + nahrávání médií
+ *   5. Redaktor       (slavoj_redaktor)    – příspěvky (aktuality)
  *
  * Role se vytvoří/aktualizuje jednou – uloží se do databáze (wp_options).
  * Verze (TJSM_ROLE_VERSION) zajistí přeregistraci při změně capabilities.
  */
-define('TJSM_ROLE_VERSION', 1);
+define('TJSM_ROLE_VERSION', 2);
+
+/**
+ * Vrátí pole všech CPT capabilities pro daný capability_type.
+ * Např. slavoj_cpt_caps('zapas', 'zapasy') vrátí edit_zapas, edit_zapasy, …
+ */
+function slavoj_cpt_caps($singular, $plural) {
+    return array(
+        "edit_{$singular}"           => true,
+        "read_{$singular}"           => true,
+        "delete_{$singular}"         => true,
+        "edit_{$plural}"             => true,
+        "edit_others_{$plural}"      => true,
+        "edit_published_{$plural}"   => true,
+        "publish_{$plural}"          => true,
+        "read_private_{$plural}"     => true,
+        "delete_{$plural}"           => true,
+        "delete_others_{$plural}"    => true,
+        "delete_published_{$plural}" => true,
+        "delete_private_{$plural}"   => true,
+        "edit_private_{$plural}"     => true,
+    );
+}
 
 function slavoj_register_roles() {
     if ((int) get_option('tjsm_role_version') === TJSM_ROLE_VERSION) {
         return;
     }
 
-    // Smazat starou verzi role (pokud existuje) a vytvořit znovu
+    // Všechna CPT capabilities seskupená podle typu obsahu
+    $caps_zapasy   = slavoj_cpt_caps('zapas',   'zapasy');
+    $caps_tymy     = slavoj_cpt_caps('tym',     'tymy');
+    $caps_hraci    = slavoj_cpt_caps('hrac',    'hraci');
+    $caps_alba     = slavoj_cpt_caps('album',   'alba');
+    $caps_sponzori = slavoj_cpt_caps('sponzor', 'sponzori');
+    $caps_kontakty = slavoj_cpt_caps('kontakt', 'kontakty');
+
+    $all_cpt_caps = array_merge(
+        $caps_zapasy, $caps_tymy, $caps_hraci,
+        $caps_alba, $caps_sponzori, $caps_kontakty
+    );
+
+    // ── 1. Administrátor – přidat vlastní CPT capabilities ──
+    $admin = get_role('administrator');
+    if ($admin) {
+        foreach ($all_cpt_caps as $cap => $grant) {
+            $admin->add_cap($cap);
+        }
+    }
+
+    // ── 2. Správce obsahu – vše kromě nastavení webu ──
     remove_role('slavoj_editor');
+    add_role('slavoj_editor', 'Správce obsahu', array_merge(
+        array(
+            'read'                   => true,
+            'edit_posts'             => true,
+            'edit_others_posts'      => true,
+            'edit_published_posts'   => true,
+            'publish_posts'          => true,
+            'delete_posts'           => true,
+            'delete_others_posts'    => true,
+            'delete_published_posts' => true,
+            'edit_pages'             => true,
+            'edit_others_pages'      => true,
+            'edit_published_pages'   => true,
+            'publish_pages'          => true,
+            'delete_pages'           => true,
+            'delete_others_pages'    => true,
+            'delete_published_pages' => true,
+            'upload_files'           => true,
+            'manage_categories'      => true,
+        ),
+        $all_cpt_caps
+    ));
 
-    add_role('slavoj_editor', 'Správce obsahu', array(
-        // Čtení
+    // ── 3. Zapisovatel – pouze zápasy (editace skóre, střelců) ──
+    remove_role('slavoj_zapisovatel');
+    add_role('slavoj_zapisovatel', 'Zapisovatel', array_merge(
+        array(
+            'read'                   => true,
+            'manage_categories'      => true,
+        ),
+        $caps_zapasy
+    ));
+
+    // ── 4. Trenér – hráči a týmy (správa soupisky) ──
+    remove_role('slavoj_trener');
+    add_role('slavoj_trener', 'Trenér', array_merge(
+        array(
+            'read'                   => true,
+            'upload_files'           => true,
+            'manage_categories'      => true,
+        ),
+        $caps_hraci,
+        $caps_tymy
+    ));
+
+    // ── 5. Fotograf – galerie a nahrávání médií ──
+    remove_role('slavoj_fotograf');
+    add_role('slavoj_fotograf', 'Fotograf', array_merge(
+        array(
+            'read'                   => true,
+            'upload_files'           => true,
+            'manage_categories'      => true,
+        ),
+        $caps_alba
+    ));
+
+    // ── 6. Redaktor – příspěvky / aktuality ──
+    remove_role('slavoj_redaktor');
+    add_role('slavoj_redaktor', 'Redaktor', array(
         'read'                   => true,
-
-        // Příspěvky a stránky
         'edit_posts'             => true,
-        'edit_others_posts'      => true,
         'edit_published_posts'   => true,
         'publish_posts'          => true,
         'delete_posts'           => true,
-        'delete_others_posts'    => true,
-        'delete_published_posts' => true,
-        'edit_pages'             => true,
-        'edit_others_pages'      => true,
-        'edit_published_pages'   => true,
-        'publish_pages'          => true,
-        'delete_pages'           => true,
-        'delete_others_pages'    => true,
-        'delete_published_pages' => true,
-
-        // Média (nahrávání obrázků)
         'upload_files'           => true,
-
-        // Taxonomie (kategorie, štítky, vlastní taxonomie)
-        'manage_categories'      => true,
-        'assign_categories'      => true,
-
-        // Moderování komentářů
-        'moderate_comments'      => true,
-        'edit_comment'           => true,
-
-        // Zakázáno: témata, pluginy, uživatelé, nastavení
-        'manage_options'         => false,
-        'install_plugins'        => false,
-        'edit_plugins'           => false,
-        'install_themes'         => false,
-        'edit_themes'            => false,
-        'edit_users'             => false,
-        'create_users'           => false,
-        'delete_users'           => false,
     ));
 
     update_option('tjsm_role_version', TJSM_ROLE_VERSION);
