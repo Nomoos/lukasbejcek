@@ -843,37 +843,90 @@ function slavoj_get_team_display_name($slug) {
 }
 
 /**
- * Globální filtr: automaticky seřadí termy taxonomie kategorie-tymu
- * dle kanonického pořadí (slavoj_kategorie_poradi()) všude, kde se
- * volá get_terms() nebo get_the_terms() — admin dropdowny, front-end
- * šablony, REST API.
+ * Zjistí, zda se aktuální kontext týká galerie (admin screen nebo front-end archiv).
  *
- * @param array        $terms      Pole WP_Term objektů.
- * @param array|string $taxonomies Taxonomie dotazu.
- * @return array  Seřazené pole.
+ * @return bool
  */
+function slavoj_je_kontext_galerie() {
+    if ( is_admin() ) {
+        $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+        return $screen && 'galerie' === $screen->post_type;
+    }
+    return is_post_type_archive( 'galerie' ) || ( is_singular() && 'galerie' === get_post_type() );
+}
+
 /**
- * Filtr pro get_terms() — druhý parametr je $query_vars['taxonomy'] (pole).
+ * Kategorie týmu, které se zobrazují pouze v určitých kontextech.
+ * Klíč = slug termu, hodnota = pole post_type, kde se smí zobrazit.
+ * Rozšiřitelné – stačí přidat další řádek.
+ *
+ * @return array
+ */
+function slavoj_kategorie_kontextove_vyjimky() {
+    return array(
+        'stara-garda' => array( 'galerie' ),
+    );
+}
+
+/**
+ * Odfiltruje kontextově omezené termy (např. stara-garda mimo galerii).
+ *
+ * @param array  $terms     Seřazené pole WP_Term objektů.
+ * @param string $post_type Aktuální post_type kontext (prázdný = neznámý).
+ * @return array  Filtrované pole.
+ */
+function slavoj_filtruj_kategorie_dle_kontextu( $terms, $post_type = '' ) {
+    $vyjimky = slavoj_kategorie_kontextove_vyjimky();
+    if ( empty( $vyjimky ) ) {
+        return $terms;
+    }
+    return array_values( array_filter( $terms, function ( $term ) use ( $vyjimky, $post_type ) {
+        if ( ! isset( $vyjimky[ $term->slug ] ) ) {
+            return true; // bez omezení
+        }
+        return in_array( $post_type, $vyjimky[ $term->slug ], true );
+    } ) );
+}
+
+/**
+ * Globální filtr pro get_terms(): seřadí kategorie-tymu kanonicky
+ * a odfiltruje kontextově omezené termy.
  */
 function slavoj_global_sort_kategorie_tymu( $terms, $taxonomies ) {
     if ( ! is_array( $taxonomies ) ) {
         $taxonomies = array( $taxonomies );
     }
-    if ( in_array( 'kategorie-tymu', $taxonomies, true ) ) {
-        $terms = slavoj_sort_tymy( $terms );
+    if ( ! in_array( 'kategorie-tymu', $taxonomies, true ) ) {
+        return $terms;
     }
-    return $terms;
+    $terms = slavoj_sort_tymy( $terms );
+
+    // Kontext: admin screen nebo front-end archiv/singular
+    $pt = '';
+    if ( is_admin() ) {
+        $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+        $pt     = $screen ? $screen->post_type : '';
+    } elseif ( is_post_type_archive() ) {
+        $pt = get_query_var( 'post_type' );
+    } elseif ( is_singular() ) {
+        $pt = get_post_type();
+    }
+
+    return slavoj_filtruj_kategorie_dle_kontextu( $terms, $pt );
 }
 add_filter( 'get_terms', 'slavoj_global_sort_kategorie_tymu', 10, 2 );
 
 /**
- * Filtr pro get_the_terms() — signatura je (terms, post_id, taxonomy).
+ * Globální filtr pro get_the_terms(): seřadí kategorie-tymu kanonicky
+ * a odfiltruje kontextově omezené termy (podle post_type příspěvku).
  */
 function slavoj_global_sort_kategorie_tymu_single( $terms, $post_id, $taxonomy ) {
-    if ( 'kategorie-tymu' === $taxonomy ) {
-        $terms = slavoj_sort_tymy( $terms );
+    if ( 'kategorie-tymu' !== $taxonomy ) {
+        return $terms;
     }
-    return $terms;
+    $terms = slavoj_sort_tymy( $terms );
+    $pt    = get_post_type( $post_id );
+    return slavoj_filtruj_kategorie_dle_kontextu( $terms, $pt ?: '' );
 }
 add_filter( 'get_the_terms', 'slavoj_global_sort_kategorie_tymu_single', 10, 3 );
 

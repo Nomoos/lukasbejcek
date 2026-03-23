@@ -384,14 +384,8 @@ function slavoj_admin_filters( $post_type ) {
             if ( is_wp_error( $terms ) || empty( $terms ) ) {
                 continue;
             }
-            // Řazení kategorie-tymu je zajištěno globálním filtrem
-            // slavoj_global_sort_kategorie_tymu() v functions.php.
-            // Stará garda se zobrazuje jen v galerii.
-            if ( 'kategorie-tymu' === $taxonomy && 'galerie' !== $post_type ) {
-                $terms = array_filter( $terms, function( $term ) {
-                    return 'stara-garda' !== $term->slug;
-                } );
-            }
+            // Řazení i kontextové filtrování kategorie-tymu (stará garda
+            // jen v galerii) je zajištěno globálním filtrem v functions.php.
             $selected = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( $_GET[ $taxonomy ] ) ) : '';
             echo '<select name="' . esc_attr( $taxonomy ) . '">';
             echo '<option value="">' . esc_html( $tax_obj->labels->all_items ) . '</option>';
