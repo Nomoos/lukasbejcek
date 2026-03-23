@@ -40,13 +40,11 @@ FTP přihlašovací údaje (host, uživatel, heslo, port) najdete v **klientské
 ## Krok 1 – Příprava WordPress na lokálním počítači
 
 1. Stáhněte nejnovější WordPress z [wordpress.org/download](https://wordpress.org/download/) a rozbalte.
-2. Do složky `wp-content/themes/` vložte obsah `web/theme/` z tohoto repozitáře:
+2. Do WordPress složky zkopírujte téma a plugin z tohoto repozitáře:
    ```
-   wp-content/themes/slavoj-myto/
+   web/wp-content/themes/tj-slavoj-myto/   →  wp-content/themes/tj-slavoj-myto/
+   web/wp-content/plugins/slavoj-custom-fields/  →  wp-content/plugins/slavoj-custom-fields/
    ```
-3. Zkopírujte případné vlastní pluginy ze `web/plugins/` do `wp-content/plugins/`.
-4. Zkopírujte statické soubory ze `web/assets/` do `wp-content/themes/slavoj-myto/assets/`  
-   (nebo do `wp-content/uploads/` podle struktury tématu).
 
 ---
 
@@ -123,13 +121,12 @@ FTP přihlašovací údaje (host, uživatel, heslo, port) najdete v **klientské
 
 ## Krok 6 – Aktivace tématu a pluginů
 
-1. Přejděte na **Vzhled → Témata** a aktivujte **slavoj-myto**.
-2. Přejděte na **Pluginy** a aktivujte:
-   - Advanced Custom Fields (ACF)
-   - Custom Post Type UI
-   - Contact Form 7
-   - Yoast SEO
+1. Přejděte na **Vzhled → Témata** a aktivujte **TJ Slavoj Mýto**.
+2. Přejděte na **Pluginy** a aktivujte **Slavoj Custom Fields**.
 3. Přejděte na **Nastavení → Trvalé odkazy**, zvolte **Název příspěvku** a uložte.
+4. Naimportujte ukázková data: **Nástroje → Slavoj nastavení → Vytvořit ukázková data**.
+
+> **Poznámka:** Pluginy ACF a Custom Post Type UI nejsou potřeba — vlastní typy obsahu i meta pole jsou implementovány přímo v kódu tématu.
 
 ---
 
@@ -145,9 +142,9 @@ FTP přihlašovací údaje (host, uživatel, heslo, port) najdete v **klientské
 
 Při nasazení změn v tématu:
 
-1. Na lokálním počítači upravte soubory tématu ve `web/theme/`.
+1. Na lokálním počítači upravte soubory tématu ve `web/wp-content/themes/tj-slavoj-myto/`.
 2. Připojte se přes FileZilla k FTP.
-3. Nahrajte **pouze změněné soubory** do `wp-content/themes/slavoj-myto/` – přepište stávající.
+3. Nahrajte **pouze změněné soubory** do `wp-content/themes/tj-slavoj-myto/` na hostingu — přepište stávající.
 
 > 💡 **Doporučení**: Pro větší projekty zvažte nasazení přes Git nebo CI/CD pipeline (GitHub Actions → FTP deploy), aby se předešlo chybám při ručním přenosu.
 

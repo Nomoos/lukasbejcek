@@ -41,13 +41,15 @@ git clone https://github.com/Nomoos/lukasbejcek.git C:\Users\<jmeno>\lukasbejcek
 
 > **Poznámka:** Složka `wordpress/` v repozitáři slouží pouze jako **referenční dokumentace** – ukazuje, jaké soubory WordPress používá a jak jsou nakonfigurovány. Do lokální instalace se nekopíruje.
 
-### Krok 4 – Zkopírujte téma a plugin
+### Krok 4 – Nainstalujte téma a plugin
 
-Ze složky repozitáře zkopírujte vlastní téma a plugin do WordPress instalace:
+**Doporučený způsob:** Přejděte do složky `web/` v repozitáři a spusťte `install.bat`. Skript automaticky zkopíruje téma a plugin na správná místa a odstraní případné starší verze.
+
+**Ruční způsob:** Ze složky repozitáře zkopírujte téma a plugin do WordPress instalace:
 
 ```
-web/theme/tj-slavoj-myto/  →  C:\xampp\htdocs\fotbal_club\wp-content\themes\tj-slavoj-myto\
-web/plugins/slavoj-custom-fields/  →  C:\xampp\htdocs\fotbal_club\wp-content\plugins\slavoj-custom-fields\
+web/wp-content/themes/tj-slavoj-myto/   →  C:\xampp\htdocs\fotbal_club\wp-content\themes\tj-slavoj-myto\
+web/wp-content/plugins/slavoj-custom-fields/  →  C:\xampp\htdocs\fotbal_club\wp-content\plugins\slavoj-custom-fields\
 ```
 
 ### Krok 5 – Vytvořte databázi

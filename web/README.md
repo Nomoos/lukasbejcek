@@ -1,54 +1,42 @@
-# web/ – Nový web TJ Slavoj Mýto
+# web/ – Web TJ Slavoj Mýto
 
-Tato složka obsahuje nový web fotbalového klubu TJ Slavoj Mýto, vzniklý portováním stávajícího WordPress tématu ze složky `original/`.
-
-## Cíl
-
-Vytvořit plně funkční WordPress téma, které nahradí původní nedokončené řešení. Obsah bude spravovatelný přes WordPress admin rozhraní bez nutnosti editovat kód.
+Tato složka obsahuje WordPress téma a plugin pro web fotbalového klubu TJ Slavoj Mýto.
 
 ## Struktura
 
 ```
 web/
-├── wp-content/         # WordPress wp-content – kopírujte do WP instalace
-│   ├── themes/         # Téma tj-slavoj-myto
-│   └── plugins/        # Plugin slavoj-custom-fields
-├── theme/              # (starý adresář – pouze pro vývoj, nekopírovat do WP)
-├── plugins/            # (starý adresář – pouze pro vývoj, nekopírovat do WP)
-├── assets/             # (starý adresář – pouze pro vývoj, nekopírovat do WP)
-├── install.bat         # Instalační skript pro Windows / XAMPP
+├── wp-content/
+│   ├── themes/tj-slavoj-myto/   # WordPress téma (šablony, CSS, obrázky)
+│   └── plugins/slavoj-custom-fields/  # Plugin (admin sloupce, filtry, seed data)
+├── plugins/slavoj-custom-fields/ # Synchronizovaná kopie pluginu
+├── install.bat                   # Instalační skript pro XAMPP
 └── README.md
 ```
 
-## Instalace pomocí install.bat (doporučeno)
+## Instalace
 
-Skript automaticky zkopíruje téma a plugin na správná místa a odstraní
-případné starší verze, aby nevznikaly konflikty nebo zbytky souborů.
+### Pomocí install.bat (doporučeno)
 
-1. Ujistěte se, že WordPress je nainstalovaný v `C:\xampp\htdocs\fotbal_club`
-   (nebo na jiné cestě).
-2. Poklepejte na **`install.bat`** v této složce.
-3. Potvrďte cestu k WordPress instalaci (nebo zadejte vlastní) a stiskněte Enter.
-4. Skript nainstaluje téma a plugin; na konci se zobrazí pokyny k aktivaci.
+1. WordPress musí být nainstalovaný v `C:\xampp\htdocs\fotbal_club` (nebo na jiné cestě).
+2. Poklepejte na **`install.bat`**.
+3. Potvrďte cestu k WordPress instalaci a stiskněte Enter.
+4. Skript stáhne nejnovější změny z Gitu, smaže staré verze a nakopíruje aktuální téma a plugin.
 
-> **Poznámka:** Pokud se zobrazí chyba přístupu, spusťte skript jako správce
-> (pravý klik → *Spustit jako správce*).
+### Ruční instalace
 
-## Jak začít
+Zkopírujte dvě složky do WordPress instalace:
 
-1. Přečtěte si `docs/01-uvod.md` pro přehled projektu.
-2. Postupujte podle fází popsaných v `docs/`.
-3. Téma a plugin nainstalujte do lokálního WordPressu pomocí skriptu `install.bat` (viz níže).
+```
+wp-content/themes/tj-slavoj-myto/       →  <wordpress>/wp-content/themes/tj-slavoj-myto/
+wp-content/plugins/slavoj-custom-fields/ →  <wordpress>/wp-content/plugins/slavoj-custom-fields/
+```
 
-## Stav
+### Po instalaci
 
-- [ ] Fáze 1 – Analýza a příprava
-- [ ] Fáze 2 – Datová struktura
-- [ ] Fáze 3 – Implementace šablon
-- [ ] Fáze 4 – Frontend funkcionalita
-- [ ] Fáze 5 – Admin rozhraní
-- [ ] Fáze 6 – Migrace dat
-- [ ] Fáze 7 – Optimalizace a SEO
-- [ ] Fáze 8 – Testování
-- [ ] Fáze 9 – Launch
-- [ ] Fáze 10 – Školení a údržba
+1. Aktivujte téma: Vzhled → Témata → TJ Slavoj Mýto
+2. Aktivujte plugin: Pluginy → Slavoj Custom Fields
+3. Nastavte permalinky: Nastavení → Trvalé odkazy → Název příspěvku
+4. Naimportujte data: Nástroje → Slavoj nastavení → Vytvořit ukázková data
+
+Podrobný návod: [docs/04-lokalni-instalace.md](../docs/04-lokalni-instalace.md)

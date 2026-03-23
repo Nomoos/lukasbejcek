@@ -1,7 +1,7 @@
 {
   "core": null,
-  "plugins": [],
-  "themes": [ "./web/theme/tj-slavoj-myto" ],
+  "plugins": [ "./web/wp-content/plugins/slavoj-custom-fields" ],
+  "themes": [ "./web/wp-content/themes/tj-slavoj-myto" ],
   "config": {
     "WP_HOME": "http://localhost:8888",
     "WP_SITEURL": "http://localhost:8888"
