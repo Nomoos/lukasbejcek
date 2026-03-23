@@ -843,6 +843,41 @@ function slavoj_get_team_display_name($slug) {
 }
 
 /**
+ * Globální filtr: automaticky seřadí termy taxonomie kategorie-tymu
+ * dle kanonického pořadí (slavoj_kategorie_poradi()) všude, kde se
+ * volá get_terms() nebo get_the_terms() — admin dropdowny, front-end
+ * šablony, REST API.
+ *
+ * @param array        $terms      Pole WP_Term objektů.
+ * @param array|string $taxonomies Taxonomie dotazu.
+ * @return array  Seřazené pole.
+ */
+/**
+ * Filtr pro get_terms() — druhý parametr je $query_vars['taxonomy'] (pole).
+ */
+function slavoj_global_sort_kategorie_tymu( $terms, $taxonomies ) {
+    if ( ! is_array( $taxonomies ) ) {
+        $taxonomies = array( $taxonomies );
+    }
+    if ( in_array( 'kategorie-tymu', $taxonomies, true ) ) {
+        $terms = slavoj_sort_tymy( $terms );
+    }
+    return $terms;
+}
+add_filter( 'get_terms', 'slavoj_global_sort_kategorie_tymu', 10, 2 );
+
+/**
+ * Filtr pro get_the_terms() — signatura je (terms, post_id, taxonomy).
+ */
+function slavoj_global_sort_kategorie_tymu_single( $terms, $post_id, $taxonomy ) {
+    if ( 'kategorie-tymu' === $taxonomy ) {
+        $terms = slavoj_sort_tymy( $terms );
+    }
+    return $terms;
+}
+add_filter( 'get_the_terms', 'slavoj_global_sort_kategorie_tymu_single', 10, 3 );
+
+/**
  * Vrátí výsledek zápasu z pohledu TJ Slavoj Mýto.
  *
  * @param string $domaci  Název domácího týmu.

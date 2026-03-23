@@ -13,7 +13,7 @@ $paged        = isset($_GET['stranka']) ? max(1, absint($_GET['stranka']))      
 
 /* Taxonomie pro filtry */
 $sezony    = get_terms(array('taxonomy' => 'sezona',        'hide_empty' => true, 'orderby' => 'name',    'order' => 'DESC'));
-$kategorie = slavoj_sort_tymy(get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => true)));
+$kategorie = get_terms(array('taxonomy' => 'kategorie-tymu', 'hide_empty' => true));
 ?>
 
 <div class="container py-4">

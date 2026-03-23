@@ -320,7 +320,8 @@ function slavoj_hrac_admin_column_data($column, $post_id) {
         }
     }
     if ($column === 'tym_hrac') {
-        echo esc_html(get_post_meta($post_id, 'tym_slug', true));
+        $slug = get_post_meta($post_id, 'tym_slug', true);
+        echo esc_html( function_exists( 'slavoj_get_team_display_name' ) ? slavoj_get_team_display_name( $slug ) : $slug );
     }
 }
 add_action('manage_hrac_posts_custom_column', 'slavoj_hrac_admin_column_data', 10, 2);
@@ -365,7 +366,7 @@ function slavoj_admin_filters( $post_type ) {
         'zapas'   => array( 'sezona', 'kategorie-tymu' ),
         'hrac'    => array( 'sezona' ),
         'tym'     => array( 'sezona' ),
-        'galerie' => array( 'kategorie-tymu' ),
+        'galerie' => array( 'sezona', 'kategorie-tymu' ),
     );
 
     if ( isset( $tax_filters[ $post_type ] ) ) {
@@ -382,6 +383,14 @@ function slavoj_admin_filters( $post_type ) {
             ) );
             if ( is_wp_error( $terms ) || empty( $terms ) ) {
                 continue;
+            }
+            // Řazení kategorie-tymu je zajištěno globálním filtrem
+            // slavoj_global_sort_kategorie_tymu() v functions.php.
+            // Stará garda se zobrazuje jen v galerii.
+            if ( 'kategorie-tymu' === $taxonomy && 'galerie' !== $post_type ) {
+                $terms = array_filter( $terms, function( $term ) {
+                    return 'stara-garda' !== $term->slug;
+                } );
             }
             $selected = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( $_GET[ $taxonomy ] ) ) : '';
             echo '<select name="' . esc_attr( $taxonomy ) . '">';
@@ -415,12 +424,24 @@ function slavoj_admin_filter_tym_slug() {
         'post_type'      => 'tym',
         'posts_per_page' => -1,
         'post_status'    => 'publish',
-        'orderby'        => 'title',
-        'order'          => 'ASC',
     ) );
 
     if ( empty( $tymy ) ) {
         return;
+    }
+
+    // Kanonické řazení podle slavoj_kategorie_poradi() (Muži A → Muži B → Dorost → …)
+    if ( function_exists( 'slavoj_kategorie_poradi' ) ) {
+        $poradi = array_keys( slavoj_kategorie_poradi() );
+        usort( $tymy, function ( $a, $b ) use ( $poradi ) {
+            $sa = get_post_meta( $a->ID, 'tym_slug', true );
+            $sb = get_post_meta( $b->ID, 'tym_slug', true );
+            $ia = array_search( $sa, $poradi );
+            $ib = array_search( $sb, $poradi );
+            $ia = ( $ia === false ) ? 999 : $ia;
+            $ib = ( $ib === false ) ? 999 : $ib;
+            return $ia - $ib;
+        } );
     }
 
     $selected = isset( $_GET['filter_tym_slug'] ) ? sanitize_text_field( wp_unslash( $_GET['filter_tym_slug'] ) ) : '';
@@ -450,8 +471,7 @@ function slavoj_admin_filter_query( $query ) {
         return;
     }
 
-    $scr    = get_current_screen();
-    $pt     = $query->get( 'post_type' );
+    $pt = $query->get( 'post_type' );
 
     // Taxonomy filtry – WordPress je zpracuje sám pouze pokud je taxonomy
     // registrovaná na daném post type A je přítomen query var.
