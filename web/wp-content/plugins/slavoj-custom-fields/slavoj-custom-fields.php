@@ -344,6 +344,169 @@ function slavoj_zapas_orderby($query) {
 add_action('pre_get_posts', 'slavoj_zapas_orderby');
 
 // =====================================================================
+// DROPDOWN FILTRY V ADMIN PŘEHLEDU
+// =====================================================================
+
+/**
+ * Přidá dropdown filtry nad seznamem příspěvků v admin přehledu.
+ *
+ * - Zápasy:  sezóna + kategorie týmu
+ * - Hráči:   sezóna + tým (podle meta pole tym_slug)
+ * - Týmy:    sezóna
+ * - Galerie: kategorie týmu
+ */
+function slavoj_admin_filters( $post_type ) {
+
+    // Mapa: post_type => pole taxonomií, které se mají zobrazit jako dropdown
+    $tax_filters = array(
+        'zapas'   => array( 'sezona', 'kategorie-tymu' ),
+        'hrac'    => array( 'sezona' ),
+        'tym'     => array( 'sezona' ),
+        'galerie' => array( 'sezona', 'kategorie-tymu' ),
+    );
+
+    if ( isset( $tax_filters[ $post_type ] ) ) {
+        foreach ( $tax_filters[ $post_type ] as $taxonomy ) {
+            $tax_obj = get_taxonomy( $taxonomy );
+            if ( ! $tax_obj ) {
+                continue;
+            }
+            $terms = get_terms( array(
+                'taxonomy'   => $taxonomy,
+                'hide_empty' => false,
+                'orderby'    => 'name',
+                'order'      => 'ASC',
+            ) );
+            if ( is_wp_error( $terms ) || empty( $terms ) ) {
+                continue;
+            }
+            // Kanonické řazení kategorií týmu (Muži A, Muži B, Dorost, …)
+            if ( 'kategorie-tymu' === $taxonomy && function_exists( 'slavoj_sort_tymy' ) ) {
+                $terms = slavoj_sort_tymy( $terms );
+            }
+            $selected = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( $_GET[ $taxonomy ] ) ) : '';
+            echo '<select name="' . esc_attr( $taxonomy ) . '">';
+            echo '<option value="">' . esc_html( $tax_obj->labels->all_items ) . '</option>';
+            foreach ( $terms as $term ) {
+                printf(
+                    '<option value="%s"%s>%s (%d)</option>',
+                    esc_attr( $term->slug ),
+                    selected( $selected, $term->slug, false ),
+                    esc_html( $term->name ),
+                    (int) $term->count
+                );
+            }
+            echo '</select>';
+        }
+    }
+
+    // Hráči: speciální dropdown pro tým (meta pole tym_slug → název týmu)
+    if ( 'hrac' === $post_type ) {
+        slavoj_admin_filter_tym_slug();
+    }
+}
+add_action( 'restrict_manage_posts', 'slavoj_admin_filters' );
+
+/**
+ * Vykreslí dropdown pro filtrování hráčů podle tym_slug.
+ * Načte všechny publikované týmy a zobrazí je jako volby.
+ */
+function slavoj_admin_filter_tym_slug() {
+    $tymy = get_posts( array(
+        'post_type'      => 'tym',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'orderby'        => 'title',
+        'order'          => 'ASC',
+    ) );
+
+    if ( empty( $tymy ) ) {
+        return;
+    }
+
+    $selected = isset( $_GET['filter_tym_slug'] ) ? sanitize_text_field( wp_unslash( $_GET['filter_tym_slug'] ) ) : '';
+
+    echo '<select name="filter_tym_slug">';
+    echo '<option value="">Všechny týmy</option>';
+    foreach ( $tymy as $tym ) {
+        $slug = get_post_meta( $tym->ID, 'tym_slug', true );
+        if ( ! $slug ) {
+            continue;
+        }
+        printf(
+            '<option value="%s"%s>%s</option>',
+            esc_attr( $slug ),
+            selected( $selected, $slug, false ),
+            esc_html( $tym->post_title )
+        );
+    }
+    echo '</select>';
+}
+
+/**
+ * Zpracuje taxonomy dropdown filtry a meta filtr tym_slug v admin WP_Query.
+ */
+function slavoj_admin_filter_query( $query ) {
+    if ( ! is_admin() || ! $query->is_main_query() ) {
+        return;
+    }
+
+    $scr    = get_current_screen();
+    $pt     = $query->get( 'post_type' );
+
+    // Taxonomy filtry – WordPress je zpracuje sám pouze pokud je taxonomy
+    // registrovaná na daném post type A je přítomen query var.
+    // Protože naše taxonomie mají show_admin_column => true a jsou
+    // registrovány na příslušných CPT, WP je zpracovává nativně.
+    // Stačí zpracovat meta filtr pro hráče.
+
+    if ( 'hrac' === $pt && ! empty( $_GET['filter_tym_slug'] ) ) {
+        $slug = sanitize_text_field( wp_unslash( $_GET['filter_tym_slug'] ) );
+        $meta = $query->get( 'meta_query' );
+        if ( ! is_array( $meta ) ) {
+            $meta = array();
+        }
+        $meta[] = array(
+            'key'     => 'tym_slug',
+            'value'   => $slug,
+            'compare' => '=',
+        );
+        $query->set( 'meta_query', $meta );
+    }
+}
+add_action( 'pre_get_posts', 'slavoj_admin_filter_query' );
+
+// =====================================================================
+// ŘAZENÍ SLOUPCŮ – HRÁČI PODLE ČÍSLA DRESU
+// =====================================================================
+
+function slavoj_hrac_sortable_columns( $columns ) {
+    $columns['cislo']    = 'cislo';
+    $columns['tym_hrac'] = 'tym_hrac';
+    return $columns;
+}
+add_filter( 'manage_edit-hrac_sortable_columns', 'slavoj_hrac_sortable_columns' );
+
+function slavoj_hrac_orderby( $query ) {
+    if ( ! is_admin() || ! $query->is_main_query() ) {
+        return;
+    }
+    if ( 'hrac' !== $query->get( 'post_type' ) ) {
+        return;
+    }
+    $orderby = $query->get( 'orderby' );
+    if ( 'cislo' === $orderby ) {
+        $query->set( 'meta_key', 'cislo' );
+        $query->set( 'orderby', 'meta_value_num' );
+    }
+    if ( 'tym_hrac' === $orderby ) {
+        $query->set( 'meta_key', 'tym_slug' );
+        $query->set( 'orderby', 'meta_value' );
+    }
+}
+add_action( 'pre_get_posts', 'slavoj_hrac_orderby' );
+
+// =====================================================================
 // SEED – ukázková data pro testování (extrahována z original/)
 // =====================================================================
 

@@ -344,6 +344,165 @@ function slavoj_zapas_orderby($query) {
 add_action('pre_get_posts', 'slavoj_zapas_orderby');
 
 // =====================================================================
+// DROPDOWN FILTRY V ADMIN PŘEHLEDU
+// =====================================================================
+
+/**
+ * Přidá dropdown filtry nad seznamem příspěvků v admin přehledu.
+ *
+ * - Zápasy:  sezóna + kategorie týmu
+ * - Hráči:   sezóna + tým (podle meta pole tym_slug)
+ * - Týmy:    sezóna
+ * - Galerie: kategorie týmu
+ */
+function slavoj_admin_filters( $post_type ) {
+
+    // Mapa: post_type => pole taxonomií, které se mají zobrazit jako dropdown
+    $tax_filters = array(
+        'zapas'   => array( 'sezona', 'kategorie-tymu' ),
+        'hrac'    => array( 'sezona' ),
+        'tym'     => array( 'sezona' ),
+        'galerie' => array( 'kategorie-tymu' ),
+    );
+
+    if ( isset( $tax_filters[ $post_type ] ) ) {
+        foreach ( $tax_filters[ $post_type ] as $taxonomy ) {
+            $tax_obj = get_taxonomy( $taxonomy );
+            if ( ! $tax_obj ) {
+                continue;
+            }
+            $terms = get_terms( array(
+                'taxonomy'   => $taxonomy,
+                'hide_empty' => false,
+                'orderby'    => 'name',
+                'order'      => 'ASC',
+            ) );
+            if ( is_wp_error( $terms ) || empty( $terms ) ) {
+                continue;
+            }
+            $selected = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( $_GET[ $taxonomy ] ) ) : '';
+            echo '<select name="' . esc_attr( $taxonomy ) . '">';
+            echo '<option value="">' . esc_html( $tax_obj->labels->all_items ) . '</option>';
+            foreach ( $terms as $term ) {
+                printf(
+                    '<option value="%s"%s>%s (%d)</option>',
+                    esc_attr( $term->slug ),
+                    selected( $selected, $term->slug, false ),
+                    esc_html( $term->name ),
+                    (int) $term->count
+                );
+            }
+            echo '</select>';
+        }
+    }
+
+    // Hráči: speciální dropdown pro tým (meta pole tym_slug → název týmu)
+    if ( 'hrac' === $post_type ) {
+        slavoj_admin_filter_tym_slug();
+    }
+}
+add_action( 'restrict_manage_posts', 'slavoj_admin_filters' );
+
+/**
+ * Vykreslí dropdown pro filtrování hráčů podle tym_slug.
+ * Načte všechny publikované týmy a zobrazí je jako volby.
+ */
+function slavoj_admin_filter_tym_slug() {
+    $tymy = get_posts( array(
+        'post_type'      => 'tym',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'orderby'        => 'title',
+        'order'          => 'ASC',
+    ) );
+
+    if ( empty( $tymy ) ) {
+        return;
+    }
+
+    $selected = isset( $_GET['filter_tym_slug'] ) ? sanitize_text_field( wp_unslash( $_GET['filter_tym_slug'] ) ) : '';
+
+    echo '<select name="filter_tym_slug">';
+    echo '<option value="">Všechny týmy</option>';
+    foreach ( $tymy as $tym ) {
+        $slug = get_post_meta( $tym->ID, 'tym_slug', true );
+        if ( ! $slug ) {
+            continue;
+        }
+        printf(
+            '<option value="%s"%s>%s</option>',
+            esc_attr( $slug ),
+            selected( $selected, $slug, false ),
+            esc_html( $tym->post_title )
+        );
+    }
+    echo '</select>';
+}
+
+/**
+ * Zpracuje taxonomy dropdown filtry a meta filtr tym_slug v admin WP_Query.
+ */
+function slavoj_admin_filter_query( $query ) {
+    if ( ! is_admin() || ! $query->is_main_query() ) {
+        return;
+    }
+
+    $scr    = get_current_screen();
+    $pt     = $query->get( 'post_type' );
+
+    // Taxonomy filtry – WordPress je zpracuje sám pouze pokud je taxonomy
+    // registrovaná na daném post type A je přítomen query var.
+    // Protože naše taxonomie mají show_admin_column => true a jsou
+    // registrovány na příslušných CPT, WP je zpracovává nativně.
+    // Stačí zpracovat meta filtr pro hráče.
+
+    if ( 'hrac' === $pt && ! empty( $_GET['filter_tym_slug'] ) ) {
+        $slug = sanitize_text_field( wp_unslash( $_GET['filter_tym_slug'] ) );
+        $meta = $query->get( 'meta_query' );
+        if ( ! is_array( $meta ) ) {
+            $meta = array();
+        }
+        $meta[] = array(
+            'key'     => 'tym_slug',
+            'value'   => $slug,
+            'compare' => '=',
+        );
+        $query->set( 'meta_query', $meta );
+    }
+}
+add_action( 'pre_get_posts', 'slavoj_admin_filter_query' );
+
+// =====================================================================
+// ŘAZENÍ SLOUPCŮ – HRÁČI PODLE ČÍSLA DRESU
+// =====================================================================
+
+function slavoj_hrac_sortable_columns( $columns ) {
+    $columns['cislo']    = 'cislo';
+    $columns['tym_hrac'] = 'tym_hrac';
+    return $columns;
+}
+add_filter( 'manage_edit-hrac_sortable_columns', 'slavoj_hrac_sortable_columns' );
+
+function slavoj_hrac_orderby( $query ) {
+    if ( ! is_admin() || ! $query->is_main_query() ) {
+        return;
+    }
+    if ( 'hrac' !== $query->get( 'post_type' ) ) {
+        return;
+    }
+    $orderby = $query->get( 'orderby' );
+    if ( 'cislo' === $orderby ) {
+        $query->set( 'meta_key', 'cislo' );
+        $query->set( 'orderby', 'meta_value_num' );
+    }
+    if ( 'tym_hrac' === $orderby ) {
+        $query->set( 'meta_key', 'tym_slug' );
+        $query->set( 'orderby', 'meta_value' );
+    }
+}
+add_action( 'pre_get_posts', 'slavoj_hrac_orderby' );
+
+// =====================================================================
 // SEED – ukázková data pro testování (extrahována z original/)
 // =====================================================================
 
@@ -361,80 +520,181 @@ function slavoj_cf_seed_demo_data() {
     $created = 0;
 
     // ------------------------------------------------------------------
-    // ZÁPASY (zapas) – Sezóna 2025/26, Muži A
+    // ZÁPASY (zapas) – reálné výsledky + nadcházející, sezóna 2025/26
+    // Zdroj: fotbalunas.cz, sportmap.cz (březen 2026)
     // ------------------------------------------------------------------
     $zapasy = array(
+        // ---- Odehrané zápasy Muži A ----
         array(
-            'title'         => 'TJ Slavoj Mýto vs Rapid Plzeň',
-            'domaci'        => 'Rapid Plzeň',
-            'hoste'         => 'TJ Slavoj Mýto',
-            'datum_zapasu'  => '2025-08-08',
-            'cas_zapasu'    => '18:00',
-            'skore'         => '4:2',
-            'strelci'       => '2× Schmid, Bejček, Otec',
-            'sezona'        => '2025/26',
-            'kategorie'     => 'muzi-a',
-            'stav'          => 'odehrany',
+            'title'        => 'TJ Slavoj Mýto vs SK Nepomuk',
+            'domaci'       => 'TJ Slavoj Mýto',
+            'hoste'        => 'SK Nepomuk',
+            'datum_zapasu' => '2025-09-06',
+            'cas_zapasu'   => '17:00',
+            'skore'        => '4:0',
+            'strelci'      => '2× Křivánek, Vaněček, Drábek M.',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'odehrany',
         ),
         array(
-            'title'         => 'TJ Slavoj Mýto vs TJ Chotěšov',
-            'domaci'        => 'TJ Slavoj Mýto',
-            'hoste'         => 'TJ Chotěšov',
-            'datum_zapasu'  => '2025-08-15',
-            'cas_zapasu'    => '18:00',
-            'skore'         => '',
-            'strelci'       => '',
-            'sezona'        => '2025/26',
-            'kategorie'     => 'muzi-a',
-            'stav'          => 'nadchazejici',
+            'title'        => 'TJ Slavoj Mýto vs TJ Měcholupy',
+            'domaci'       => 'TJ Slavoj Mýto',
+            'hoste'        => 'TJ Měcholupy',
+            'datum_zapasu' => '2025-09-20',
+            'cas_zapasu'   => '17:00',
+            'skore'        => '5:2',
+            'strelci'      => '3× Křivánek, Vaněček, Čajkovskij',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'odehrany',
         ),
         array(
-            'title'         => 'TJ Slavoj Mýto vs FK Bohemia Kaznějov',
-            'domaci'        => 'FK Bohemia Kaznějov',
-            'hoste'         => 'TJ Slavoj Mýto',
-            'datum_zapasu'  => '2025-08-22',
-            'cas_zapasu'    => '18:00',
-            'skore'         => '',
-            'strelci'       => '',
-            'sezona'        => '2025/26',
-            'kategorie'     => 'muzi-a',
-            'stav'          => 'nadchazejici',
+            'title'        => 'SK Radnice vs TJ Slavoj Mýto',
+            'domaci'       => 'SK Radnice',
+            'hoste'        => 'TJ Slavoj Mýto',
+            'datum_zapasu' => '2025-10-04',
+            'cas_zapasu'   => '16:30',
+            'skore'        => '0:6',
+            'strelci'      => '3× Vaněček, 2× Křivánek, Tůma',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'odehrany',
         ),
         array(
-            'title'         => 'Rapid Plzeň vs TJ Slavoj Mýto (Muži B)',
-            'domaci'        => 'Rapid Plzeň',
-            'hoste'         => 'TJ Slavoj Mýto',
-            'datum_zapasu'  => '2025-08-08',
-            'cas_zapasu'    => '18:00',
-            'skore'         => '',
-            'strelci'       => '',
-            'sezona'        => '2025/26',
-            'kategorie'     => 'muzi-b',
-            'stav'          => 'nadchazejici',
+            'title'        => 'TJ Slavoj Mýto vs TJ Holýšov',
+            'domaci'       => 'TJ Slavoj Mýto',
+            'hoste'        => 'TJ Holýšov',
+            'datum_zapasu' => '2025-10-18',
+            'cas_zapasu'   => '16:00',
+            'skore'        => '2:0',
+            'strelci'      => 'Křivánek, Lang',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'odehrany',
         ),
         array(
-            'title'         => 'TJ Slavoj Mýto vs FK Bohemia Kaznějov (Dorost)',
-            'domaci'        => 'TJ Slavoj Mýto',
-            'hoste'         => 'FK Bohemia Kaznějov',
-            'datum_zapasu'  => '2025-08-08',
-            'cas_zapasu'    => '16:00',
-            'skore'         => '',
-            'strelci'       => '',
-            'sezona'        => '2025/26',
-            'kategorie'     => 'dorost',
-            'stav'          => 'nadchazejici',
+            'title'        => 'Rapid Plzeň vs TJ Slavoj Mýto',
+            'domaci'       => 'Rapid Plzeň',
+            'hoste'        => 'TJ Slavoj Mýto',
+            'datum_zapasu' => '2025-11-01',
+            'cas_zapasu'   => '16:00',
+            'skore'        => '4:2',
+            'strelci'      => 'Vaněček, Drábek M.',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'odehrany',
         ),
         array(
-            'title'         => 'Rapid Plzeň vs TJ Slavoj Mýto (Starší žáci)',
-            'domaci'        => 'Rapid Plzeň',
-            'hoste'         => 'TJ Slavoj Mýto',
-            'datum_zapasu'  => '2025-08-08',
-            'cas_zapasu'    => '10:00',
-            'skore'         => '',
-            'strelci'       => '',
-            'sezona'        => '2025/26',
-            'kategorie'     => 'starsi-zaci',
-            'stav'          => 'nadchazejici',
+            'title'        => 'TJ Slavoj Mýto vs TJ Chotěšov',
+            'domaci'       => 'TJ Slavoj Mýto',
+            'hoste'        => 'TJ Chotěšov',
+            'datum_zapasu' => '2025-11-15',
+            'cas_zapasu'   => '15:00',
+            'skore'        => '2:2',
+            'strelci'      => 'Křivánek, Čajkovskij',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'odehrany',
+        ),
+        array(
+            'title'        => 'SK Horní Bříza vs TJ Slavoj Mýto',
+            'domaci'       => 'SK Horní Bříza',
+            'hoste'        => 'TJ Slavoj Mýto',
+            'datum_zapasu' => '2026-03-07',
+            'cas_zapasu'   => '15:00',
+            'skore'        => '3:0',
+            'strelci'      => '',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'odehrany',
+        ),
+        // ---- Nadcházející zápasy Muži A ----
+        array(
+            'title'        => 'TJ Slavoj Mýto vs SK Slavia Vejprnice',
+            'domaci'       => 'TJ Slavoj Mýto',
+            'hoste'        => 'SK Slavia Vejprnice',
+            'datum_zapasu' => '2026-03-22',
+            'cas_zapasu'   => '15:00',
+            'skore'        => '',
+            'strelci'      => '',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'nadchazejici',
+        ),
+        array(
+            'title'        => 'TJ Slavoj Mýto vs SK Horní Bříza',
+            'domaci'       => 'TJ Slavoj Mýto',
+            'hoste'        => 'SK Horní Bříza',
+            'datum_zapasu' => '2026-04-05',
+            'cas_zapasu'   => '16:30',
+            'skore'        => '',
+            'strelci'      => '',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'nadchazejici',
+        ),
+        array(
+            'title'        => 'TJ Slavoj Mýto vs TJ Sokol Lhota',
+            'domaci'       => 'TJ Slavoj Mýto',
+            'hoste'        => 'TJ Sokol Lhota',
+            'datum_zapasu' => '2026-04-11',
+            'cas_zapasu'   => '16:30',
+            'skore'        => '',
+            'strelci'      => '',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'nadchazejici',
+        ),
+        array(
+            'title'        => 'TJ Slavoj Mýto vs TJ Chotěšov (jaro)',
+            'domaci'       => 'TJ Slavoj Mýto',
+            'hoste'        => 'TJ Chotěšov',
+            'datum_zapasu' => '2026-04-26',
+            'cas_zapasu'   => '17:00',
+            'skore'        => '',
+            'strelci'      => '',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'nadchazejici',
+        ),
+        array(
+            'title'        => 'TJ Slavoj Mýto vs TJ Slavoj Koloveč',
+            'domaci'       => 'TJ Slavoj Mýto',
+            'hoste'        => 'TJ Slavoj Koloveč',
+            'datum_zapasu' => '2026-05-09',
+            'cas_zapasu'   => '17:30',
+            'skore'        => '',
+            'strelci'      => '',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-a',
+            'stav'         => 'nadchazejici',
+        ),
+        // ---- Muži B ----
+        array(
+            'title'        => 'TJ Slavoj Mýto B vs TJ Sokol Zbiroh',
+            'domaci'       => 'TJ Slavoj Mýto B',
+            'hoste'        => 'TJ Sokol Zbiroh',
+            'datum_zapasu' => '2026-04-05',
+            'cas_zapasu'   => '14:00',
+            'skore'        => '',
+            'strelci'      => '',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'muzi-b',
+            'stav'         => 'nadchazejici',
+        ),
+        // ---- Dorost ----
+        array(
+            'title'        => 'TJ Slavoj Mýto vs FK Rokycany (Dorost)',
+            'domaci'       => 'TJ Slavoj Mýto',
+            'hoste'        => 'FK Rokycany',
+            'datum_zapasu' => '2026-04-12',
+            'cas_zapasu'   => '10:00',
+            'skore'        => '',
+            'strelci'      => '',
+            'sezona'       => '2025/26',
+            'kategorie'    => 'dorost',
+            'stav'         => 'nadchazejici',
         ),
     );
 
@@ -462,39 +722,86 @@ function slavoj_cf_seed_demo_data() {
     }
 
     // ------------------------------------------------------------------
-    // TÝM (tym) – Muži A, Sezóna 2024/25
+    // TÝMY (tym)
+    // Zdroj: slavojmyto.cz, fotbalunas.cz
     // ------------------------------------------------------------------
-    $tym_title = 'Muži A';
-    if (!slavoj_post_exists($tym_title, 'tym')) {
+    $tymy = array(
+        array(
+            'title'     => 'Muži A',
+            'slug'      => 'muzi-a',
+            'trener'    => 'Petr Nykles',
+            'asistent'  => 'Ivan Honzík',
+            'zdravotnik'=> 'Jan Basl',
+            'pocet'     => 20,
+            'sezona'    => '2025/26',
+        ),
+        array(
+            'title'     => 'Muži B',
+            'slug'      => 'muzi-b',
+            'trener'    => 'Martin Hoffmann',
+            'asistent'  => '',
+            'zdravotnik'=> '',
+            'pocet'     => 16,
+            'sezona'    => '2025/26',
+        ),
+        array(
+            'title'     => 'Dorost',
+            'slug'      => 'dorost',
+            'trener'    => 'Petr Bejček',
+            'asistent'  => '',
+            'zdravotnik'=> '',
+            'pocet'     => 18,
+            'sezona'    => '2025/26',
+        ),
+    );
+
+    foreach ($tymy as $t) {
+        if (slavoj_post_exists($t['title'], 'tym')) {
+            continue;
+        }
         $tym_id = wp_insert_post(array(
-            'post_title'   => $tym_title,
-            'post_type'    => 'tym',
-            'post_status'  => 'publish',
+            'post_title'  => $t['title'],
+            'post_type'   => 'tym',
+            'post_status' => 'publish',
         ));
         if ($tym_id && !is_wp_error($tym_id)) {
-            update_post_meta($tym_id, 'tym_slug',          'muzi-a');
-            update_post_meta($tym_id, 'hlavni_trener',     'Nyklas Petr');
-            update_post_meta($tym_id, 'asistent_trenera',  'Honzík Ivan');
-            update_post_meta($tym_id, 'zdravotnik',        'Hrabák Jan');
-            wp_set_object_terms($tym_id, '2024/25', 'sezona');
-            wp_set_object_terms($tym_id, 'muzi-a',  'kategorie-tymu');
+            update_post_meta($tym_id, 'tym_slug',          $t['slug']);
+            update_post_meta($tym_id, 'hlavni_trener',     $t['trener']);
+            update_post_meta($tym_id, 'asistent_trenera',  $t['asistent']);
+            update_post_meta($tym_id, 'zdravotnik',        $t['zdravotnik']);
+            update_post_meta($tym_id, 'pocet_hracu',       $t['pocet']);
+            wp_set_object_terms($tym_id, $t['sezona'], 'sezona');
+            wp_set_object_terms($tym_id, $t['slug'],   'kategorie-tymu');
             $created++;
         }
     }
 
     // ------------------------------------------------------------------
-    // HRÁČI (hrac) – Muži A, Sezóna 2024/25
+    // HRÁČI (hrac) – Muži A, reálná soupiska
+    // Zdroj: slavojmyto.cz/cs/tymy/muzi-a, fotbalunas.cz
     // ------------------------------------------------------------------
     $hraci = array(
-        array('title' => 'Josef Brankář',      'cislo' => 1,  'rok' => 1987, 'pozice' => 'brankari',    'tym' => 'muzi-a'),
-        array('title' => 'Pavel Brankář',      'cislo' => 2,  'rok' => 1987, 'pozice' => 'brankari',    'tym' => 'muzi-a'),
-        array('title' => 'Adam Bejček',        'cislo' => 4,  'rok' => 1989, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
-        array('title' => 'Jan Novák',          'cislo' => 5,  'rok' => 1990, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
-        array('title' => 'Martin Procházka',   'cislo' => 6,  'rok' => 2000, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
-        array('title' => 'Tomáš Horáček',      'cislo' => 7,  'rok' => 2005, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
-        array('title' => 'Jakub Kříž',         'cislo' => 8,  'rok' => 1999, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
-        array('title' => 'Ondřej Schmid',      'cislo' => 10, 'rok' => 1995, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
-        array('title' => 'Lukáš Otec',         'cislo' => 11, 'rok' => 1993, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        // Brankáři
+        array('title' => 'Milan Navrátil',      'cislo' => 1,  'rok' => 1993, 'pozice' => 'brankari',    'tym' => 'muzi-a'),
+        // Hráči v poli
+        array('title' => 'Ondřej Lang',         'cislo' => 4,  'rok' => 1999, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Marek Šobáň',         'cislo' => 6,  'rok' => 1997, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Martin Drábek',       'cislo' => 8,  'rok' => 1998, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Alexandr Čajkovskij', 'cislo' => 9,  'rok' => 2001, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Matěj Tůma',          'cislo' => 10, 'rok' => 2003, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Lukáš Křivánek',      'cislo' => 11, 'rok' => 1998, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Jiří Drábek',         'cislo' => 13, 'rok' => 2000, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'David Vaněček',       'cislo' => 17, 'rok' => 1995, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Marek Lupáč',         'cislo' => 19, 'rok' => 1998, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Jakub Lenk',          'cislo' => 20, 'rok' => 2003, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Jan Vild',            'cislo' => 21, 'rok' => 1987, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Matyáš Mařík',        'cislo' => 22, 'rok' => 2001, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Jan Mašek',           'cislo' => 23, 'rok' => 2003, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        array('title' => 'Ondřej Mašek',        'cislo' => 24, 'rok' => 2003, 'pozice' => 'hraci-v-poli','tym' => 'muzi-a'),
+        // Muži B
+        array('title' => 'Filip Stejskal',      'cislo' => 1,  'rok' => 2000, 'pozice' => 'brankari',    'tym' => 'muzi-b'),
+        array('title' => 'Dominik Wood',        'cislo' => 5,  'rok' => 2002, 'pozice' => 'hraci-v-poli','tym' => 'muzi-b'),
+        array('title' => 'Martin Hoffmann',     'cislo' => 7,  'rok' => 1990, 'pozice' => 'hraci-v-poli','tym' => 'muzi-b'),
     );
 
     foreach ($hraci as $h) {
@@ -510,7 +817,7 @@ function slavoj_cf_seed_demo_data() {
             update_post_meta($hrac_id, 'cislo',        $h['cislo']);
             update_post_meta($hrac_id, 'rok_narozeni', $h['rok']);
             update_post_meta($hrac_id, 'tym_slug',     $h['tym']);
-            wp_set_object_terms($hrac_id, '2024/25',   'sezona');
+            wp_set_object_terms($hrac_id, '2025/26',   'sezona');
             wp_set_object_terms($hrac_id, $h['tym'],   'kategorie-tymu');
             wp_set_object_terms($hrac_id, $h['pozice'],'pozice-hrace');
             $created++;
@@ -519,12 +826,15 @@ function slavoj_cf_seed_demo_data() {
 
     // ------------------------------------------------------------------
     // KONTAKTY (kontakt) – Výbor klubu
+    // Zdroj: slavojmyto.cz
     // ------------------------------------------------------------------
     $kontakty = array(
-        array('title' => 'Radek Koula',      'pozice' => 'Prezident klubu',                  'telefon' => '+420 602 224 684', 'email' => 'tjslavojmyto@seznam.cz', 'poradi' => 1),
+        array('title' => 'Radek Koula',      'pozice' => 'Předseda klubu',                   'telefon' => '+420 602 224 684', 'email' => 'tjslavojmyto@seznam.cz', 'poradi' => 1),
         array('title' => 'Milan Huml',       'pozice' => 'Sekretář klubu a administrativa',  'telefon' => '+420 737 259 684', 'email' => 'tjslavojmyto@seznam.cz', 'poradi' => 2),
-        array('title' => 'František Končel', 'pozice' => 'Pokladník',                        'telefon' => '',                 'email' => 'tjslavojmyto@seznam.cz', 'poradi' => 3),
-        array('title' => 'Petr Bejček',      'pozice' => 'Člen výboru, trenér mládeže',      'telefon' => '+420 776 137 057', 'email' => 'tjslavojmyto@seznam.cz', 'poradi' => 4),
+        array('title' => 'František Končel', 'pozice' => 'Pokladník',                        'telefon' => '+420 737 151 288', 'email' => 'tjslavojmyto@seznam.cz', 'poradi' => 3),
+        array('title' => 'Petr Bejček',      'pozice' => 'Člen výboru, vedoucí mládeže',     'telefon' => '+420 776 137 057', 'email' => 'tjslavojmyto@seznam.cz', 'poradi' => 4),
+        array('title' => 'Petr Nykles',      'pozice' => 'Hlavní trenér Mužů A',             'telefon' => '',                 'email' => 'tjslavojmyto@seznam.cz', 'poradi' => 5),
+        array('title' => 'Ivan Honzík',      'pozice' => 'Asistent trenéra Mužů A',          'telefon' => '',                 'email' => 'tjslavojmyto@seznam.cz', 'poradi' => 6),
     );
 
     foreach ($kontakty as $k) {
@@ -546,12 +856,39 @@ function slavoj_cf_seed_demo_data() {
     }
 
     // ------------------------------------------------------------------
+    // SPONZOŘI (sponzor)
+    // ------------------------------------------------------------------
+    $sponzori = array(
+        array('title' => 'Město Mýto',          'web' => 'https://www.myto.cz'),
+        array('title' => 'Rokycany – kraj',     'web' => 'https://www.plzensky-kraj.cz'),
+        array('title' => 'Místní sponzor',      'web' => ''),
+    );
+
+    foreach ($sponzori as $s) {
+        if (slavoj_post_exists($s['title'], 'sponzor')) {
+            continue;
+        }
+        $s_id = wp_insert_post(array(
+            'post_title'  => $s['title'],
+            'post_type'   => 'sponzor',
+            'post_status' => 'publish',
+        ));
+        if ($s_id && !is_wp_error($s_id)) {
+            update_post_meta($s_id, 'web_sponzora', $s['web']);
+            $created++;
+        }
+    }
+
+    // ------------------------------------------------------------------
     // GALERIE (galerie)
     // ------------------------------------------------------------------
     $galerie = array(
-        array('title' => 'Mýto vs Lhota',              'tym' => 'Muži A', 'kategorie' => 'muzi-a',    'sezona' => '2024/25'),
-        array('title' => 'Horní Bříza vs Mýto',        'tym' => 'Muži A', 'kategorie' => 'muzi-a',    'sezona' => '2024/25'),
-        array('title' => 'Turnaj mladších žáků – Rokycany', 'tym' => 'Mladší žáci', 'kategorie' => 'mladsi-zaci', 'sezona' => '2024/25'),
+        array('title' => 'TJ Slavoj Mýto vs SK Nepomuk 4:0',   'kategorie' => 'muzi-a',    'sezona' => '2025/26'),
+        array('title' => 'Předzápasový trénink – podzim 2025', 'kategorie' => 'muzi-a',    'sezona' => '2025/26'),
+        array('title' => 'Horní Bříza vs Mýto',                'kategorie' => 'muzi-a',    'sezona' => '2025/26'),
+        array('title' => 'Mýto vs Lhota – 4. kolo',            'kategorie' => 'muzi-a',    'sezona' => '2024/25'),
+        array('title' => 'Turnaj mladší žáci – Rokycany',      'kategorie' => 'mladsi-zaci','sezona' => '2024/25'),
+        array('title' => 'Letní příprava dorostu 2025',        'kategorie' => 'dorost',    'sezona' => '2025/26'),
     );
 
     foreach ($galerie as $g) {
@@ -564,7 +901,6 @@ function slavoj_cf_seed_demo_data() {
             'post_status' => 'publish',
         ));
         if ($g_id && !is_wp_error($g_id)) {
-            update_post_meta($g_id, 'tym', $g['tym']);
             wp_set_object_terms($g_id, $g['sezona'],    'sezona');
             wp_set_object_terms($g_id, $g['kategorie'], 'kategorie-tymu');
             $created++;
@@ -572,16 +908,29 @@ function slavoj_cf_seed_demo_data() {
     }
 
     // ------------------------------------------------------------------
-    // AKTUALITY (WordPress post) – příspěvky z homepage
+    // AKTUALITY (WordPress post)
+    // Zdroj: fotbalunas.cz, slavojmyto.cz
     // ------------------------------------------------------------------
     $aktuality = array(
         array(
-            'title'   => 'Postup do 7. ligy',
+            'title'   => 'Postup do 7. ligy potvrzen',
             'content' => 'V nejvyšší okresní soutěži na Rokycansku se celé jaro odehrával souboj o první místo. To nakonec uhájila Raková před rezervou Mýta, čímž si tak zajistila postup. Smutnit ale nakonec nemusel ani Slavoj, který původně měl mít černého Petra. Postupové čachry znamenaly i pro něj návrat zpět do krajské soutěže.',
+            'datum'   => '2025-06-15',
         ),
         array(
             'title'   => 'Starší žáci Mýta udrželi třikrát čisté konto',
-            'content' => 'V sobotu 22.3.2025 na umělém trávníku mezi rokycanskými bytovkami sehráli turnaj mladších žáků okresního fotbalového svazu. O jejich svěřence se staral šéftrenér OTM Michal Šilhánek.',
+            'content' => 'V sobotu 22.3.2025 na umělém trávníku mezi rokycanskými bytovkami sehráli turnaj mladších žáků okresního fotbalového svazu. O jejich svěřence se staral šéftrenér OTM Michal Šilhánek. Naši žáci předvedli výborné výkony a třikrát udrželi čisté konto.',
+            'datum'   => '2025-03-23',
+        ),
+        array(
+            'title'   => 'Mýto druhé v tabulce s 30 body',
+            'content' => 'Po 16 odehraných kolech sezóny 2025/26 se TJ Slavoj Mýto drží na výborném 2. místě tabulky Plzeňského krajského přeboru s 30 body. Střelecky táhnou Lukáš Křivánek (22 gólů) a David Vaněček (20 gólů). Jarní část sezóny začíná 22. března domácím zápasem proti SK Slavia Vejprnice.',
+            'datum'   => '2026-03-01',
+        ),
+        array(
+            'title'   => 'Přípravný turnaj – Mýto vyhrálo skupinu',
+            'content' => 'V březnu 2025 zvítězilo Mýto na přípravném turnaji – porazilo Holoubkov 1:0, Příkosice 3:0 a remizovalo 0:0 s Břasy. Skvělá příprava před jarem přinesla potřebné herní minuty a prověřila spolupráci hráčů.',
+            'datum'   => '2025-03-10',
         ),
     );
 
@@ -590,12 +939,17 @@ function slavoj_cf_seed_demo_data() {
             continue;
         }
         $p_id = wp_insert_post(array(
-            'post_title'   => $a['title'],
-            'post_content' => $a['content'],
-            'post_type'    => 'post',
-            'post_status'  => 'publish',
+            'post_title'    => $a['title'],
+            'post_content'  => $a['content'],
+            'post_type'     => 'post',
+            'post_status'   => 'publish',
+            'post_date'     => $a['datum'] . ' 10:00:00',
         ));
         if ($p_id && !is_wp_error($p_id)) {
+            // Přiřadit kategorii 'aktuality'
+            wp_set_post_categories($p_id, array(
+                get_cat_ID('aktuality') ?: wp_create_category('aktuality'),
+            ));
             $created++;
         }
     }
