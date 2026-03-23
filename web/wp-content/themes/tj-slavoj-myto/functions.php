@@ -802,12 +802,13 @@ function slavoj_kategorie_poradi() {
     return array(
         'muzi-a'            => 'Muži A',
         'muzi-b'            => 'Muži B',
+        'stara-garda'       => 'Stará garda',
         'dorost'            => 'Dorost',
         'starsi-zaci'       => 'Starší žáci',
         'mladsi-zaci'       => 'Mladší žáci',
         'starsi-pripravka'  => 'Starší přípravka',
         'mladsi-pripravka'  => 'Mladší přípravka',
-        'mini-pripravka'    => 'Minipřípravka',
+        'mini-pripravka'    => 'Mini přípravka',
     );
 }
 
@@ -1285,12 +1286,15 @@ function tjsm_init_handle_form() {
     // 4. Termíny taxonomií (kategorie-tymu, stav-zapasu, sezona, pozice-hrace)
     $taxonomy_terms = array(
         'kategorie-tymu' => array(
-            array( 'name' => 'Muži A',       'slug' => 'muzi-a' ),
-            array( 'name' => 'Muži B',       'slug' => 'muzi-b' ),
-            array( 'name' => 'Dorost',       'slug' => 'dorost' ),
-            array( 'name' => 'Starší žáci',  'slug' => 'starsi-zaci' ),
-            array( 'name' => 'Mladší žáci',  'slug' => 'mladsi-zaci' ),
-            array( 'name' => 'Přípravka',    'slug' => 'pripravka' ),
+            array( 'name' => 'Muži A',            'slug' => 'muzi-a' ),
+            array( 'name' => 'Muži B',            'slug' => 'muzi-b' ),
+            array( 'name' => 'Stará garda',       'slug' => 'stara-garda' ),
+            array( 'name' => 'Dorost',             'slug' => 'dorost' ),
+            array( 'name' => 'Starší žáci',       'slug' => 'starsi-zaci' ),
+            array( 'name' => 'Mladší žáci',       'slug' => 'mladsi-zaci' ),
+            array( 'name' => 'Starší přípravka',  'slug' => 'starsi-pripravka' ),
+            array( 'name' => 'Mladší přípravka',  'slug' => 'mladsi-pripravka' ),
+            array( 'name' => 'Mini přípravka',    'slug' => 'mini-pripravka' ),
         ),
         'stav-zapasu' => array(
             array( 'name' => 'Nadcházející', 'slug' => 'nadchazejici' ),

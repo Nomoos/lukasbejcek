@@ -209,12 +209,15 @@ function slavoj_cf_seed_taxonomies() {
 
     // Kategorie týmů
     $kategorie = array(
-        'Muži A'        => 'muzi-a',
-        'Muži B'        => 'muzi-b',
-        'Dorost'        => 'dorost',
-        'Starší žáci'   => 'starsi-zaci',
-        'Mladší žáci'   => 'mladsi-zaci',
-        'Přípravka'     => 'pripravka',
+        'Muži A'            => 'muzi-a',
+        'Muži B'            => 'muzi-b',
+        'Stará garda'       => 'stara-garda',
+        'Dorost'            => 'dorost',
+        'Starší žáci'       => 'starsi-zaci',
+        'Mladší žáci'       => 'mladsi-zaci',
+        'Starší přípravka'  => 'starsi-pripravka',
+        'Mladší přípravka'  => 'mladsi-pripravka',
+        'Mini přípravka'    => 'mini-pripravka',
     );
     foreach ($kategorie as $nazev => $slug) {
         if (!term_exists($slug, 'kategorie-tymu')) {

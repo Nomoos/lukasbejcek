@@ -209,12 +209,15 @@ function slavoj_cf_seed_taxonomies() {
 
     // Kategorie týmů
     $kategorie = array(
-        'Muži A'        => 'muzi-a',
-        'Muži B'        => 'muzi-b',
-        'Dorost'        => 'dorost',
-        'Starší žáci'   => 'starsi-zaci',
-        'Mladší žáci'   => 'mladsi-zaci',
-        'Přípravka'     => 'pripravka',
+        'Muži A'            => 'muzi-a',
+        'Muži B'            => 'muzi-b',
+        'Stará garda'       => 'stara-garda',
+        'Dorost'            => 'dorost',
+        'Starší žáci'       => 'starsi-zaci',
+        'Mladší žáci'       => 'mladsi-zaci',
+        'Starší přípravka'  => 'starsi-pripravka',
+        'Mladší přípravka'  => 'mladsi-pripravka',
+        'Mini přípravka'    => 'mini-pripravka',
     );
     foreach ($kategorie as $nazev => $slug) {
         if (!term_exists($slug, 'kategorie-tymu')) {
@@ -383,6 +386,12 @@ function slavoj_admin_filters( $post_type ) {
             // Kanonické řazení kategorií týmu (Muži A, Muži B, Dorost, …)
             if ( 'kategorie-tymu' === $taxonomy && function_exists( 'slavoj_sort_tymy' ) ) {
                 $terms = slavoj_sort_tymy( $terms );
+                // Stará garda se zobrazuje jen v galerii
+                if ( 'galerie' !== $post_type ) {
+                    $terms = array_filter( $terms, function( $term ) {
+                        return 'stara-garda' !== $term->slug;
+                    } );
+                }
             }
             $selected = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( $_GET[ $taxonomy ] ) ) : '';
             echo '<select name="' . esc_attr( $taxonomy ) . '">';
