@@ -121,6 +121,21 @@ get_header();
       $aktuality_args = array(
           'category_name'  => 'aktuality',
           'posts_per_page' => 4,
+          'meta_query'     => array(
+              'relation' => 'OR',
+              // Příspěvky s nastaveným datem expirace >= dnes
+              array(
+                  'key'     => '_expiration_date',
+                  'value'   => date('Y-m-d'),
+                  'compare' => '>=',
+                  'type'    => 'DATE',
+              ),
+              // Starší příspěvky bez meta (před zavedením expirace)
+              array(
+                  'key'     => '_expiration_date',
+                  'compare' => 'NOT EXISTS',
+              ),
+          ),
       );
       $aktuality_query = new WP_Query( $aktuality_args );
 
@@ -134,6 +149,7 @@ get_header();
                   <h4><a href="<?php the_permalink(); ?>" class="text-decoration-none">
                     <?php the_title(); ?>
                   </a></h4>
+                  <p class="aktualita__datum text-muted small mb-2"><?php the_date('j. n. Y'); ?></p>
                   <?php the_excerpt(); ?>
                 </div>
               </div>

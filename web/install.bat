@@ -81,10 +81,16 @@ if not exist "!WP_DIR!\wp-content\" (
     exit /b 1
 )
 
+:: -- MySQL nastaveni ---------------------------------------------
+set "DEFAULT_DB=slavoj_myto"
+set "DEFAULT_MYSQL=C:\xampp\mysql\bin\mysql.exe"
+set /p "DB_NAME=Zadejte nazev databaze [%DEFAULT_DB%]: "
+if "!DB_NAME!"=="" set "DB_NAME=%DEFAULT_DB%"
+
 :: -- Tema --------------------------------------------------------
 set "DEST_THEME=!WP_DIR!\wp-content\themes\tj-slavoj-myto"
 
-echo  [1/2] Instalace tematu...
+echo  [1/3] Instalace tematu...
 
 if not exist "!SRC_THEME!\" (
     echo  [CHYBA] Zdrojova slozka tematu nebyla nalezena: !SRC_THEME!
@@ -119,7 +125,7 @@ echo       Tema uspesne nainstalovano.
 :: -- Plugin ------------------------------------------------------
 set "DEST_PLUGIN=!WP_DIR!\wp-content\plugins\slavoj-custom-fields"
 
-echo  [2/2] Instalace pluginu...
+echo  [2/3] Instalace pluginu...
 
 if not exist "!SRC_PLUGIN!\" (
     echo  [CHYBA] Zdrojova slozka pluginu nebyla nalezena: !SRC_PLUGIN!
@@ -150,6 +156,69 @@ if errorlevel 1 (
     exit /b 1
 )
 echo       Plugin uspesne nainstalovan.
+
+:: -- Taxonomy termy v DB (pres php.exe – zachova UTF-8) ----------
+echo  [3/3] Nastaveni taxonomy termu v databazi...
+
+set "PHP_EXE=C:\xampp\php\php.exe"
+set "SEED_SCRIPT=!WP_DIR!\slavoj-seed-terms.php"
+
+if not exist "!PHP_EXE!" (
+    echo  [PRESKOCENO] php.exe nenalezen na !PHP_EXE!.
+    echo               Taxonomy termy vloz rucne pres WP Admin.
+    goto :db_skip
+)
+
+:: Zapis docasny PHP seed skript do WP adresare
+(
+echo ^<?php
+echo define^('ABSPATH', __DIR__ . '/'^);
+echo define^('WPINC', 'wp-includes'^);
+echo require_once __DIR__ . '/wp-load.php';
+echo $terms = array^(
+echo     'kategorie-tymu' =^> array^(
+echo         array^('muzi-a',           'Mu\u017ei A'^),
+echo         array^('muzi-b',           'Mu\u017ei B'^),
+echo         array^('dorost',           'Dorost'^),
+echo         array^('starsi-zaci',      'Star\u0161\u00ed \u017e\u00e1ci'^),
+echo         array^('mladsi-zaci',      'Mlad\u0161\u00ed \u017e\u00e1ci'^),
+echo         array^('starsi-pripravka', 'Star\u0161\u00ed p\u0159\u00edpravka'^),
+echo         array^('mladsi-pripravka', 'Mlad\u0161\u00ed p\u0159\u00edpravka'^),
+echo         array^('mini-pripravka',   'Minip\u0159\u00edpravka'^),
+echo         array^('stara-garda',      'Star\u00e1 garda'^),
+echo     ^),
+echo     'stav-zapasu' =^> array^(
+echo         array^('nadchazejici', 'Nach\u00e1zej\u00edc\u00ed'^),
+echo         array^('odehrany',     'Odehr\u00e1n\u00fd'^),
+echo         array^('zruseny',      'Zru\u0161en\u00fd'^),
+echo     ^),
+echo     'sezona' =^> array^(
+echo         array^('2024-2025', '2024/2025'^),
+echo         array^('2025-2026', '2025/2026'^),
+echo     ^),
+echo ^);
+echo foreach ^($terms as $tax =^> $list^) {
+echo     foreach ^($list as $t^) {
+echo         list^($slug, $name^) = $t;
+echo         $name = json_decode^('"' . $name . '"'^);
+echo         if ^(!term_exists^($slug, $tax^)^) {
+echo             wp_insert_term^($name, $tax, array^('slug' =^> $slug^)^);
+echo             echo "+ $name\n";
+echo         } else { echo "= $name\n"; }
+echo     }
+echo }
+) > "!SEED_SCRIPT!"
+
+"!PHP_EXE!" "!SEED_SCRIPT!"
+if errorlevel 1 (
+    echo  [UPOZORNENI] PHP seed skript selhal.
+) else (
+    echo       Taxonomy termy OK.
+)
+
+del "!SEED_SCRIPT!" >nul 2>&1
+
+:db_skip
 
 :: -- Hotovo ------------------------------------------------------
 echo.

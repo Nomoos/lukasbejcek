@@ -9,10 +9,18 @@ get_header();
 $filtr_kategorie = isset($_GET['kategorie']) ? sanitize_text_field(wp_unslash($_GET['kategorie'])) : '';
 $filtr_sezona    = isset($_GET['sezona'])    ? sanitize_text_field(wp_unslash($_GET['sezona']))    : '';
 
-$kategorie_tymu_terms = get_terms(array(
-    'taxonomy'   => 'kategorie-tymu',
-    'hide_empty' => false,
-));
+// Pevný seznam kategorií pro galerii – nezávislý na DB termech.
+// 'zaci' je virtuální slug (sloučení starsi-zaci + mladsi-zaci).
+$galerie_kategorie = array(
+    'muzi-a'           => 'Muži A',
+    'muzi-b'           => 'Muži B',
+    'stara-garda'      => 'Stará garda',
+    'dorost'           => 'Dorost',
+    'zaci'             => 'Žáci',
+    'starsi-pripravka' => 'Starší přípravka',
+    'mladsi-pripravka' => 'Mladší přípravka',
+    'mini-pripravka'   => 'Minipřípravka',
+);
 
 $dostupne_sezony = get_terms(array(
     'taxonomy'   => 'sezona',
@@ -39,13 +47,11 @@ $dostupne_sezony = get_terms(array(
           <label class="visually-hidden" for="f-kategorie">Kategorie týmu</label>
           <select id="f-kategorie" name="kategorie" class="form-select filter-select-team" onchange="this.form.submit()">
             <option value="">Všechny kategorie</option>
-            <?php if (!empty($kategorie_tymu_terms) && !is_wp_error($kategorie_tymu_terms)) : ?>
-              <?php foreach ($kategorie_tymu_terms as $term) : ?>
-                <option value="<?php echo esc_attr($term->slug); ?>" <?php selected($filtr_kategorie, $term->slug); ?>>
-                  <?php echo esc_html($term->name); ?>
-                </option>
-              <?php endforeach; ?>
-            <?php endif; ?>
+            <?php foreach ($galerie_kategorie as $slug => $nazev) : ?>
+              <option value="<?php echo esc_attr($slug); ?>" <?php selected($filtr_kategorie, $slug); ?>>
+                <?php echo esc_html($nazev); ?>
+              </option>
+            <?php endforeach; ?>
           </select>
         </div>
 
@@ -73,11 +79,14 @@ $dostupne_sezony = get_terms(array(
 </section>
 
 <!-- MODRÝ PRUH S LOGEM -->
-<div class="team-hero">
-  <div class="team-hero__bar">
-    <img class="team-hero__logo"
-         src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png"
-         alt="TJ Slavoj Mýto">
+<div class="container-fluid px-0">
+  <div class="row align-items-center g-0">
+    <div class="col-5"><div class="blue-bar-p"></div></div>
+    <div class="col-2 d-flex justify-content-center">
+      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png"
+           alt="TJ Slavoj Mýto" height="50">
+    </div>
+    <div class="col-5"><div class="blue-bar-l"></div></div>
   </div>
 </div>
 
@@ -94,10 +103,14 @@ $dostupne_sezony = get_terms(array(
       $tax_query = array();
 
       if ($filtr_kategorie) {
+          // 'zaci' je virtuální slug – zobrazuje alba Starších i Mladších žáků.
+          $terms_pro_query = ($filtr_kategorie === 'zaci')
+              ? array('starsi-zaci', 'mladsi-zaci')
+              : $filtr_kategorie;
           $tax_query[] = array(
               'taxonomy' => 'kategorie-tymu',
               'field'    => 'slug',
-              'terms'    => $filtr_kategorie,
+              'terms'    => $terms_pro_query,
           );
       }
 

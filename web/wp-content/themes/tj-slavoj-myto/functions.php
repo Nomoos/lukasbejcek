@@ -1308,22 +1308,44 @@ function tjsm_init_handle_form() {
 
     $log = array();
 
-    // 1. Stránky (Pages) s přiřazením šablony
+    // 1. Stránky (Pages) s přiřazením šablony a výchozím obsahem
+    $historie_content =
+        '<p>První zprávy o kopané v Mýtě sahají do roku 1909, kdy byl založen klub kopané v Mýtě, jako druhý na okrese po Rokycanech, s názvem „Sportovní klub Olympia Mýto." Hrálo se na hřišti u sv. Vojtěcha. O tři roky později byl klub přejmenován na „Sportovní klub Český Lev", a poté byla činnost přerušena 1.sv.válkou.</p>' .
+        '<p>Poválečná obnova přinesla i nový název „Rudá hvězda Mýto", který byl však zanedlouho změněn na „SK Viktoria Mýto". V roce 1931 přecházejí hráči do nově vzniklého klubu „SK Olympia Mýto" a slaví 30let svého trvání.</p>' .
+        '<p>Ještě před 2.sv.válkou bylo zrušeno hřiště u sv.Vojtěcha a několik let se hrálo na cizím hřišti kařezských fotbalistů za cekovským lesíkem.</p>' .
+        '<p>Po válce začal klub usilovat o vybudování vlastního hřiště na Benátkách. „SK Olympia Mýto" byla v té době začleněna do Sokola, a poté v r.1952 byly sokolské jednoty převedeny, jako složky ROH, pod jednotlivé průmyslové závody. Mýtský klub byl přičleněn ke sladovně a byl mu dán název „Slavoj". Od této doby se název klubu již nezměnil. Změnil se pouze vzhled hřiště. Od r. 1950 až r.1987 byly dřevěné kabiny i tribuna postupně přebudovány na zděné.</p>' .
+        '<p>Od 90.let se dále zdokonalovalo nejen hřiště a okolí, ale i týmy. Úspěchy mýtského fotbalu vynesly družstvo do krajských soutěží a začal být kladen větší důraz na práci s mládeží.</p>' .
+        '<p>V r. 1994 postoupili muži do 1.B třídy, žáci hráli již krajský přebor. V letech 2001–02 přišel postup do A třídy a i nadále mužstvo slaví úspěchy, když se v r.2004–05 stává účastníkem krajského přeboru. Kraj se v Mýtě udržel pouze po dobu dvou let, kdy přišlo chvilkové období pádů se smutným návratem až do 1.B třídy.</p>' .
+        '<p>Úspěchy se vrátily ke Slavoji znovu v r. 2009–10, kdy se tým opět probojoval do 1.A třídy. Postup zpět do krajského přeboru se povedl v roce 2017. Historický úspěch v Mýtě rok 2019 – „A" tým postupuje do Divize. Ostatní týmy muži B hrají nyní I. A třídu, dorost – krajskou soutěž, žáci okresní přebor a úspěšně se rozrůstá i základna mladších i starších přípravek. Stále se drží i mýtská stará garda.</p>' .
+        '<p>Od sezóny 2022/2023 se „A" tým mužů vrací do krajského přeboru a „B" tým bude řádit v I.B třídě. Stále se ve svých skupinách skvěle drží i všechny mládežnické týmy.</p>';
+
     $pages = array(
-        array( 'title' => 'Úvod',     'slug' => 'uvod',      'template' => '' ),
-        array( 'title' => 'Aktuality','slug' => 'aktuality', 'template' => 'page-aktuality.php' ),
-        array( 'title' => 'Zápasy',   'slug' => 'zapasy',    'template' => '' ), // URL obsluhuje CPT archive (archive-zapas.php)
-        array( 'title' => 'Týmy',     'slug' => 'tymy',      'template' => '' ), // URL obsluhuje CPT archive (archive-tym.php)
-        array( 'title' => 'Galerie',  'slug' => 'galerie',   'template' => '' ), // URL obsluhuje CPT archive (archive-galerie.php)
-        array( 'title' => 'Historie', 'slug' => 'historie',  'template' => 'page-historie.php' ),
-        array( 'title' => 'Sponzoři', 'slug' => 'sponzori',  'template' => 'page-sponzori.php' ),
-        array( 'title' => 'Kontakty', 'slug' => 'kontakty',  'template' => 'page-kontakty.php' ),
+        array( 'title' => 'Úvod',     'slug' => 'uvod',      'template' => '',                    'content' => '' ),
+        array( 'title' => 'Aktuality','slug' => 'aktuality', 'template' => 'page-aktuality.php',  'content' => '' ),
+        array( 'title' => 'Zápasy',   'slug' => 'zapasy',    'template' => '',                    'content' => '' ),
+        array( 'title' => 'Týmy',     'slug' => 'tymy',      'template' => '',                    'content' => '' ),
+        array( 'title' => 'Galerie',  'slug' => 'galerie',   'template' => '',                    'content' => '' ),
+        array( 'title' => 'Historie', 'slug' => 'historie',  'template' => 'page-historie.php',   'content' => $historie_content ),
+        array( 'title' => 'Sponzoři', 'slug' => 'sponzori',  'template' => 'page-sponzori.php',   'content' => '' ),
+        array( 'title' => 'Kontakty', 'slug' => 'kontakty',  'template' => 'page-kontakty.php',   'content' => '' ),
     );
 
     foreach ( $pages as $page_data ) {
         $exists = get_page_by_path( $page_data['slug'] );
         if ( $exists ) {
-            $log[] = '✓ Stránka „' . $page_data['title'] . '" již existuje (přeskočena).';
+            // Pokud stránka existuje ale nemá obsah, doplň ho
+            if ( $page_data['content'] && empty( trim( $exists->post_content ) ) ) {
+                wp_update_post( array(
+                    'ID'           => $exists->ID,
+                    'post_content' => $page_data['content'],
+                ) );
+                if ( $page_data['template'] ) {
+                    update_post_meta( $exists->ID, '_wp_page_template', $page_data['template'] );
+                }
+                $log[] = '+ Obsah stránky „' . $page_data['title'] . '" doplněn.';
+            } else {
+                $log[] = '✓ Stránka „' . $page_data['title'] . '" již existuje (přeskočena).';
+            }
             continue;
         }
         $page_id = wp_insert_post( array(
@@ -1331,7 +1353,7 @@ function tjsm_init_handle_form() {
             'post_name'    => $page_data['slug'],
             'post_status'  => 'publish',
             'post_type'    => 'page',
-            'post_content' => '',
+            'post_content' => $page_data['content'],
         ) );
         if ( is_wp_error( $page_id ) ) {
             $log[] = '✗ Chyba při vytváření stránky „' . $page_data['title'] . '": ' . $page_id->get_error_message();
@@ -1486,7 +1508,7 @@ function tjsm_init_admin_page() {
             <tr><td>Stránka</td><td>Sponzoři (<code>sponzori</code>)</td></tr>
             <tr><td>Stránka</td><td>Kontakty (<code>kontakty</code>)</td></tr>
             <tr><td>Kategorie příspěvků</td><td>Aktuality (<code>aktuality</code>)</td></tr>
-            <tr><td>Kategorie týmu</td><td>Muži A, Muži B, Dorost, Starší žáci, Mladší žáci, Přípravka</td></tr>
+            <tr><td>Kategorie týmu</td><td>Muži A, Muži B, Dorost, Starší žáci, Mladší žáci, Starší přípravka, Mladší přípravka, Minipřípravka</td></tr>
             <tr><td>Stav zápasu</td><td>Nadcházející, Odehraný, Zrušený</td></tr>
             <tr><td>Sezóna</td><td>2024/2025, 2025/2026</td></tr>
             <tr><td>Pozice hráče</td><td>Brankáři, Hráči v poli</td></tr>
@@ -1967,4 +1989,78 @@ function slavoj_register_roles() {
     update_option('tjsm_role_version', TJSM_ROLE_VERSION);
 }
 add_action('init', 'slavoj_register_roles');
+
+// =============================================================
+// EXPIRACE AKTUALIT
+// =============================================================
+
+/**
+ * Meta box "Expirace aktuality" – zobrazí se v panelu vedle Publikovat.
+ * Výchozí datum = 30 dní od publikování. Checkbox aktivuje vlastní datum.
+ */
+add_action('add_meta_boxes', function () {
+    add_meta_box(
+        'slavoj_expiration',
+        'Expirace aktuality',
+        'slavoj_expiration_render',
+        'post',
+        'side',
+        'high'
+    );
+});
+
+function slavoj_expiration_render($post) {
+    wp_nonce_field('slavoj_expiration_save', 'slavoj_expiration_nonce');
+
+    $custom_set  = (bool) get_post_meta($post->ID, '_expiration_custom', true);
+    $saved_date  = get_post_meta($post->ID, '_expiration_date', true);
+
+    // Výpočet výchozího data: datum publikování + 30 dní
+    $publish_ts   = ($post->post_date && $post->post_date !== '0000-00-00 00:00:00')
+                    ? strtotime($post->post_date)
+                    : time();
+    $default_date = date('Y-m-d', $publish_ts + 30 * DAY_IN_SECONDS);
+    $display_date = $custom_set ? $saved_date : $default_date;
+    ?>
+    <p>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+            <input type="checkbox" id="slavoj_custom_exp"
+                   name="slavoj_custom_expiration" value="1"
+                   <?php checked($custom_set); ?>>
+            Vlastní datum expirace
+        </label>
+    </p>
+    <p>
+        <input type="date" id="slavoj_exp_date" name="slavoj_expiration_date"
+               value="<?php echo esc_attr($display_date); ?>"
+               <?php echo $custom_set ? '' : 'disabled'; ?>
+               style="width:100%">
+    </p>
+    <p class="description">Výchozí: 30 dní od publikování</p>
+    <script>
+    document.getElementById('slavoj_custom_exp').addEventListener('change', function () {
+        document.getElementById('slavoj_exp_date').disabled = !this.checked;
+    });
+    </script>
+    <?php
+}
+
+add_action('save_post', function ($post_id) {
+    if ( ! isset($_POST['slavoj_expiration_nonce'])
+         || ! wp_verify_nonce($_POST['slavoj_expiration_nonce'], 'slavoj_expiration_save') ) return;
+    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+    if ( ! current_user_can('edit_post', $post_id) ) return;
+
+    if ( ! empty($_POST['slavoj_custom_expiration']) ) {
+        update_post_meta($post_id, '_expiration_date',   sanitize_text_field($_POST['slavoj_expiration_date']));
+        update_post_meta($post_id, '_expiration_custom', '1');
+    } else {
+        // Výchozí: 30 dní od data publikování
+        $post         = get_post($post_id);
+        $publish_ts   = strtotime($post->post_date);
+        $default_date = date('Y-m-d', $publish_ts + 30 * DAY_IN_SECONDS);
+        update_post_meta($post_id, '_expiration_date', $default_date);
+        delete_post_meta($post_id, '_expiration_custom');
+    }
+});
 

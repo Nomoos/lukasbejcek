@@ -1,496 +1,190 @@
-# Návrh postupu portování webu do WordPress
+# Plán portování webu do WordPress – TJ Slavoj Mýto
 
-## Executive Summary
+## Přehled projektu
 
-Tento dokument navrhuje kompletní postup pro dokončení migrace webu TJ Slavoj Mýto do plně funkčního WordPress tématu. Současný stav je částečně implementované téma s mnoha hardcoded prvky a nefunkčními komponentami.
+Migrace webu fotbalového klubu TJ Slavoj Mýto ze statických HTML stránek do plně funkčního WordPress tématu.
+Cíl: dynamická správa zápasů, týmů, hráčů a galerií přes WordPress admin bez znalosti kódu.
 
-## Současný stav
+---
 
-- ✅ Základní WordPress téma struktura (header, footer, style.css)
-- ✅ Některé page templates vytvořeny
-- ✅ Použití WP_Query na některých stránkách
-- ✅ Základní navigační menu funkční
-- ❌ Většina obsahu je hardcoded v PHP souborech
-- ❌ Filtry a interaktivní prvky nefunkční
-- ❌ Chybí custom post types pro strukturovaný obsah
-- ❌ Není admin rozhraní pro správu dat
+## Aktuální stav (březen 2026)
+
+| Oblast | Stav |
+|--------|------|
+| Struktura tématu (header, footer, style.css) | ✅ |
+| Custom Post Types (CPT) | ✅ |
+| Taxonomie (sezóna, kategorie, stav...) | ✅ |
+| Šablony stránek (zapasy, tymy, galerie...) | ✅ |
+| HTML filtry (výběr týmu, sezóny, stavu) | ✅ |
+| Stránkování výsledků | ✅ |
+| Bootstrap 5 – responzivní design | ✅ |
+| Mobilní menu (Bootstrap hamburger) | ✅ |
+| Lightbox pro galerie | ✅ |
+| Admin formulář pro zadání skóre | ✅ |
+| Plugin slavoj-custom-fields (ukázková data) | ✅ |
+| Dokumentace | ✅ průběžně |
+| Migrace reálných dat | ⏳ |
+| Školení správce webu | ⏳ |
+
+---
 
 ## Fáze migrace
 
-### Fáze 1: Analýza a příprava ✅ (hotovo)
+### Fáze 1: Analýza a příprava ✅ HOTOVO
 
-#### 1.1 Inventarizace obsahu
-- [x] Sepsat seznam všech typů obsahu (zápasy, týmy, hráči, galerie, kontakty)
-- [x] Identifikovat všechna potřebná pole pro každý typ → `docs/06-inventar-obsahu.md`
-- [x] Vytvořit datový model → `docs/08-datovy-model.md`
-- [x] Připravit ukázková data pro testování → `wordpress/seed-data.sql`, `docs/09-ukazková-data.md`
+- [x] Inventarizace obsahu → `docs/06-inventar-obsahu.md`
+- [x] Datový model → `docs/08-datovy-model.md`
+- [x] Ukázková data → `docs/09-ukazková-data.md`, `wordpress/seed-data.sql`
+- [x] Nastavení lokálního prostředí (wp-env) → `.wp-env.json`
+- [x] Git verzování
 
-#### 1.2 Nastavení vývojového prostředí
-- [x] Nainstalovat lokální WordPress (wp-env / Docker) → `.wp-env.json`
-- [x] Nové téma ze složky `web/theme/tj-slavoj-myto/` aktivovat místo originálu
-- [x] Nainstalovat potřebné pluginy → `web/plugins/slavoj-custom-fields/`
-- [x] Nastavit Git pro verzování změn
+### Fáze 2: Datová struktura ✅ HOTOVO
 
-### Fáze 2: Datová struktura ✅ (hotovo)
+Zaregistrováno v `web/wp-content/themes/tj-slavoj-myto/functions.php`:
 
-#### 2.1 Custom Post Types
+**Custom Post Types:**
+- [x] `zapas` – datum, čas, domácí, hosté, skóre, střelci
+- [x] `tym` – trenér, asistent, zdravotník, počet hráčů
+- [x] `hrac` – číslo dresu, rok narození, pozice, tým
+- [x] `galerie` – název, obrázky, kategorie, sezóna
+- [x] `sponzor` – logo, odkaz na web
+- [x] `kontakt` – jméno, pozice, telefon, email, pořadí
 
-Registrovány v `web/theme/tj-slavoj-myto/functions.php`:
-- [x] Zápasy (`zapas`) – s meta boxy datum, čas, domácí, hosté, skóre, střelci
-- [x] Týmy (`tym`) – s meta boxy trenér, asistent, zdravotník, tym_slug
-- [x] Hráči (`hrac`) – s meta boxy číslo, rok_narozeni, tym_slug
-- [x] Galerie (`galerie`) – s featured image a post content
-- [x] Sponzoři (`sponzor`) – s meta boxem web_sponzora
-- [x] Kontakty (`kontakt`) – s meta boxy pozice, telefon, email, poradi
+**Taxonomie:**
+- [x] `sezona` – 2024/25, 2025/26 atd.
+- [x] `kategorie-tymu` – Muži A, Muži B, Dorost, Žáci...
+- [x] `stav-zapasu` – nadcházející, odehraný, zrušený
+- [x] `pozice-hrace` – brankář, obránce, záložník, útočník
 
-Původní specifikace custom post types:
+### Fáze 3: Šablony stránek ✅ HOTOVO
 
-**1. Zápasy (Match)**
-```php
-Pole:
-- Tým (taxonomie)
-- Domácí tým (text)
-- Hostující tým (text)
-- Skóre domácí (číslo)
-- Skóre hosté (číslo)
-- Datum a čas (datetime)
-- Sezóna (taxonomie)
-- Střelci (text/textarea)
-- Stav (taxonomie: nadcházející/odehraný)
-```
+| Šablona | Stav | Popis |
+|---------|------|-------|
+| `front-page.php` | ✅ | Banner, 4 nejbližší zápasy, aktuality |
+| `page-zapasy.php` | ✅ | Filtry, seznam zápasů, stránkování |
+| `page-tymy.php` | ✅ | Filtry, info o týmu, soupiska |
+| `page-galerie.php` | ✅ | Filtry, mřížka alb |
+| `page-kontakty.php` | ✅ | Výbor klubu, mapa |
+| `page-sponzori.php` | ✅ | Loga sponzorů s odkazy |
+| `page-aktuality.php` | ✅ | Novinky se stránkováním |
+| `page-historie.php` | ✅ | Obsah z WP editoru |
+| `single-zapas.php` | ✅ | Detail zápasu, admin formulář |
+| `single-tym.php` | ✅ | Detail týmu, soupiska, nejbližší zápasy |
+| `single-hrac.php` | ✅ | Profil hráče |
+| `single-galerie.php` | ✅ | Fotogalerie s lightboxem |
+| `archive-zapas.php` | ✅ | Archiv zápasů s filtry |
+| `archive-tym.php` | ✅ | Přehled všech týmů |
 
-**2. Týmy (Team)**
-```php
-Pole:
-- Název týmu (title)
-- Kategorie (taxonomie: Muži A, Muži B, Dorost, Žáci)
-- Sezóna (taxonomie)
-- Počet hráčů (číslo)
-- Hlavní trenér (text)
-- Asistent trenéra (text)
-- Zdravotník (text)
-- Logo týmu (obrázek)
-- Popis (editor)
-```
+### Fáze 4: Frontend ✅ HOTOVO
 
-**3. Hráči (Player)**
-```php
-Pole:
-- Jméno (title)
-- Číslo dresu (číslo)
-- Rok narození (číslo/datum)
-- Pozice (taxonomie: brankář, obránce, záložník, útočník)
-- Tým (vztah k custom post type Team)
-- Fotografie (obrázek)
-- Kontakt (text)
-```
+**Filtry:**
+- [x] Filtry pomocí HTML formuláře (GET parametry), bez JavaScriptu
+- [x] `onchange="this.form.submit()"` – okamžitá odezva po výběru
+- [x] `<noscript>` záložní tlačítko pro případ bez JS
 
-**4. Galerie (Gallery)**
-```php
-Pole:
-- Název události (title)
-- Datum události (datum)
-- Popis (editor)
-- Tým (taxonomie)
-- Sezóna (taxonomie)
-- Fotografie (galerie - WordPress galerie, vestavěná)
-```
+**Mobilní zobrazení:**
+- [x] Bootstrap 5 grid – `col-12 col-md-6 col-lg-4` atd.
+- [x] Hamburger menu přes Bootstrap `data-bs-toggle="collapse"` (bez JS)
+- [x] Touch-friendly velikosti tlačítek (min 44×44 px)
 
-**5. Kontakty (Contact)**
-```php
-Pole:
-- Jméno (title)
-- Funkce (text)
-- Telefon (text)
-- Email (email)
-- Fotografie (obrázek)
-- Pořadí (číslo pro řazení)
-```
+**Ostatní:**
+- [x] Lightbox pro galerie (vlastní minimální JS ~50 řádků)
+- [x] Smooth scroll (`scroll-behavior: smooth` v CSS)
+- [x] Stránkování zápasů a aktualit
+- [x] Lazy loading obrázků (`loading="lazy"`)
 
-**6. Sponzoři (Sponsor)**
-```php
-Pole:
-- Název (title)
-- Logo (obrázek)
-- URL webových stránek (url)
-- Popis (editor)
-- Typ sponzorství (taxonomie: hlavní, vedlejší, partneři)
-- Pořadí (číslo)
-```
+### Fáze 5: Admin rozhraní ⏳ ČÁSTEČNĚ
 
-#### 2.2 Taxonomie (kategorie a tagy)
+- [x] Admin formulář pro zadání skóre a střelců přímo ze stránky zápasu
+- [x] Admin sloupce v přehledu zápasů (datum, skóre, tým)
+- [x] Plugin slavoj-custom-fields – tlačítka pro vložení ukázkových dat
+- [ ] Dashboard widget se statistikami (počet zápasů, hráčů...)
+- [ ] Upravit pořadí položek v levém menu adminu
 
-- **Sezóna**: 2024/25, 2025/26, atd.
-- **Kategorie týmu**: Muži A, Muži B, Dorost, Starší žáci, Mladší žáci, Přípravka
-- **Pozice hráče**: Brankář, Obránce, Záložník, Útočník
-- **Stav zápasu**: Nadcházející, Odehraný, Zrušený
-- **Typ sponzorství**: Hlavní partner, Partner, Podpora
+### Fáze 6: Migrace dat ⏳ ČEKÁ
 
-#### 2.3 Plugin recommendations
-
-**Nutné:**
-1. **Advanced Custom Fields (ACF)** - pro custom fields (zdarma, dostupný na wordpress.org)
-2. **Custom Post Type UI** - pro snadné vytvoření custom post types (nebo kódovat do functions.php)
-
-**Doporučené:**
-3. **WP Query Console** - pro testování queries
-4. **Admin Columns** - pro lepší přehled v admin rozhraní
-5. **Duplicate Post** - pro rychlé kopírování zápasů
-6. **Regenerate Thumbnails** - pro optimalizaci obrázků
-
-**Volitelné:**
-7. **Polylang** - pokud plánujete vícejazyčnost (zdarma)
-8. **W3 Total Cache** nebo **WP Super Cache** - pro cachování a rychlost (zdarma)
-9. **Yoast SEO** - pro SEO optimalizaci
-
-### Fáze 3: Implementace šablon (3-4 dny)
-
-#### 3.1 Aktualizace function.php
-
-```php
-Přidat:
-1. Registrace všech custom post types
-2. Registrace taxonomií
-3. Podpora featured images
-4. Podpora HTML5
-5. Registrace velikostí obrázků
-6. Enqueue skriptů a stylů (správná cesta)
-7. AJAX funkce pro filtrování
-8. Helper funkce pro výpis dat
-```
-
-#### 3.2 Přepracování šablon
-
-**index.php (Domovská stránka)**
-- [x] Banner zůstává, obrázek jako featured image stránky (fallback na banner.jpg)
-- [x] Karty zápasů - WP_Query na custom post type "Match"
-- [x] Filtrovat pouze nadcházející zápasy (4 nejbližší)
-- [x] Sekce aktualit - WP_Query kategorie "aktuality"
-
-**page-zapasy.php**
-- [x] Funkční filtry přes HTML form GET
-- [x] WP_Query na custom post type "Match"
-- [x] Tax query pro filtrování podle týmu, sezóny, stavu
-- [x] Zobrazit detaily z custom fields
-- [ ] Pagination pro seznam zápasů
-
-**page-tymy.php**
-- [x] Funkční select boxy s HTML form
-- [x] WP_Query na custom post type "Team"
-- [x] Soupiska hráčů přes helper funkci
-- [x] Zobrazit všechny údaje z custom fields
-
-**page-galerie.php**
-- [x] Funkční filtry
-- [x] WP_Query na custom post type "Gallery"
-- [x] Grid layout s featured images
-
-**single-galerie.php**
-- [x] Detailní stránka galerie
-- [x] Zobrazení fotek (ACF galerie nebo post content)
-- [x] Lightbox s navigací a klávesnicí
-
-**page-historie.php**
-- [x] Obsah načítán z WP page editoru (the_content)
-- [x] Zachováno formátování (dvousloupcový layout)
-
-**page-kontakty.php**
-- [x] WP_Query na custom post type "Contact"
-- [x] Zobrazit všechny údaje z custom fields (tel, email)
-- [x] Veškeré styly v CSS (bez inline style)
-
-**page-sponzori.php**
-- [x] WP_Query na custom post type "Sponsor"
-- [x] Zobrazení log s odkazy
-- [x] Responsivní grid
-
-#### 3.3 Šablony pro single posts
-
-**single-zapas.php** (detail zápasu)
-- [x] Kompletní informace o zápase
-- [x] Správcovský formulář pro zadání skóre a střelců
-
-**single-tym.php** (detail týmu)
-- [x] Informace o týmu (trenéři, počet hráčů)
-- [x] Soupiska hráčů
-- [x] Nejbližší zápasy týmu
-
-**single-hrac.php** (profil hráče)
-- [x] Fotografie a základní údaje (číslo, rok narození, pozice, tým)
-- [x] Odkaz na tým
-
-**archive-zapas.php**
-- [x] Filtry, WP_Query, seznam zápasů s odkazem na detail
-
-**archive-tym.php**
-- [x] Filtry, WP_Query, grid karet týmů
-
-### Fáze 4: Frontend funkcionality (2-3 dny)
-
-#### 4.1 Implementace filtrů
-
-**JavaScript/AJAX komponenta:**
-```javascript
-Funkce:
-1. Posluchač změn na select elementech
-2. AJAX request na WordPress s parametry filtru
-3. Aktualizace DOM s výsledky
-4. Loading states a error handling
-5. URL parameters pro sdílení filtrovaných výsledků
-```
-
-**PHP AJAX handler:**
-```php
-Funkce:
-1. Přijmout AJAX request
-2. Sestavit WP_Query s meta_query
-3. Renderovat HTML výsledků
-4. Vrátit JSON response
-```
-
-#### 4.2 JavaScript vylepšení
-
-- [ ] Sticky menu při scrollování
-- [ ] Mobile hamburger menu
-- [ ] Lazy loading obrázků
-- [ ] Lightbox pro galerie (např. GLightbox)
-- [ ] Smooth scroll pro kotvy
-- [ ] Form validace pro kontaktní formulář
-
-#### 4.3 Responsivita
-
-- [ ] Otestovat na mobilních zařízeních
-- [ ] Upravit `.container` na fluid-container s max-width
-- [ ] Media queries pro breakpointy
-- [ ] Touch-friendly navigace
-- [ ] Optimalizované obrázky pro mobil
-
-### Fáze 5: Admin rozhraní (1-2 dny)
-
-#### 5.1 Customizace admin
-
-- [ ] Custom dashboard widget s rychlými statistikami
-- [ ] Admin columns pro custom post types
-- [ ] Quick edit pro časté změny
-- [ ] Bulk actions pro hromadné úpravy
-- [ ] Admin menu reorganizace (seskupit sportovní sekce)
-
-#### 5.2 User roles
-
-- [ ] **Administrátor** - plná práva
-- [ ] **Editor** - může editovat veškerý obsah
-- [ ] **Přispěvatel** - může přidávat aktuality a galerie
-- [ ] **Autor** - může přidávat pouze aktuality
-
-#### 5.3 Dokumentace pro editory
-
-- [ ] Návod jak přidat zápas
-- [ ] Návod jak přidat hráče
-- [ ] Návod jak vytvořit galerii
-- [ ] Návod jak změnit banner
-- [ ] Video tutoriály
-
-### Fáze 6: Migrace dat (1 den)
-
-#### 6.1 Import obsahu
-
-- [ ] Převést aktuální kategorie na custom post types
-- [ ] Import starých příspěvků aktualit
-- [ ] Vytvořit všechny týmy s údaji
+- [ ] Vytvoření týmů s reálnými údaji (trenér, hráči)
 - [ ] Import soupisek hráčů
-- [ ] Nahrát obrázky a loga
-- [ ] Vytvořit ukázkové zápasy
+- [ ] Zadání zápasů aktuální sezóny
+- [ ] Nahrání fotografií do galerií
+- [ ] Přidání sponzorů s logy
+- [ ] Aktualizace kontaktů výboru klubu
+- [ ] Aktualizace textu na stránce Historie
 
-#### 6.2 Nastavení
+### Fáze 7: Optimalizace ⏳ VOLITELNÉ (pro maturitu dostačuje současný stav)
 
-- [ ] Nastavit permalink strukturu
-- [ ] Vytvořit hlavní menu
-- [ ] Nastavit homepage na index.php
-- [ ] Vytvořit 404 stránku
-- [ ] Nastavit často používané velikosti obrázků
+- [ ] Minifikace CSS (WP plugin nebo build script)
+- [ ] WebP formát obrázků
+- [ ] Caching plugin (WP Super Cache – zdarma)
+- [ ] SEO plugin (Yoast SEO – zdarma)
+- [ ] Meta description pro každou stránku
 
-### Fáze 7: Optimalizace a SEO (1-2 dny)
+### Fáze 8: Testování ⏳
 
-#### 7.1 Performance
+- [ ] Ověřit filtry na mobilním telefonu (Chrome Android, iOS Safari)
+- [ ] Zkontrolovat zobrazení na tabletu (768 px)
+- [ ] Projít všechny stránky a ověřit funkčnost
+- [ ] Zkontrolovat zobrazení prázdných stavů (žádné výsledky)
 
-- [ ] Minifikace CSS a JavaScript
-- [ ] Lazy loading obrázků
-- [ ] Optimalizace databázových queries
-- [ ] Caching (W3 Total Cache nebo WP Super Cache)
-- [ ] CDN pro statické soubory
-- [ ] Optimalizace obrázků (WebP format)
+### Fáze 9: Nasazení na hosting ⏳
 
-#### 7.2 SEO
-
-- [ ] Meta tagy pro všechny stránky
-- [ ] Schema.org markup pro sportovní klub
-- [ ] XML sitemap
-- [ ] Robots.txt
-- [ ] Open Graph tagy pro social sharing
-- [ ] Alt texty pro všechny obrázky
-
-#### 7.3 Bezpečnost
-
-- [ ] Aktualizace WordPress, téma a pluginů
-- [ ] Silná hesla pro admin
-- [ ] Two-factor authentication
-- [ ] Security plugin (Wordfence nebo Sucuri)
-- [ ] Regular backups (UpdraftPlus)
-- [ ] SSL certifikát
-
-### Fáze 8: Testování (2-3 dny)
-
-#### 8.1 Funkční testování
-
-- [ ] Testovat všechny filtry a vyhledávání
-- [ ] Ověřit všechny odkazy a navigaci
-- [ ] Testovat formuláře
-- [ ] Ověřit správné zobrazení všech custom post types
-- [ ] Testovat admin rozhraní
-
-#### 8.2 Cross-browser testing
-
-- [ ] Chrome
-- [ ] Firefox
-- [ ] Safari
-- [ ] Edge
-- [ ] Mobilní prohlížeče (iOS Safari, Chrome Android)
-
-#### 8.3 Responsivita testing
-
-- [ ] Desktop (1920px, 1366px)
-- [ ] Tablet (768px, 1024px)
-- [ ] Mobile (375px, 414px)
-- [ ] Landscape orientace
-
-#### 8.4 Performance testing
-
-- [ ] PageSpeed Insights
-- [ ] GTmetrix
-- [ ] Loading time pod 3 sekundy
-- [ ] Lighthouse audit
-
-### Fáze 9: Launch (1 den)
-
-#### 9.1 Pre-launch checklist
-
-- [ ] Záloha současného webu
-- [ ] Export produkční databáze
-- [ ] Kontrola všech URL adres
-- [ ] Nastavení přesměrování (301 redirects)
-- [ ] Testování na staging serveru
-
-#### 9.2 Deployment
-
-- [ ] Upload souborů tématu na produkci
+- [ ] Záloha původního webu
+- [ ] Upload tématu přes FTP → `web/wp-content/themes/tj-slavoj-myto/`
+- [ ] Upload pluginu → `web/wp-content/plugins/slavoj-custom-fields/`
 - [ ] Import databáze
-- [ ] Aktualizace URLs v databázi (Search & Replace)
-- [ ] Nahrát media soubory
-- [ ] Aktivovat produkční pluginy
-- [ ] Zapnout caching
+- [ ] Aktualizace URL adres (WP admin → Nastavení → Záložní URL)
+- [ ] Aktivace tématu
 
-#### 9.3 Post-launch
+---
 
-- [ ] Monitorovat chyby v konzoli
-- [ ] Sledovat Google Search Console
-- [ ] Testovat kontaktní formuláře
-- [ ] Verify analytics tracking
-- [ ] Odeslat sitemap do Google
+## Klíčové technické rozhodnutí
 
-### Fáze 10: Školení a údržba (průběžné)
+### Filtry bez AJAXu
 
-#### 10.1 Školení klientů
+Filtry (výběr týmu, sezóny, stavu zápasu) fungují přes standardní HTML formulář metodou GET.
+Stránka se po výběru znovu načte s novými parametry v URL.
 
-- [ ] Jak přidat nový zápas
-- [ ] Jak upravit tým a soupisku
-- [ ] Jak vytvořit galerii
-- [ ] Jak publikovat aktualitu
-- [ ] Jak aktualizovat kontakty
+**Výhody pro maturitní projekt:**
+- Jednoduché na pochopení a vysvětlení
+- Funguje bez JavaScriptu (dostupné pro všechny)
+- URL lze sdílet (filtrovaný výsledek má vlastní odkaz)
 
-#### 10.2 Údržba
+### Bootstrap 5 jako základ
 
-- [ ] Měsíční aktualizace WordPressu
-- [ ] Pravidelné zálohy
-- [ ] Monitoring bezpečnosti
-- [ ] Performance monitoring
-- [ ] Content updates
+Web používá Bootstrap 5.3 pro:
+- Grid systém (responzivní sloupce)
+- Komponenty: navbar, badge, card, table, alert, btn
+- Utility třídy: `d-flex`, `gap-3`, `text-center`, `fw-bold`, `mb-4`...
 
-## Časový odhad
+Vlastní CSS styly jsou minimální – pouze tam, kde Bootstrap nestačí (barvy klubu, lightbox, match karty).
 
-| Fáze | Čas | Popis |
-|------|-----|-------|
-| Fáze 1 | 1-2 dny | Analýza a příprava |
-| Fáze 2 | 2-3 dny | Datová struktura |
-| Fáze 3 | 3-4 dny | Implementace šablon |
-| Fáze 4 | 2-3 dny | Frontend funkcionality |
-| Fáze 5 | 1-2 dny | Admin rozhraní |
-| Fáze 6 | 1 den | Migrace dat |
-| Fáze 7 | 1-2 dny | Optimalizace a SEO |
-| Fáze 8 | 2-3 dny | Testování |
-| Fáze 9 | 1 den | Launch |
-| Fáze 10 | Průběžné | Školení a údržba |
-| **CELKEM** | **14-23 dnů** | **Čistý vývoj** |
+### Custom Post Types místo stránek
 
-## Prioritizace
+Každý typ obsahu (zápas, tým, hráč...) je samostatný CPT. To umožňuje:
+- Správu obsahu přes WordPress admin (bez editace kódu)
+- Filtrování pomocí taxonomií (kategorie, sezóna)
+- Propojení mezi CPT (hráč → tým, zápas → tým)
 
-### Must-have (Kritické)
-1. Custom post types pro zápasy, týmy, hráče
-2. Funkční filtry a vyhledávání
-3. Responsivní design
-4. Admin rozhraní pro správu obsahu
-5. Bezpečnost a zálohy
+---
 
-### Should-have (Důležité)
-1. Galerie s lightboxem
-2. Stránka sponzorů
-3. SEO optimalizace
-4. Performance optimalizace
-5. Detailní statistiky
+## Adresářová struktura
 
-### Could-have (Nice to have)
-1. PDF export soupisek
-2. Statistiky hráčů
-3. Porovnání týmů
-4. Newsletter
-5. Social media integrace
-
-### Won't-have (Pro budoucnost)
-1. E-shop s klubovým zbožím
-2. Online vstupenky
-3. Live scoring
-4. Mobilní aplikace
-5. Fanouškovská sekce
-
-## Rizika a jejich mitigace
-
-### Riziko 1: Ztráta dat při migraci
-**Mitigace**: Pravidelné zálohy, testování na staging serveru
-
-### Riziko 2: Performance problémy
-**Mitigace**: Caching, CDN, optimalizace queries, lazy loading
-
-### Riziko 3: Kompatibilita pluginů
-**Mitigace**: Testování před nasazením, výběr stabilních a udržovaných pluginů
-
-### Riziko 4: Chyby v custom kódu
-**Mitigace**: Code review, testování, error logging
-
-### Riziko 5: SEO pokles po migraci
-**Mitigace**: 301 redirects, zachování URL struktury, sitemap update
-
-## Doporučení
-
-1. **Fázovaný přístup**: Neimplementovat vše najednou, prioritizovat must-have features
-2. **Staging prostředí**: Vždy testovat na kopii před nasazením na produkci
-3. **Version control**: Používat Git pro verzování kódu
-4. **Dokumentace**: Dokumentovat custom funkce a rozhodnutí
-5. **User testing**: Nechat otestovat několik uživatelů před spuštěním
-6. **Mobile-first**: Navrhovat nejprve pro mobily, pak desktop
-7. **Accessibility**: Dbát na přístupnost pro všechny uživatele
-8. **Future-proof**: Navrhovat s ohledem na budoucí rozšíření
-
-## Závěr
-
-Kompletní migrace webu TJ Slavoj Mýto do plně funkčního WordPress tématu je realizovatelná za 3-5 týdnů čistého vývoje. Klíčem k úspěchu je systematický přístup, důkladné testování a kvalitní dokumentace pro budoucí správu webu.
-
-Současná struktura v `original` složce poskytuje dobrý základ, ale vyžaduje významné rozšíření o custom post types, AJAX filtrování a admin rozhraní pro pohodlnou správu obsahu.
+```
+lukasbejcek/
+├── web/
+│   └── wp-content/
+│       ├── themes/
+│       │   └── tj-slavoj-myto/          ← vlastní téma
+│       │       ├── functions.php         ← CPT, taxonomie, helpery
+│       │       ├── front-page.php        ← úvodní stránka
+│       │       ├── page-*.php            ← šablony stránek
+│       │       ├── single-*.php          ← šablony detailů
+│       │       ├── archive-*.php         ← archivy
+│       │       ├── template-parts/       ← znovupoužitelné části
+│       │       └── assets/css/           ← vlastní CSS (main + komponenty)
+│       └── plugins/
+│           └── slavoj-custom-fields/     ← plugin pro ukázková data
+├── docs/                                 ← dokumentace projektu
+├── original/                             ← původní kód (referenční)
+└── wordpress/                            ← instalace WP + seed data
+```

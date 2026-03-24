@@ -82,7 +82,7 @@ Obsahuje úplný seznam všech implementovaných typů obsahu, jejich skutečné
 | Sezóna | taxonomie `sezona` | taxonomie | 2024/25, 2025/26… |
 | Kategorie týmu | taxonomie `kategorie-tymu` | taxonomie | Muži A, Muži B, Dorost… |
 | Sezóna | taxonomie `sezona` | taxonomie | Pro filtrování galerie |
-| Fotografie v albu | *(obsah příspěvku)* | gallery block | Vkládání fotek přes WordPress editor nebo ACF |
+| Fotografie v albu | *(obsah příspěvku)* | gallery block | Vkládání fotek přes WordPress editor (Přidat média → Vytvořit galerii) |
 
 ---
 

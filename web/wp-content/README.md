@@ -19,7 +19,7 @@ web/
 
 1. Přečtěte si `docs/01-uvod.md` pro přehled projektu.
 2. Postupujte podle fází popsaných v `docs/`.
-3. Téma nainstalujte do lokálního WordPressu ze složky `web/theme/`.
+3. Téma nainstalujte do lokálního WordPressu ze složky `web/wp-content/themes/tj-slavoj-myto/`.
 
 ## Stav
 

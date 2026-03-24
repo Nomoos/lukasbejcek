@@ -1,23 +1,34 @@
 # docs/ – Dokumentace projektu TJ Slavoj Mýto
 
-Průběžná dokumentace vývoje WordPress tématu pro fotbalový klub TJ Slavoj Mýto.
+Dokumentace je rozdělena do dvou složek podle účelu.
 
-## Obsah
+## K odevzdání (`k-odevzdani/`)
 
-| Soubor | Popis | Stav |
-|--------|-------|------|
-| [01-uvod.md](./01-uvod.md) | Úvod, technologie, lokální prostředí | ✅ aktuální |
-| [02-analyza-original.md](./02-analyza-original.md) | Analýza původního kódu ve složce `original/` | archiv |
-| [03-nova-struktura.md](./03-nova-struktura.md) | Adresářová struktura, mapování URL→šablona, helper funkce | ✅ aktuální |
-| [04-lokalni-instalace.md](./04-lokalni-instalace.md) | Jak rozchodit projekt lokálně (XAMPP) | archiv |
-| [05-deployment-ftp.md](./05-deployment-ftp.md) | Deployment na hosting přes FTP | archiv |
-| [06-inventar-obsahu.md](./06-inventar-obsahu.md) | Inventář CPT s poli a taxonomiemi | archiv |
-| [07-pluginy.md](./07-pluginy.md) | Přehled pluginů použitých v projektu | archiv |
-| [08-datovy-model.md](./08-datovy-model.md) | Formální datový model – entity, atributy, ER diagram | ✅ aktuální |
-| [09-ukazková-data.md](./09-ukazková-data.md) | Ukázková data pro testování | archiv |
-| [10-review-kod.md](./10-review-kod.md) | Review kódu – problémy, opravy, hodnocení | ✅ aktuální |
-| [11-wordpress-sablony.md](./11-wordpress-sablony.md) | CPT archive vs Page template – rozdíl a mapování | ✅ aktuální |
-| [12-javascript.md](./12-javascript.md) | Inventář JS v projektu, hodnocení, alternativy | ✅ aktuální |
-| [13-typy-obsahu.md](./13-typy-obsahu.md) | Přehled všech typů obsahu – CPT, taxonomie, nativní WP | ✅ aktuální |
-| [14-admin-ux-a-razeni-taxonomii.md](./14-admin-ux-a-razeni-taxonomii.md) | Admin UX, řazení taxonomií, kontextové filtrování, obhajoba | ✅ aktuální |
-| [15-souhrnna-dokumentace.md](./15-souhrnna-dokumentace.md) | Souhrnná technická dokumentace projektu k odevzdání | ✅ aktuální |
+Dokumenty popisující aktuální stav projektu a návody k použití. Součást maturitní práce dle [zadání](../ZADANI-MATURITNI-PRACE.md), bod 11 – Odevzdávané výstupy.
+
+| Soubor | Popis |
+|--------|-------|
+| [01-uvod.md](./k-odevzdani/01-uvod.md) | Úvod, technologie, prostředí |
+| [07-pluginy.md](./k-odevzdani/07-pluginy.md) | Dokumentace pluginů a vlastních řešení |
+| [08-datovy-model.md](./k-odevzdani/08-datovy-model.md) | Datový model – entity, atributy, ER diagram |
+| [13-typy-obsahu.md](./k-odevzdani/13-typy-obsahu.md) | Přehled typů obsahu – CPT, taxonomie, nativní WP |
+| [15-souhrnna-dokumentace.md](./k-odevzdani/15-souhrnna-dokumentace.md) | Souhrnná technická dokumentace projektu |
+| [16-navod-administrace.md](./k-odevzdani/16-navod-administrace.md) | Návod na použití administrace WordPress |
+| [navod-web.md](./k-odevzdani/navod-web.md) | Návod k použití webu pro návštěvníky |
+
+## Pracovní dokumentace (`pracovni/`)
+
+Průběžná dokumentace vzniklá během vývoje. Slouží jako referenční materiál.
+
+| Soubor | Popis |
+|--------|-------|
+| [02-analyza-original.md](./pracovni/02-analyza-original.md) | Analýza původního kódu ve složce `original/` |
+| [03-nova-struktura.md](./pracovni/03-nova-struktura.md) | Adresářová struktura, mapování URL → šablona |
+| [04-lokalni-instalace.md](./pracovni/04-lokalni-instalace.md) | Jak rozchodit projekt lokálně (XAMPP) |
+| [05-deployment-ftp.md](./pracovni/05-deployment-ftp.md) | Deployment na hosting přes FTP |
+| [06-inventar-obsahu.md](./pracovni/06-inventar-obsahu.md) | Inventář CPT s poli a taxonomiemi |
+| [09-ukazková-data.md](./pracovni/09-ukazková-data.md) | Ukázková data a seed |
+| [10-review-kod.md](./pracovni/10-review-kod.md) | Review kódu – problémy, opravy |
+| [11-wordpress-sablony.md](./pracovni/11-wordpress-sablony.md) | CPT archive vs Page template |
+| [12-javascript.md](./pracovni/12-javascript.md) | Inventář JS v projektu |
+| [14-admin-ux-a-razeni-taxonomii.md](./pracovni/14-admin-ux-a-razeni-taxonomii.md) | Admin UX, řazení taxonomií |

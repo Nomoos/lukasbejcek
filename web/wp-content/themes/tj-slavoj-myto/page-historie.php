@@ -2,28 +2,32 @@
 /**
  * Template Name: Historie
  * Stránka s historií klubu TJ Slavoj Mýto
- * Obsahuje: text historie klubu (editovatelný přes WP admin), logo na pravé straně
+ * Logo je zarovnáno vpravo v textu (float), text obtéká.
  */
 get_header();
 ?>
 
-<div class="container py-5">
-    <h2 class="mb-4 text-center fw-bold"><?php echo esc_html(get_the_title(get_queried_object_id())); ?></h2>
-    <div class="row align-items-start">
-      <div class="col-lg-7">
-        <?php
-        if (have_posts()) :
-            while (have_posts()) : the_post();
-                the_content();
-            endwhile;
-        endif;
-        ?>
-      </div>
+<section class="section">
+  <div class="container">
 
-      <div class="col-lg-5 text-center">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png" alt="TJ Slavoj Mýto" class="img-fluid club-logo">
-      </div>
+    <header class="page-title">
+      <h1 class="page-title__h1">Historie Klubu</h1>
+    </header>
+
+    <div class="historie-obsah">
+      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo-tjslavoj.png"
+           alt="TJ Slavoj Mýto"
+           class="historie-logo">
+      <?php
+      if (have_posts()) :
+          while (have_posts()) : the_post();
+              the_content();
+          endwhile;
+      endif;
+      ?>
     </div>
-</div>
+
+  </div>
+</section>
 
 <?php get_footer(); ?>

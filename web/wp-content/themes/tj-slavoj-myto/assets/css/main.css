@@ -297,3 +297,17 @@ h1, h2, h3, h4, h5, h6 { margin: 0; line-height: 1.25; font-weight: 700; color: 
 .admin-box { border-color: var(--primary) !important; background: #f0f4ff; }
 .admin-box__title { color: var(--primary); }
 .admin-box__badge { font-size: .65rem; vertical-align: middle; }
+
+/* ───────────────────────────────────────
+   HISTORIE KLUBU
+   ─────────────────────────────────────── */
+.historie-obsah { line-height: 1.75; }
+.historie-obsah p { margin-bottom: 1rem; }
+.historie-logo {
+    float: right;
+    width: 180px;
+    margin: 0 0 24px 32px;
+}
+@media (max-width: 575px) {
+    .historie-logo { float: none; display: block; margin: 0 auto 24px; width: 130px; }
+}

@@ -231,7 +231,7 @@ Galerie (galerie)
 
 ## Poznámky k implementaci
 
-- Všechny CPT a taxonomie jsou registrovány v `web/theme/tj-slavoj-myto/functions.php`.
+- Všechny CPT a taxonomie jsou registrovány v `web/wp-content/themes/tj-slavoj-myto/functions.php`.
 - Meta boxy pro zadávání polí jsou registrovány tamtéž (sekce `META BOXY`).
 - Plugin `slavoj-custom-fields` rozšiřuje administrační prostředí (sloupce v seznamech, seed taxonomií, seed demo dat).
 - Pro import ukázkových dat viz **[09 – Ukázková data](./09-ukazková-data.md)**.

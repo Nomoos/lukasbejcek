@@ -86,17 +86,13 @@ define( 'WP_SITEURL', 'http://localhost/fotbal_club' );
 
 ### Krok 9 – Doporučené pluginy (volitelné)
 
-V sekci **Pluginy → Přidat nový** nainstalujte následující pluginy:
+V sekci **Pluginy** aktivujte jediný potřebný plugin:
 
-| Plugin | Odkaz | Proč ho potřebujeme |
-|--------|-------|---------------------|
-| Contact Form 7 | [wordpress.org/plugins/contact-form-7](https://wordpress.org/plugins/contact-form-7/) | Zpracování a odesílání kontaktního formuláře na stránce Kontakty; zajišťuje validaci vstupů a odesílání e-mailů bez vlastního PHP kódu |
-| Yoast SEO | [wordpress.org/plugins/wordpress-seo](https://wordpress.org/plugins/wordpress-seo/) | Správa meta titulků, popisů, XML sitemapy a Open Graph tagů; zlepšuje viditelnost webu ve vyhledávačích a náhled při sdílení na sociálních sítích |
-| WP Super Cache | [wordpress.org/plugins/wp-super-cache](https://wordpress.org/plugins/wp-super-cache/) | Ukládání vygenerovaných stránek do mezipaměti (statické HTML); výrazně zkracuje dobu načítání a snižuje zátěž serveru při větším počtu návštěvníků |
-| Wordfence Security | [wordpress.org/plugins/wordfence](https://wordpress.org/plugins/wordfence/) | Firewall, ochrana přihlašovací stránky a skenování malwaru; chrání web před útoky hrubou silou a neoprávněným přístupem |
-| UpdraftPlus | [wordpress.org/plugins/updraftplus](https://wordpress.org/plugins/updraftplus/) | Automatické zálohování souborů WordPressu a databáze na vzdálené úložiště (Google Drive, Dropbox); umožňuje obnovu webu při výpadku nebo chybě |
+| Plugin | Umístění | Popis |
+|--------|----------|-------|
+| Slavoj Custom Fields | `wp-content/plugins/slavoj-custom-fields/` | Administrační nástroje – seed taxonomií a dat, rozšířené sloupce, dropdown filtry |
 
-> **Poznámka:** Pluginy **Advanced Custom Fields (ACF)** a **Custom Post Type UI** není nutné instalovat – vlastní typy obsahu (CPT) i meta pole jsou implementovány přímo v kódu tématu v souboru `functions.php`. Podrobný přehled všech pluginů a vlastního kódu najdete v [07-pluginy.md](./07-pluginy.md).
+> **Poznámka:** Žádné externí pluginy (ACF, Custom Post Type UI, Yoast SEO apod.) nejsou potřeba – veškerá funkcionalita je implementována přímo v kódu tématu a vlastním pluginu. Podrobnosti viz [07-pluginy.md](../k-odevzdani/07-pluginy.md).
 
 ### Krok 10 – Nastavte permalink strukturu
 

@@ -126,7 +126,7 @@ FTP přihlašovací údaje (host, uživatel, heslo, port) najdete v **klientské
 3. Přejděte na **Nastavení → Trvalé odkazy**, zvolte **Název příspěvku** a uložte.
 4. Naimportujte ukázková data: **Nástroje → Slavoj nastavení → Vytvořit ukázková data**.
 
-> **Poznámka:** Pluginy ACF a Custom Post Type UI nejsou potřeba — vlastní typy obsahu i meta pole jsou implementovány přímo v kódu tématu.
+> **Poznámka:** Žádné externí pluginy (ACF, Custom Post Type UI apod.) nejsou potřeba — veškerá funkcionalita je implementována v kódu tématu a pluginu Slavoj Custom Fields.
 
 ---
 
