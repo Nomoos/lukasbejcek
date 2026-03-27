@@ -56,19 +56,19 @@ Celý projekt je dostupný jako open-source repozitář na GitHubu a je připrav
 
 ### 2.1 Původní stav webu
 
-Původní web TJ Slavoj Mýto byl postaven na WordPress tématu ve složce `original/`. Analýza zdrojového kódu odhalila několik zásadních problémů:
+Původní web TJ Slavoj Mýto (http://slavojmyto.cz/) je postaven jako statický server-rendered web (není WordPress). Stránky jsou dostupné pod prefixem `/cs/` a obsahují sekce: úvodní stránku, historii klubu, výbor (kontakty), týmy se soupiskami, kalendář zápasů po sezónách, fotogalerie a sponzory.
 
-1. **Pevně zakódovaný obsah** – názvy týmů, zápasy a kontakty byly zapsány přímo v PHP šablonách. Každá změna obsahu vyžadovala zásah do zdrojového kódu.
+Ověřením živého webu v březnu 2026 byly zjištěny tyto nedostatky:
 
-2. **Nefunkční filtry** – stránky zápasů a týmů obsahovaly HTML prvky pro filtrování, ale JavaScript zajišťující jejich funkčnost nebyl implementován nebo nefungoval správně.
+1. **Nepřehledná navigace** – struktura menu neodpovídá očekávání návštěvníka. Zápasy jsou skryté pod položkou „Kalendář" (nikoliv „Zápasy"), kontaktní údaje na vedení klubu pod „Výbor" v sekci „O klubu" (nikoliv „Kontakty"). Chybí sekce aktualit/novinek.
 
-3. **Chybějící datový model** – zápasy a hráči nebyli uloženi jako samostatné záznamy v databázi (custom post types), ale jako součást statických šablon. Nebylo možné je filtrovat, řadit ani stránkovat.
+2. **Nepřehledný výpis zápasů** – zápasy jsou zobrazeny jako dlouhý seznam seskupený podle týmů na jedné stránce za celou sezónu. Chybí jakékoliv filtrování (podle týmu, stavu zápasu) a stránkování. Pro nalezení konkrétního zápasu je nutné procházet celou stránku.
 
-4. **Nekonzistentní použití WordPress API** – některé stránky používaly `WP_Query`, jiné měly data zakódována přímo v HTML. Neexistoval jednotný přístup.
+3. **Částečně integrovaný WordPress** – na pozadí webu běží WordPress, přes který lze přidávat zápasy, týmy a editovat galerie. Integrace je však neúplná – frontend není plně propojený s redakčním systémem a řada sekcí zůstává statická.
 
-5. **Nedostatečná responzivita** – mobilní zobrazení nebylo důsledně otestováno; některé prvky přetékaly mimo obrazovku.
+4. **Chybějící funkce** – web nemá vyhledávání, jednotlivé detaily zápasů, profily hráčů ani aktuality. Galerie používá dvouúrovňový systém (tým → ročník → album), ale bez filtrování.
 
-Z původního kódu bylo možné převzít HTML strukturu šablon, napojení na Bootstrap 5 a základní vizuální styl. Veškerá datová a logická vrstva musela být implementována znovu.
+Z původního webu bylo možné převzít vizuální styl (logo, barvy klubu), strukturu sekcí a data (soupisky hráčů, výsledky zápasů, kontakty na výbor, sponzory). Technická a datová vrstva musela být navržena a implementována od základu v redakčním systému WordPress.
 
 ### 2.2 Požadavky na nové řešení
 
