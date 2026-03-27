@@ -36,6 +36,7 @@ lukasbejcek/
 ├── docs/                             # Dokumentace (15 kapitol)
 ├── Design/                           # Grafické návrhy
 ├── ZADANI-MATURITNI-PRACE.md
+├── PRISTUPOVE-UDAJE.md
 ├── DOKUMENTACE-KOD.md
 └── PLAN-PORTOVANI-WORDPRESS.md
 ```
@@ -70,11 +71,17 @@ Podrobnosti: [docs/04-lokalni-instalace.md](./docs/04-lokalni-instalace.md)
 
 ## Dokumentace
 
-Kompletní dokumentace v [docs/](./docs/), rozdělená do dvou složek:
+### Hlavní dokument k odevzdání
 
-### K odevzdání ([docs/k-odevzdani/](./docs/k-odevzdani/))
+- **[docs/DOKUMENTACE.md](./docs/DOKUMENTACE.md)** – Kompletní dokumentace maturitní práce (titulní strana, prohlášení, abstrakt, úvod, analýza, implementace, testování, uživatelská příručka, závěr, seznam literatury dle ČSN ISO 690:2022)
+- **[docs/generate-pdf.sh](./docs/generate-pdf.sh)** – Skript pro generování PDF z dokumentace (vyžaduje pandoc + LaTeX)
 
-Součást maturitní práce dle [zadání](./ZADANI-MATURITNI-PRACE.md), bod 11 – Odevzdávané výstupy.
+### Přístupové údaje a zadání
+
+- [PRISTUPOVE-UDAJE.md](./PRISTUPOVE-UDAJE.md) – Přístupové údaje k testovacím účtům
+- [ZADANI-MATURITNI-PRACE.md](./ZADANI-MATURITNI-PRACE.md) – Zadání maturitní práce
+
+### Dílčí dokumentace ([docs/k-odevzdani/](./docs/k-odevzdani/))
 
 | Soubor | Téma |
 |--------|------|
@@ -99,7 +106,6 @@ Průběžná dokumentace vzniklá během vývoje – referenční materiál.
 
 ### Další dokumenty
 
-- [ZADANI-MATURITNI-PRACE.md](./ZADANI-MATURITNI-PRACE.md) – Zadání maturitní práce
 - [DOKUMENTACE-KOD.md](./DOKUMENTACE-KOD.md) – Vysvětlení původního kódu
 - [PLAN-PORTOVANI-WORDPRESS.md](./PLAN-PORTOVANI-WORDPRESS.md) – Plán migrace do WordPress
 

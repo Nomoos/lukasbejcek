@@ -1,6 +1,13 @@
 # docs/ – Dokumentace projektu TJ Slavoj Mýto
 
-Dokumentace je rozdělena do dvou složek podle účelu.
+## Hlavní dokument k odevzdání
+
+| Soubor | Popis |
+|--------|-------|
+| **[DOKUMENTACE.md](./DOKUMENTACE.md)** | **Kompletní dokumentace maturitní práce** (titulní strana, prohlášení, abstrakt, úvod, analýza, implementace, testování, uživatelská příručka, závěr, seznam literatury dle ČSN ISO 690:2022) |
+| [generate-pdf.sh](./generate-pdf.sh) | Skript pro vygenerování PDF z dokumentace (vyžaduje pandoc + LaTeX) |
+
+Dokumentace je dále rozdělena do dvou složek podle účelu.
 
 ## K odevzdání (`k-odevzdani/`)
 
