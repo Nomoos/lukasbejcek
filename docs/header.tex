@@ -1,0 +1,23 @@
+% ============================================================================
+% LaTeX header pro generování PDF dokumentace
+% TJ Slavoj Mýto – maturitní práce
+% ============================================================================
+
+% České uvozovky a typografie
+\usepackage{csquotes}
+
+% Tabulky: zmenšení fontu aby nepřetékaly přes okraj
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{\small}
+
+% Zalamování dlouhých URL a cest v tabulkách
+\usepackage{seqsplit}
+\makeatletter
+\def\url@leostyle{\@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\small\ttfamily}}}
+\makeatother
+
+% Lepší zalamování textu v tabulkách
+\usepackage{array}
+
+% Ochrana proti přetékání textu přes okraj
+\sloppy
