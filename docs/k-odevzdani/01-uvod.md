@@ -19,13 +19,9 @@ Cílem bylo přenést web fotbalového klubu **TJ Slavoj Mýto** ze stávající
 ## Adresářová struktura
 
 ```
-lukasbejcek/
-├── web/                              # WordPress instalace
-│   └── wp-content/
-│       └── themes/tj-slavoj-myto/   # ← aktivní téma
-├── original/                         # Původní téma (referenční, neměnit)
-├── docs/                             # Dokumentace
-└── notes/                            # Pracovní poznámky
+web/
+└── wp-content/
+    └── themes/tj-slavoj-myto/        # ← aktivní téma
 ```
 
 ## Klíčová rozhodnutí
