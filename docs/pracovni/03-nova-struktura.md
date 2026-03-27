@@ -3,32 +3,28 @@
 ## Adresářová struktura repozitáře
 
 ```
-lukasbejcek/
-├── web/                                      # WordPress instalace
-│   └── wp-content/
-│       └── themes/tj-slavoj-myto/           # Aktivní téma
-│           ├── style.css                     # Meta tématu + globální styly
-│           ├── functions.php                 # CPT, taxonomie, helpery, admin nástroje
-│           ├── front-page.php                # Homepage
-│           ├── header.php / footer.php       # Hlavička a patička
-│           ├── archive-zapas.php             # Seznam zápasů (/zapasy/)
-│           ├── archive-tym.php               # Seznam týmů (/tymy/)
-│           ├── single-zapas.php              # Detail zápasu
-│           ├── single-tym.php                # Detail týmu
-│           ├── single-hrac.php               # Detail hráče
-│           ├── single-galerie.php            # Detail alba s lightboxem
-│           ├── page-galerie.php              # Přehled galerií
-│           ├── page-sponzori.php             # Sponzoři
-│           ├── page-historie.php             # Historie klubu
-│           ├── page-aktuality.php            # Aktuality
-│           ├── archive.php / single.php      # Fallback šablony
-│           ├── template-parts/
-│           │   ├── card-match.php            # Karta zápasu (fotbalový styl)
-│           │   └── hero-team.php             # Hero sekce týmu
-│           └── img/                          # Obrázky (logo, banner)
-├── original/                                 # Původní téma (referenční, neměnit)
-├── docs/                                     # Dokumentace
-└── notes/                                    # Pracovní poznámky
+web/
+└── wp-content/
+    └── themes/tj-slavoj-myto/                # Aktivní téma
+        ├── style.css                          # Meta tématu + globální styly
+        ├── functions.php                      # CPT, taxonomie, helpery, admin nástroje
+        ├── front-page.php                     # Homepage
+        ├── header.php / footer.php            # Hlavička a patička
+        ├── archive-zapas.php                  # Seznam zápasů (/zapasy/)
+        ├── archive-tym.php                    # Seznam týmů (/tymy/)
+        ├── single-zapas.php                   # Detail zápasu
+        ├── single-tym.php                     # Detail týmu
+        ├── single-hrac.php                    # Detail hráče
+        ├── single-galerie.php                 # Detail alba s lightboxem
+        ├── page-galerie.php                   # Přehled galerií
+        ├── page-sponzori.php                  # Sponzoři
+        ├── page-historie.php                  # Historie klubu
+        ├── page-aktuality.php                 # Aktuality
+        ├── archive.php / single.php           # Fallback šablony
+        ├── template-parts/
+        │   ├── card-match.php                 # Karta zápasu (fotbalový styl)
+        │   └── hero-team.php                  # Hero sekce týmu
+        └── img/                               # Obrázky (logo, banner)
 ```
 
 ## Mapování URL → šablona

@@ -8,37 +8,28 @@ Maturitní práce: WordPress téma a plugin pro fotbalový klub TJ Slavoj Mýto.
 ## Struktura projektu
 
 ```
-lukasbejcek/
-├── web/                              # Nový web
-│   ├── wp-content/
-│   │   ├── themes/tj-slavoj-myto/    # WordPress téma
-│   │   │   ├── front-page.php        # Úvodní stránka
-│   │   │   ├── archive-zapas.php     # Archiv zápasů (filtry, karty)
-│   │   │   ├── archive-galerie.php   # Archiv galerií
-│   │   │   ├── archive-tym.php       # Archiv týmů
-│   │   │   ├── single-zapas.php      # Detail zápasu
-│   │   │   ├── single-galerie.php    # Detail alba
-│   │   │   ├── single-tym.php        # Detail týmu
-│   │   │   ├── single-hrac.php       # Detail hráče
-│   │   │   ├── page-kontakty.php     # Kontakty
-│   │   │   ├── page-sponzori.php     # Sponzoři
-│   │   │   ├── page-historie.php     # Historie klubu
-│   │   │   ├── page-aktuality.php    # Aktuality (příspěvky)
-│   │   │   ├── functions.php         # Registrace CPT, taxonomií, helper funkce, seed
-│   │   │   ├── header.php / footer.php
-│   │   │   ├── template-parts/       # Znovupoužitelné části (card-match, hero-team, …)
-│   │   │   └── assets/css/main.css   # Vlastní styly
-│   │   └── plugins/
-│   │       └── slavoj-custom-fields/ # Plugin – meta boxy pro CPT v admin rozhraní
-│   └── install.bat                   # Skript pro kopírování do XAMPP
-├── original/                         # Původní téma (referenční, neměnit)
-├── wordpress/                        # WordPress core
-├── docs/                             # Dokumentace (15 kapitol)
-├── Design/                           # Grafické návrhy
-├── ZADANI-MATURITNI-PRACE.md
-├── PRISTUPOVE-UDAJE.md
-├── DOKUMENTACE-KOD.md
-└── PLAN-PORTOVANI-WORDPRESS.md
+web/
+├── wp-content/
+│   ├── themes/tj-slavoj-myto/        # WordPress téma
+│   │   ├── front-page.php            # Úvodní stránka
+│   │   ├── archive-zapas.php         # Archiv zápasů (filtry, karty)
+│   │   ├── archive-galerie.php       # Archiv galerií
+│   │   ├── archive-tym.php           # Archiv týmů
+│   │   ├── single-zapas.php          # Detail zápasu
+│   │   ├── single-galerie.php        # Detail alba
+│   │   ├── single-tym.php            # Detail týmu
+│   │   ├── single-hrac.php           # Detail hráče
+│   │   ├── page-kontakty.php         # Kontakty
+│   │   ├── page-sponzori.php         # Sponzoři
+│   │   ├── page-historie.php         # Historie klubu
+│   │   ├── page-aktuality.php        # Aktuality (příspěvky)
+│   │   ├── functions.php             # Registrace CPT, taxonomií, helper funkce, seed
+│   │   ├── header.php / footer.php
+│   │   ├── template-parts/           # Znovupoužitelné části (card-match, hero-team, …)
+│   │   └── assets/css/main.css       # Vlastní styly
+│   └── plugins/
+│       └── slavoj-custom-fields/     # Plugin – meta boxy pro CPT v admin rozhraní
+└── install.bat                       # Skript pro kopírování do XAMPP
 ```
 
 ## Custom Post Types a taxonomie

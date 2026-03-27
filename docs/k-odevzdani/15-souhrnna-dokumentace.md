@@ -54,32 +54,23 @@ Toto rozdělení odpovídá doporučené WordPress architektuře: téma řeší 
 ### 3.2 Adresářová struktura
 
 ```
-lukasbejcek/
-├── original/                  # Původní téma studenta (reference, neměnit)
-├── web/
-│   ├── wp-content/
-│   │   ├── themes/tj-slavoj-myto/   # AKTIVNÍ téma
-│   │   │   ├── functions.php         # Registrace CPT, taxonomií, helper funkce
-│   │   │   ├── front-page.php        # Homepage
-│   │   │   ├── archive-*.php         # Archivní šablony (zapas, tym, galerie)
-│   │   │   ├── single-*.php          # Detailní šablony (zapas, tym, hrac, galerie)
-│   │   │   ├── page-*.php            # Stránkové šablony (historie, kontakty, sponzori)
-│   │   │   ├── template-parts/       # Znovupoužitelné části (card-match, hero-team, …)
-│   │   │   ├── assets/css/           # Stylové soubory (main.css + components/)
-│   │   │   ├── img/                  # Obrázky tématu (logo, banner)
-│   │   │   └── style.css             # WP identifikátor tématu (bez stylů)
-│   │   └── plugins/slavoj-custom-fields/
-│   │       └── slavoj-custom-fields.php
-│   ├── plugins/slavoj-custom-fields/ # Synchronizovaná kopie pluginu
-│   ├── install.bat                   # Instalační skript pro XAMPP
-│   └── README.md
-├── docs/                      # Průběžná dokumentace (01–15)
-├── wordpress/                 # WordPress core (reference)
-├── .wp-env.json               # Konfigurace pro wp-env
-├── ZADANI-MATURITNI-PRACE.md  # Zadání práce
-├── DOKUMENTACE-KOD.md         # Dokumentace původního kódu
-├── PLAN-PORTOVANI-WORDPRESS.md # Plán migrace
-└── README.md                  # Hlavní README projektu
+web/
+├── wp-content/
+│   ├── themes/tj-slavoj-myto/        # AKTIVNÍ téma
+│   │   ├── functions.php              # Registrace CPT, taxonomií, helper funkce
+│   │   ├── front-page.php             # Homepage
+│   │   ├── archive-*.php              # Archivní šablony (zapas, tym, galerie)
+│   │   ├── single-*.php               # Detailní šablony (zapas, tym, hrac, galerie)
+│   │   ├── page-*.php                 # Stránkové šablony (historie, kontakty, sponzori)
+│   │   ├── template-parts/            # Znovupoužitelné části (card-match, hero-team, …)
+│   │   ├── assets/css/                # Stylové soubory (main.css + components/)
+│   │   ├── img/                       # Obrázky tématu (logo, banner)
+│   │   └── style.css                  # WP identifikátor tématu (bez stylů)
+│   └── plugins/slavoj-custom-fields/
+│       └── slavoj-custom-fields.php
+├── plugins/slavoj-custom-fields/      # Synchronizovaná kopie pluginu
+├── install.bat                        # Instalační skript pro XAMPP
+└── README.md
 ```
 
 ### 3.3 CSS architektura

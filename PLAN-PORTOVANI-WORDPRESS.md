@@ -170,21 +170,17 @@ Každý typ obsahu (zápas, tým, hráč...) je samostatný CPT. To umožňuje:
 ## Adresářová struktura
 
 ```
-lukasbejcek/
-├── web/
-│   └── wp-content/
-│       ├── themes/
-│       │   └── tj-slavoj-myto/          ← vlastní téma
-│       │       ├── functions.php         ← CPT, taxonomie, helpery
-│       │       ├── front-page.php        ← úvodní stránka
-│       │       ├── page-*.php            ← šablony stránek
-│       │       ├── single-*.php          ← šablony detailů
-│       │       ├── archive-*.php         ← archivy
-│       │       ├── template-parts/       ← znovupoužitelné části
-│       │       └── assets/css/           ← vlastní CSS (main + komponenty)
-│       └── plugins/
-│           └── slavoj-custom-fields/     ← plugin pro ukázková data
-├── docs/                                 ← dokumentace projektu
-├── original/                             ← původní kód (referenční)
-└── wordpress/                            ← instalace WP + seed data
+web/
+└── wp-content/
+    ├── themes/
+    │   └── tj-slavoj-myto/               ← vlastní téma
+    │       ├── functions.php              ← CPT, taxonomie, helpery
+    │       ├── front-page.php             ← úvodní stránka
+    │       ├── page-*.php                 ← šablony stránek
+    │       ├── single-*.php               ← šablony detailů
+    │       ├── archive-*.php              ← archivy
+    │       ├── template-parts/            ← znovupoužitelné části
+    │       └── assets/css/                ← vlastní CSS (main + komponenty)
+    └── plugins/
+        └── slavoj-custom-fields/          ← plugin pro ukázková data
 ```
