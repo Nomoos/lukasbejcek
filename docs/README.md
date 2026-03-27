@@ -5,7 +5,8 @@
 | Soubor | Popis |
 |--------|-------|
 | **[DOKUMENTACE.md](./DOKUMENTACE.md)** | **Kompletní dokumentace maturitní práce** (titulní strana, prohlášení, abstrakt, úvod, analýza, implementace, testování, uživatelská příručka, závěr, seznam literatury dle ČSN ISO 690:2022) |
-| [generate-pdf.sh](./generate-pdf.sh) | Skript pro vygenerování PDF z dokumentace (vyžaduje pandoc + LaTeX) |
+| [generate-pdf.sh](./generate-pdf.sh) | Generování PDF – Linux / macOS / WSL (vyžaduje pandoc + LaTeX) |
+| [generate-pdf.ps1](./generate-pdf.ps1) | Generování PDF – Windows PowerShell (vyžaduje pandoc + MiKTeX) |
 
 Dokumentace je dále rozdělena do dvou složek podle účelu.
 
