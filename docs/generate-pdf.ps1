@@ -43,7 +43,7 @@ pandoc $Input `
     --toc `
     --toc-depth=3 `
     -V toc-title="Obsah" `
-    --highlight-style=tango `
+    --syntax-highlighting=tango `
     -V colorlinks=true `
     -V linkcolor=black `
     -V urlcolor=blue `
