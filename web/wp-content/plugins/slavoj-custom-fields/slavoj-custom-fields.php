@@ -327,6 +327,41 @@ function slavoj_hrac_admin_column_data($column, $post_id) {
 add_action('manage_hrac_posts_custom_column', 'slavoj_hrac_admin_column_data', 10, 2);
 
 // =====================================================================
+// ROZŠÍŘENÍ SLOUPCŮ V ADMIN PŘEHLEDU – TÝMY
+// =====================================================================
+
+function slavoj_tym_admin_columns($columns) {
+    $new = array();
+    foreach ($columns as $key => $title) {
+        $new[$key] = $title;
+        if ($key === 'title') {
+            $new['hlavni_trener']    = 'Hlavní trenér';
+            $new['asistent_trenera'] = 'Asistent trenéra';
+            $new['zdravotnik']       = 'Zdravotník';
+            $new['pocet_hracu']      = 'Počet hráčů';
+        }
+    }
+    return $new;
+}
+add_filter('manage_tym_posts_columns', 'slavoj_tym_admin_columns');
+
+function slavoj_tym_admin_column_data($column, $post_id) {
+    switch ($column) {
+        case 'hlavni_trener':
+        case 'asistent_trenera':
+        case 'zdravotnik':
+            $val = get_post_meta($post_id, $column, true);
+            echo $val ? esc_html($val) : '—';
+            break;
+        case 'pocet_hracu':
+            $val = get_post_meta($post_id, 'pocet_hracu', true);
+            echo esc_html($val !== '' ? $val : '0');
+            break;
+    }
+}
+add_action('manage_tym_posts_custom_column', 'slavoj_tym_admin_column_data', 10, 2);
+
+// =====================================================================
 // ŘAZENÍ SLOUPCŮ V ADMIN PŘEHLEDU – ZÁPASY PODLE DATA
 // =====================================================================
 
