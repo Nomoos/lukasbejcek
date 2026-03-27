@@ -38,8 +38,8 @@ pandoc $Input `
     -V geometry:margin=2.5cm `
     -V fontsize=12pt `
     -V lang=cs `
-    -V mainfont="DejaVu Serif" `
-    -V monofont="DejaVu Sans Mono" `
+    -V mainfont="Cambria" `
+    -V monofont="Consolas" `
     --toc `
     --toc-depth=3 `
     -V toc-title="Obsah" `
