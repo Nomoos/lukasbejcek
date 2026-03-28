@@ -44,7 +44,7 @@ Tato maturitní práce se zabývá návrhem a implementací webové prezentace f
 
 Fotbalový klub TJ Slavoj Mýto je amatérský sportovní klub působící v obci Mýto u Rokycan. Klub má několik týmů od mužů po mládežnické kategorie a potřebuje moderní webovou prezentaci, na které budou přehledně zobrazeny zápasy, týmy, hráčské soupisky, fotogalerie, partneři klubu a kontakty na vedení.
 
-Původní web klubu byl postaven na nedokončeném WordPress tématu s pevně zakódovaným obsahem přímo v PHP šablonách. Správce klubu nemohl bez zásahu programátora přidat nový zápas, aktualizovat soupisku ani publikovat novinky. Cílem této práce je vytvořit plně funkční a spravovatelný WordPress web, kde veškerý obsah lze spravovat přes standardní administrační rozhraní.
+Původní web klubu byl charakteristický nepřehledným uspořádáním obsahu a graficky zastaralým vzhledem. Cílem této práce je vytvořit graficky přijatelný a přehledný web s plně funkčním a spravovatelným WordPressem, kde veškerý obsah lze spravovat přes standardní administrační rozhraní.
 
 Práce je členěna do následujících kapitol. Kapitola 2 analyzuje původní řešení a porovnává možné přístupy k implementaci. Kapitola 3 popisuje implementaci – datový model, šablony, administrační nástroje a bezpečnost. Kapitola 4 dokumentuje testování a ověření funkčnosti. Kapitola 5 slouží jako uživatelská příručka pro správce webu. Kapitola 6 obsahuje závěr s návrhy na rozšíření.
 
