@@ -119,7 +119,7 @@ Grafický návrh webu byl vytvořen v nástroji Figma [7] ve variantách pro des
 
 Zadání práce doporučuje řadu externích pluginů: Custom Post Type UI [8] pro registraci CPT, Advanced Custom Fields [9] pro správu vlastních polí, FacetWP pro filtrování obsahu, The Events Calendar pro kalendář zápasů, Modula pro galerie a User Role Editor pro správu rolí.
 
-Po analýze jsme zvolili **vlastní implementaci** klíčových funkcí přímo v kódu tématu a vlastním pluginu. Důvody:
+Po analýze jsem zvolili **vlastní implementaci** klíčových funkcí přímo v kódu tématu a vlastním pluginu. Důvody:
 
 | Aspekt | Externí pluginy | Vlastní implementace |
 |---|---|---|
@@ -269,6 +269,8 @@ register_taxonomy('sezona', array('zapas', 'tym', 'hrac', 'galerie'), array(
     'show_in_rest'      => true,
 ));
 ```
+
+Sdílení taxonomií mezi více CPT umožňuje jednotnou klasifikaci obsahu a zjednodušuje implementaci filtrování i návazných výpisů napříč jednotlivými sekcemi webu.
 
 #### 3.3.3 Vazby mezi entitami
 
