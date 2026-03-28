@@ -58,7 +58,7 @@ Celý projekt je dostupný jako open-source repozitář na GitHubu a je připrav
 
 Původní web TJ Slavoj Mýto (http://slavojmyto.cz/) je postaven jako statický server-rendered web (není WordPress). Stránky jsou dostupné pod prefixem `/cs/` a obsahují sekce: úvodní stránku, historii klubu, výbor (kontakty), týmy se soupiskami, kalendář zápasů po sezónách, fotogalerie a sponzory.
 
-Ověřením živého webu v březnu 2026 byly zjištěny tyto nedostatky:
+Ověřením živého webu byly zjištěny tyto nedostatky:
 
 1. **Nepřehledná navigace** – struktura menu neodpovídá očekávání návštěvníka. Zápasy jsou skryté pod položkou „Kalendář" (nikoliv „Zápasy"), kontaktní údaje na vedení klubu pod „Výbor" v sekci „O klubu" (nikoliv „Kontakty"). Chybí sekce aktualit/novinek.
 
