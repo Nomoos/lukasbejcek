@@ -899,6 +899,10 @@ function slavoj_global_sort_kategorie_tymu( $terms, $taxonomies ) {
     if ( ! in_array( 'kategorie-tymu', $taxonomies, true ) ) {
         return $terms;
     }
+    // Bail out when $terms are not WP_Term objects (e.g. term IDs or counts).
+    if ( ! is_array( $terms ) || empty( $terms ) || ! is_object( current( $terms ) ) ) {
+        return $terms;
+    }
     $terms = slavoj_sort_tymy( $terms );
 
     // Kontext: admin screen nebo front-end archiv/singular
@@ -922,6 +926,10 @@ add_filter( 'get_terms', 'slavoj_global_sort_kategorie_tymu', 10, 2 );
  */
 function slavoj_global_sort_kategorie_tymu_single( $terms, $post_id, $taxonomy ) {
     if ( 'kategorie-tymu' !== $taxonomy ) {
+        return $terms;
+    }
+    // Bail out when $terms are not WP_Term objects (e.g. term IDs or counts).
+    if ( ! is_array( $terms ) || empty( $terms ) || ! is_object( current( $terms ) ) ) {
         return $terms;
     }
     $terms = slavoj_sort_tymy( $terms );
