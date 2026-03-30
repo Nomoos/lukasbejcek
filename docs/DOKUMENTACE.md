@@ -541,6 +541,7 @@ Projekt dodržuje standardní bezpečnostní praktiky WordPressu [3] [13]:
 - **Nonce ochrana:** Každý meta box formulář je chráněn WordPress nonce tokenem (`wp_nonce_field` / `wp_verify_nonce`).
 - **WP_Query:** Databázové dotazy využívají výhradně WordPress API, nikoli přímé SQL.
 - **Capability mapping:** Každý CPT má vlastní `capability_type` pro granulární řízení oprávnění.
+- **WPS Hide Login:** Bezplatný plugin z oficiálního repozitáře WordPressu, který mění výchozí přihlašovací URL `/wp-login.php` na vlastní adresu (např. `/prihlaseni/`). Přístup na `/wp-login.php` i `/wp-admin/` (pro nepřihlášené) vrací chybu 404. Tím se výrazně snižuje riziko automatizovaných brute-force útoků, protože útočníci nemohou najít standardní přihlašovací stránku. Nastavení pluginu: **Nastavení → WPS Hide Login** – stačí zadat požadovaný slug a uložit.
 
 ### 3.13 JavaScript
 
@@ -643,7 +644,7 @@ Během testování byly nalezeny a opraveny tyto chyby:
 
 #### 5.1.1 Přihlášení
 
-Otevřete `http://localhost/fotbal_club/wp-admin/` a přihlaste se. V levém menu uvidíte sekce: **Zápasy**, **Týmy**, **Hráči**, **Galerie**, **Sponzoři**, **Kontakty**.
+Otevřete přihlašovací stránku webu a přihlaste se. Výchozí adresa WordPressu je `/wp-login.php`, ale na produkčním serveru je pomocí pluginu **WPS Hide Login** změněna na vlastní slug (viz sekce 3.12). V levém menu uvidíte sekce: **Zápasy**, **Týmy**, **Hráči**, **Galerie**, **Sponzoři**, **Kontakty**.
 
 #### 5.1.2 Správa zápasů
 
