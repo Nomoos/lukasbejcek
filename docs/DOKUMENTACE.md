@@ -56,7 +56,7 @@ Celý projekt je dostupný jako open-source repozitář na GitHubu a je připrav
 
 ### 2.1 Původní stav webu
 
-Původní web TJ Slavoj Mýto (http://slavojmyto.cz/) je postaven jako statický server-rendered web (není WordPress). Stránky jsou dostupné pod prefixem `/cs/` a obsahují sekce: úvodní stránku, historii klubu, výbor (kontakty), týmy se soupiskami, kalendář zápasů po sezónách, fotogalerie a sponzory.
+Původní web TJ Slavoj Mýto (http://slavojmyto.cz/) byl charakteristický nepřehledným uspořádáním obsahu a graficky zastaralým vzhledem. Stránky obsahují sekce: úvodní stránku, historii klubu, výbor (kontakty), týmy se soupiskami, kalendář zápasů po sezónách, fotogalerie a sponzory.
 
 Ověřením živého webu byly zjištěny tyto nedostatky:
 
@@ -64,11 +64,11 @@ Ověřením živého webu byly zjištěny tyto nedostatky:
 
 2. **Nepřehledný výpis zápasů** – zápasy jsou zobrazeny jako dlouhý seznam seskupený podle týmů na jedné stránce za celou sezónu. Chybí jakékoliv filtrování (podle týmu, stavu zápasu) a stránkování. Pro nalezení konkrétního zápasu je nutné procházet celou stránku.
 
-3. **Částečně integrovaný WordPress** – na pozadí webu běží WordPress, přes který lze přidávat zápasy, týmy a editovat galerie. Integrace je však neúplná – frontend není plně propojený s redakčním systémem a řada sekcí zůstává statická.
+3. **Graficky zastaralý vzhled** – vizuální styl webu neodpovídá moderním standardům webového designu. Layout se přizpůsobuje obrazovce pouze omezeně a celkový grafický dojem působí zastarale.
 
-4. **Chybějící funkce** – web nemá vyhledávání, jednotlivé detaily zápasů, profily hráčů ani aktuality. Galerie používá dvouúrovňový systém (tým → ročník → album), ale bez filtrování.
+4. **Chybějící správa obsahu a funkce** – web postrádá standardní administrační rozhraní pro správu obsahu, vyhledávání, detaily jednotlivých zápasů, profily hráčů a aktuality. Galerie používá dvouúrovňový systém (tým → ročník → album), ale bez filtrování.
 
-Z původního webu bylo možné převzít vizuální styl (logo, barvy klubu), strukturu sekcí a data (soupisky hráčů, výsledky zápasů, kontakty na výbor, sponzory). Technická a datová vrstva musela být navržena a implementována od základu v redakčním systému WordPress.
+Z původního webu bylo možné převzít vizuální identitu (logo, barvy klubu), strukturu sekcí a dostupná data (soupisky hráčů, výsledky zápasů, kontakty na výbor, sponzory). Technická a datová vrstva musela být navržena a implementována od základu v redakčním systému WordPress, který zajistí plnohodnotnou správu veškerého obsahu přes standardní administrační rozhraní.
 
 ### 2.2 Požadavky na nové řešení
 
