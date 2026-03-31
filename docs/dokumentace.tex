@@ -1,0 +1,1843 @@
+\section{Webová prezentace fotbalového klubu s databází zápasů a správou
+obsahu ve
+WordPressu}\label{webovuxe1-prezentace-fotbalovuxe9ho-klubu-s-databuxe1zuxed-zuxe1pasux16f-a-spruxe1vou-obsahu-ve-wordpressu}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Maturitní práce}
+
+\textbf{Autor:} Lukáš Bejček \textbf{Obor:} Informační technologie
+\textbf{Školní rok:} 2025/2026
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\newpage
+
+\subsection{Prohlášení}\label{prohluxe1ux161enuxed}
+
+Prohlašuji, že jsem maturitní práci na téma \emph{Webová prezentace
+fotbalového klubu s databází zápasů a správou obsahu ve WordPressu}
+vypracoval samostatně pod vedením vedoucího práce a s použitím odborné
+literatury a dalších informačních zdrojů, které jsou citovány v práci a
+uvedeny v seznamu použité literatury.
+
+V Mýtě dne \ldots\ldots\ldots\ldots\ldots\ldots.. Podpis:
+\ldots\ldots\ldots\ldots\ldots\ldots\ldots.
+
+\newpage
+
+\subsection{Poděkování}\label{podux11bkovuxe1nuxed}
+
+Děkuji vedoucímu práce za odborné vedení, cenné rady a připomínky při
+zpracování maturitní práce.
+
+\newpage
+
+\subsection{Abstrakt}\label{abstrakt}
+
+Tato maturitní práce se zabývá návrhem a implementací webové prezentace
+fotbalového klubu TJ Slavoj Mýto. Cílem bylo vytvořit moderní,
+responzivní web, který umožňuje správci klubu spravovat zápasy, týmy,
+hráče, galerie, sponzory a kontakty bez znalosti programování. Web je
+postaven na redakčním systému WordPress s vlastním tématem založeným na
+frameworku Bootstrap 5 a vlastním pluginem pro rozšíření administrace.
+Místo externích placených pluginů byla zvolena vlastní implementace
+klíčových funkcí -- registrace typů obsahu, vlastních polí, filtrů a
+uživatelských rolí -- přímo v kódu tématu a pluginu. Práce popisuje
+analýzu původního řešení, návrh datového modelu, implementaci šablon a
+administračních nástrojů, testování, příručku administrátora a postup
+nasazení na hosting.
+
+\textbf{Klíčová slova:} WordPress, fotbalový klub, webová prezentace,
+custom post types, Bootstrap 5, PHP, responzivní design
+
+\newpage
+
+\subsection{Obsah}\label{obsah}
+
+\emph{(Obsah je generován automaticky při exportu do PDF -- viz
+\texttt{docs/generate-pdf.sh})}
+
+\newpage
+
+\subsection{1 Úvod}\label{uxfavod}
+
+Fotbalový klub TJ Slavoj Mýto je amatérský sportovní klub působící v
+obci Mýto u Rokycan. Klub má několik týmů od mužů po mládežnické
+kategorie a potřebuje moderní webovou prezentaci, na které budou
+přehledně zobrazeny zápasy, týmy, hráčské soupisky, fotogalerie,
+partneři klubu a kontakty na vedení.
+
+Původní web klubu byl charakteristický nepřehledným uspořádáním obsahu a
+graficky zastaralým vzhledem. Cílem této práce je vytvořit graficky
+přijatelný a přehledný web s plně funkčním a spravovatelným WordPressem,
+kde veškerý obsah lze spravovat přes standardní administrační rozhraní.
+
+Práce je členěna do následujících kapitol. Kapitola 2 analyzuje původní
+řešení a porovnává možné přístupy k implementaci. Kapitola 3 popisuje
+implementaci -- datový model, šablony, administrační nástroje a
+bezpečnost. Kapitola 4 dokumentuje testování a ověření funkčnosti.
+Kapitola 5 slouží jako příručka administrátora pro správu obsahu webu.
+Kapitola 6 popisuje nasazení na produkční hosting. Kapitola 7 obsahuje
+závěr s návrhy na rozšíření.
+
+Celý projekt je dostupný jako open-source repozitář na GitHubu a je
+připraven k lokálnímu nasazení pomocí XAMPP.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{2 Analýza problému}\label{analuxfdza-probluxe9mu}
+
+\subsubsection{2.1 Původní stav webu}\label{pux16fvodnuxed-stav-webu}
+
+Původní web TJ Slavoj Mýto (http://slavojmyto.cz/) byl charakteristický
+nepřehledným uspořádáním obsahu a graficky zastaralým vzhledem. Stránky
+obsahují sekce: úvodní stránku, historii klubu, výbor (kontakty), týmy
+se soupiskami, kalendář zápasů po sezónách, fotogalerie a sponzory.
+
+Ověřením živého webu byly zjištěny tyto nedostatky:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Nepřehledná navigace} -- struktura menu neodpovídá očekávání
+  návštěvníka. Zápasy jsou skryté pod položkou „Kalendář'' (nikoliv
+  „Zápasy''), kontaktní údaje na vedení klubu pod „Výbor'' v sekci „O
+  klubu'' (nikoliv „Kontakty''). Chybí sekce aktualit/novinek.
+\item
+  \textbf{Nepřehledný výpis zápasů} -- zápasy jsou zobrazeny jako dlouhý
+  seznam seskupený podle týmů na jedné stránce za celou sezónu. Chybí
+  jakékoliv filtrování (podle týmu, stavu zápasu) a stránkování. Pro
+  nalezení konkrétního zápasu je nutné procházet celou stránku.
+\item
+  \textbf{Graficky zastaralý vzhled} -- vizuální styl webu neodpovídá
+  moderním standardům webového designu. Layout se přizpůsobuje obrazovce
+  pouze omezeně a celkový grafický dojem působí zastarale.
+\item
+  \textbf{Chybějící správa obsahu a funkce} -- web postrádá standardní
+  administrační rozhraní pro správu obsahu, vyhledávání, detaily
+  jednotlivých zápasů, profily hráčů a aktuality. Galerie používá
+  dvouúrovňový systém (tým → ročník → album), ale bez filtrování.
+\end{enumerate}
+
+Z původního webu bylo možné převzít vizuální identitu (logo, barvy
+klubu), strukturu sekcí a dostupná data (soupisky hráčů, výsledky
+zápasů, kontakty na výbor, sponzory). Technická a datová vrstva musela
+být navržena a implementována od základu v redakčním systému WordPress,
+který zajistí plnohodnotnou správu veškerého obsahu přes standardní
+administrační rozhraní.
+
+\subsubsection{2.2 Požadavky na nové
+řešení}\label{poux17eadavky-na-novuxe9-ux159eux161enuxed}
+
+Na základě zadání maturitní práce {[}1{]} a potřeb klubu byly stanoveny
+tyto požadavky:
+
+\begin{itemize}
+\tightlist
+\item
+  Evidence zápasů s výsledky, střelci a filtrováním podle sezóny, týmu a
+  stavu
+\item
+  Evidence týmů se soupiskami hráčů a realizačním týmem
+\item
+  Fotogalerie členěná podle týmů a sezón
+\item
+  Kontakty na vedení klubu s možností řazení
+\item
+  Přehled sponzorů s logy a odkazy
+\item
+  Stránka historie klubu
+\item
+  Správa veškerého obsahu přes administraci WordPress bez zásahu do kódu
+\item
+  Responzivní design (desktop i mobilní zařízení)
+\item
+  Minimální JavaScript -- preferovat serverové řešení v PHP
+\end{itemize}
+
+\subsubsection{2.3 Volba technologií}\label{volba-technologiuxed}
+
+\paragraph{2.3.1 CMS -- WordPress}\label{cms-wordpress}
+
+Pro implementaci byl zvolen redakční systém WordPress {[}2{]},
+nejrozšířenější CMS na světě s podílem přes 40 \% všech webových
+stránek. WordPress nabízí:
+
+\begin{itemize}
+\tightlist
+\item
+  Vestavěné administrační rozhraní pro správu obsahu
+\item
+  Systém custom post types a taxonomií pro strukturovaná data
+\item
+  Šablonovou hierarchii pro mapování URL na šablony
+\item
+  REST API pro případné budoucí rozšíření
+\item
+  Rozsáhlou dokumentaci a komunitu {[}3{]}
+\end{itemize}
+
+\paragraph{2.3.2 CSS framework -- Bootstrap
+5}\label{css-framework-bootstrap-5}
+
+Pro responzivní layout byl zvolen framework Bootstrap 5 {[}4{]}, který
+poskytuje:
+
+\begin{itemize}
+\tightlist
+\item
+  Grid systém pro responzivní rozvržení stránky
+\item
+  Utility třídy pro rychlé stylování (spacing, barvy, typography)
+\item
+  Hotové komponenty (navbar, cards, badges, forms)
+\item
+  Mobile-first přístup k responzivnímu designu
+\end{itemize}
+
+Bootstrap je načítán z CDN {[}5{]}, čímž odpadá nutnost build nástrojů a
+zároveň se využívá cache prohlížeče.
+
+\paragraph{2.3.3 Lokální vývojové prostředí --
+XAMPP}\label{lokuxe1lnuxed-vuxfdvojovuxe9-prostux159eduxed-xampp}
+
+Pro lokální vývoj a testování byl zvolen balík XAMPP {[}6{]}, který
+obsahuje Apache webserver, MySQL databázi a PHP interpret v jedné
+instalaci. XAMPP je dostupný zdarma pro Windows, macOS i Linux.
+
+\paragraph{2.3.4 Grafický návrh --
+Figma}\label{grafickuxfd-nuxe1vrh-figma}
+
+Grafický návrh webu byl vytvořen v nástroji Figma {[}7{]} ve variantách
+pro desktop i mobilní zařízení.
+
+\subsubsection{2.4 Vlastní implementace vs.~externí
+pluginy}\label{vlastnuxed-implementace-vs.-externuxed-pluginy}
+
+Zadání práce doporučuje řadu externích pluginů: Custom Post Type UI
+{[}8{]} pro registraci CPT, Advanced Custom Fields {[}9{]} pro správu
+vlastních polí, FacetWP pro filtrování obsahu, The Events Calendar pro
+kalendář zápasů, Modula pro galerie a User Role Editor pro správu rolí.
+
+Po analýze jsem zvolili \textbf{vlastní implementaci} klíčových funkcí
+přímo v kódu tématu a vlastním pluginu. Důvody:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Aspekt
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Externí pluginy
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Vlastní implementace
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Kontrola nad kódem & Omezená -- závislost na cizím kódu & Plná -- kód je
+čitelný a obhajitelný \\
+Závislosti & Více pluginů = více bodů selhání & Pouze WordPress core +
+vlastní kód \\
+Výkon & Každý plugin přidává zátěž & Minimální overhead \\
+Údržba & Nutnost aktualizovat pluginy & Kód je pod vlastní správou \\
+Licence & Některé pluginy jsou placené & Vše zdarma (GPL-2.0) \\
+\end{longtable}
+}
+
+Jediným nainstalovaným pluginem je \textbf{Slavoj Custom Fields} --
+vlastní plugin vytvořený pro tento projekt, který rozšiřuje
+administrační prostředí.
+
+\subsubsection{2.5 Custom post types vs.~vlastní databázové
+tabulky}\label{custom-post-types-vs.-vlastnuxed-databuxe1zovuxe9-tabulky}
+
+WordPress nabízí dva přístupy k ukládání strukturovaných dat: custom
+post types (CPT) s meta poli, nebo vlastní databázové tabulky.
+
+Pro tento projekt byly zvoleny CPT z následujících důvodů {[}3{]}:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Integrace s WordPress admin} -- CPT automaticky získají
+  administrační rozhraní (přehled, editace, mazání, koš) bez nutnosti
+  psát vlastní CRUD logiku.
+\item
+  \textbf{Podpora taxonomií} -- termy (sezóna, kategorie týmu) lze
+  přiřazovat nativně.
+\item
+  \textbf{WP\_Query} -- dotazování probíhá standardním WordPress API,
+  které řeší caching, stránkování i bezpečnost.
+\item
+  \textbf{REST API} -- parametr
+  \texttt{show\_in\_rest\ =\textgreater{}\ true} zpřístupní data přes
+  JSON API.
+\item
+  \textbf{Šablonová hierarchie} -- WordPress automaticky mapuje URL na
+  šablony (\texttt{/zapasy/} → \texttt{archive-zapas.php}).
+\end{enumerate}
+
+Alternativa s vlastními tabulkami by vyžadovala ruční implementaci
+administrace, validace, stránkování a URL routingu.
+
+\subsubsection{2.6 Archivní šablony vs.~stránkové
+šablony}\label{archivnuxed-ux161ablony-vs.-struxe1nkovuxe9-ux161ablony}
+
+Pro zobrazení seznamů CPT (zápasy, týmy, galerie) byly zvoleny
+\textbf{archivní šablony} (\texttt{archive-zapas.php}) místo stránkových
+šablon (\texttt{page-zapasy.php}). Důvody {[}3{]}:
+
+\begin{itemize}
+\tightlist
+\item
+  WordPress automaticky vytvoří čistou URL \texttt{/zapasy/} bez
+  nutnosti zakládat stránku v administraci
+\item
+  Stránkování funguje nativně
+\item
+  Taxonomické filtry se integrují přirozeně přes GET parametry
+\end{itemize}
+
+Stránkové šablony zůstávají pouze pro statický obsah: historie,
+kontakty, sponzoři.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{3 Implementace}\label{implementace}
+
+\subsubsection{3.1 Architektura
+řešení}\label{architektura-ux159eux161enuxed}
+
+Projekt se skládá ze dvou komponent:
+
+\textbf{Téma \texttt{tj-slavoj-myto}} obsahuje prezentační logiku a
+registraci datového modelu:
+
+\begin{itemize}
+\tightlist
+\item
+  registrace custom post types a taxonomií
+\item
+  šablony pro front-end (homepage, archivy, detaily)
+\item
+  CSS styly rozdělené do komponentových souborů
+\item
+  pomocné funkce (řazení, vazby, počítání hráčů)
+\item
+  globální filtry pro konzistentní chování taxonomií
+\end{itemize}
+
+\textbf{Plugin \texttt{slavoj-custom-fields}} poskytuje administrační
+nástroje:
+
+\begin{itemize}
+\tightlist
+\item
+  vlastní sloupce v admin přehledech (datum, tým, skóre, číslo dresu)
+\item
+  dropdown filtry pro filtrování v administraci
+\item
+  řaditelné sloupce (datum zápasu, číslo dresu)
+\item
+  nástrojová stránka pro správu a seedování ukázkových dat
+\end{itemize}
+
+Toto rozdělení odpovídá doporučené WordPress architektuře {[}3{]}: téma
+řeší „jak vypadá'', plugin řeší „jak se spravuje''.
+
+\subsubsection{3.2 Adresářová
+struktura}\label{adresuxe1ux159ovuxe1-struktura}
+
+\begin{verbatim}
+web/
+└── wp-content/
+    ├── themes/tj-slavoj-myto/
+    │   ├── functions.php              # Registrace CPT, taxonomií, helperů
+    │   ├── front-page.php             # Homepage
+    │   ├── archive-zapas.php          # Seznam zápasů s filtry
+    │   ├── archive-tym.php            # Seznam týmů
+    │   ├── archive-galerie.php        # Přehled fotoalb
+    │   ├── single-zapas.php           # Detail zápasu
+    │   ├── single-tym.php             # Profil týmu se soupiskou
+    │   ├── single-hrac.php            # Profil hráče
+    │   ├── single-galerie.php         # Fotoalbum s lightboxem
+    │   ├── page-historie.php          # Historie klubu
+    │   ├── page-kontakty.php          # Kontakty výboru
+    │   ├── page-sponzori.php          # Partneři klubu
+    │   ├── template-parts/            # Znovupoužitelné komponenty
+    │   └── assets/css/                # Stylové soubory
+    └── plugins/slavoj-custom-fields/
+        └── slavoj-custom-fields.php   # Administrační plugin
+\end{verbatim}
+
+\subsubsection{3.3 Datový model}\label{datovuxfd-model}
+
+\paragraph{3.3.1 Custom post types}\label{custom-post-types}
+
+Projekt definuje šest vlastních typů obsahu registrovaných v
+\texttt{functions.php} pomocí funkce \texttt{register\_post\_type()}
+{[}3{]}:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+CPT
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Slug
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Meta pole
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Účel
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Zápasy} & \texttt{zapas} & \texttt{datum\_zapasu},
+\texttt{cas\_zapasu}, \texttt{domaci}, \texttt{hoste}, \texttt{skore},
+\texttt{strelci} & Evidence zápasů \\
+\textbf{Týmy} & \texttt{tym} & \texttt{hlavni\_trener},
+\texttt{asistent\_trenera}, \texttt{zdravotnik}, \texttt{tym\_slug} &
+Profily týmů \\
+\textbf{Hráči} & \texttt{hrac} & \texttt{cislo}, \texttt{rok\_narozeni},
+\texttt{tym\_slug} & Soupisky hráčů \\
+\textbf{Galerie} & \texttt{galerie} & --- & Fotoalba \\
+\textbf{Sponzoři} & \texttt{sponzor} & \texttt{web\_sponzora} & Partneři
+klubu \\
+\textbf{Kontakty} & \texttt{kontakt} & \texttt{pozice},
+\texttt{telefon}, \texttt{email}, \texttt{poradi} & Výbor klubu \\
+\end{longtable}
+}
+
+Ukázka registrace CPT pro zápasy:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{register\_post\_type(}\StringTok{\textquotesingle{}zapas\textquotesingle{}}\OtherTok{,} \DataTypeTok{array}\NormalTok{(}
+    \StringTok{\textquotesingle{}labels\textquotesingle{}}\NormalTok{ =\textgreater{} }\DataTypeTok{array}\NormalTok{(}
+        \StringTok{\textquotesingle{}name\textquotesingle{}}\NormalTok{               =\textgreater{} }\StringTok{\textquotesingle{}Zápasy\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}singular\_name\textquotesingle{}}\NormalTok{      =\textgreater{} }\StringTok{\textquotesingle{}Zápas\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}add\_new\textquotesingle{}}\NormalTok{            =\textgreater{} }\StringTok{\textquotesingle{}Přidat zápas\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}add\_new\_item\textquotesingle{}}\NormalTok{       =\textgreater{} }\StringTok{\textquotesingle{}Přidat nový zápas\textquotesingle{}}\OtherTok{,}
+        \CommentTok{// ...}
+\NormalTok{    )}\OtherTok{,}
+    \StringTok{\textquotesingle{}public\textquotesingle{}}\NormalTok{              =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+    \StringTok{\textquotesingle{}has\_archive\textquotesingle{}}\NormalTok{         =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+    \StringTok{\textquotesingle{}rewrite\textquotesingle{}}\NormalTok{             =\textgreater{} }\DataTypeTok{array}\NormalTok{(}\StringTok{\textquotesingle{}slug\textquotesingle{}}\NormalTok{ =\textgreater{} }\StringTok{\textquotesingle{}zapasy\textquotesingle{}}\NormalTok{)}\OtherTok{,}
+    \StringTok{\textquotesingle{}supports\textquotesingle{}}\NormalTok{            =\textgreater{} }\DataTypeTok{array}\NormalTok{(}\StringTok{\textquotesingle{}title\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}thumbnail\textquotesingle{}}\NormalTok{)}\OtherTok{,}
+    \StringTok{\textquotesingle{}menu\_icon\textquotesingle{}}\NormalTok{           =\textgreater{} }\StringTok{\textquotesingle{}dashicons{-}awards\textquotesingle{}}\OtherTok{,}
+    \StringTok{\textquotesingle{}show\_in\_rest\textquotesingle{}}\NormalTok{        =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+    \StringTok{\textquotesingle{}taxonomies\textquotesingle{}}\NormalTok{          =\textgreater{} }\DataTypeTok{array}\NormalTok{(}\StringTok{\textquotesingle{}sezona\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}kategorie{-}tymu\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}stav{-}zapasu\textquotesingle{}}\NormalTok{)}\OtherTok{,}
+    \StringTok{\textquotesingle{}capability\_type\textquotesingle{}}\NormalTok{     =\textgreater{} }\DataTypeTok{array}\NormalTok{(}\StringTok{\textquotesingle{}zapas\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}zapasy\textquotesingle{}}\NormalTok{)}\OtherTok{,}
+    \StringTok{\textquotesingle{}map\_meta\_cap\textquotesingle{}}\NormalTok{        =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+\NormalTok{))}\OtherTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+Každý CPT má vlastní \texttt{capability\_type} s
+\texttt{map\_meta\_cap\ =\textgreater{}\ true}, což umožňuje granulární
+řízení oprávnění pro jednotlivé uživatelské role.
+
+\paragraph{3.3.2 Taxonomie}\label{taxonomie}
+
+Projekt používá čtyři vlastní taxonomie registrované přes
+\texttt{register\_taxonomy()} {[}3{]}:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Taxonomie
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Slug
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Sdílená mezi CPT
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Účel
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Sezóna} & \texttt{sezona} & zapas, tym, hrac, galerie &
+Filtrování podle ročníku \\
+\textbf{Kategorie týmu} & \texttt{kategorie-tymu} & zapas, tym, hrac,
+galerie & Muži A, B, Dorost, Žáci\ldots{} \\
+\textbf{Stav zápasu} & \texttt{stav-zapasu} & zapas & Nadcházející,
+Odehraný, Zrušený \\
+\textbf{Pozice hráče} & \texttt{pozice-hrace} & hrac & Brankáři, Hráči v
+poli \\
+\end{longtable}
+}
+
+Ukázka registrace taxonomie:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{register\_taxonomy(}\StringTok{\textquotesingle{}sezona\textquotesingle{}}\OtherTok{,} \DataTypeTok{array}\NormalTok{(}\StringTok{\textquotesingle{}zapas\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}tym\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}hrac\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}galerie\textquotesingle{}}\NormalTok{)}\OtherTok{,} \DataTypeTok{array}\NormalTok{(}
+    \StringTok{\textquotesingle{}labels\textquotesingle{}}\NormalTok{            =\textgreater{} }\DataTypeTok{array}\NormalTok{(}
+        \StringTok{\textquotesingle{}name\textquotesingle{}}\NormalTok{          =\textgreater{} }\StringTok{\textquotesingle{}Sezóny\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}singular\_name\textquotesingle{}}\NormalTok{ =\textgreater{} }\StringTok{\textquotesingle{}Sezóna\textquotesingle{}}\OtherTok{,}
+\NormalTok{    )}\OtherTok{,}
+    \StringTok{\textquotesingle{}hierarchical\textquotesingle{}}\NormalTok{      =\textgreater{} }\KeywordTok{false}\OtherTok{,}
+    \StringTok{\textquotesingle{}public\textquotesingle{}}\NormalTok{            =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+    \StringTok{\textquotesingle{}show\_admin\_column\textquotesingle{}}\NormalTok{ =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+    \StringTok{\textquotesingle{}show\_in\_rest\textquotesingle{}}\NormalTok{      =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+\NormalTok{))}\OtherTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+Sdílení taxonomií mezi více CPT umožňuje jednotnou klasifikaci obsahu a
+zjednodušuje implementaci filtrování i návazných výpisů napříč
+jednotlivými sekcemi webu.
+
+\paragraph{3.3.3 Vazby mezi entitami}\label{vazby-mezi-entitami}
+
+Vztahy mezi typy obsahu jsou řešeny dvěma mechanismy:
+
+\textbf{Taxonomická vazba (M:N)} -- sezóna a kategorie týmu jsou sdíleny
+mezi zápasy, týmy, hráči a galeriemi pomocí WordPress taxonomií.
+
+\textbf{Meta pole vazba (1:N)} -- hráči jsou propojeni s týmy přes meta
+pole \texttt{tym\_slug}. Každý hráč má uložen slug svého týmu (např.
+\texttt{muzi-a}), který odpovídá hodnotě \texttt{tym\_slug} u
+příslušného záznamu CPT \texttt{tym}.
+
+\begin{verbatim}
+Zápas ──(taxonomie)──> Sezóna <──(taxonomie)── Tým
+  │                                               │
+  └──(taxonomie)──> Kategorie týmu <──(taxonomie)─┘
+                                                  │
+                                            (meta: tym_slug)
+                                                  │
+                                                Hráč
+\end{verbatim}
+
+Funkce \texttt{slavoj\_count\_hracu\_tymu()} automaticky počítá hráče
+přiřazené k týmu a výsledek ukládá do meta pole \texttt{pocet\_hracu}.
+
+\paragraph{3.3.4 ER diagram}\label{er-diagram}
+
+\begin{verbatim}
+┌────────────────────────────────┐
+│            SEZÓNA              │  taxonomie: sezona
+│  slug: 2024-25 / 2025-26 …    │
+└──────────┬─────────────────────┘
+           │ m:n (term relationship)
+     ┌─────┼──────┬─────────────────┐
+     │     │      │                 │
+     ▼     ▼      ▼                 ▼
+┌────────┐ ┌────────┐ ┌──────────┐ ┌─────────┐
+│ ZÁPAS  │ │  TÝM   │ │  HRÁČ    │ │ GALERIE │
+└───┬────┘ └───┬────┘ └────┬─────┘ └─────────┘
+    │          │           │
+    │          │  1:n      │ n:1 (tym_slug)
+    │          └───────────┘
+    ▼ m:n
+┌────────────────────────────────┐
+│         KATEGORIE TÝMU         │  taxonomie: kategorie-tymu
+└────────────────────────────────┘
+
+┌─────────┐   ┌──────────┐
+│ KONTAKT │   │ SPONZOR  │   (samostatné entity)
+└─────────┘   └──────────┘
+\end{verbatim}
+
+\subsubsection{3.4 Vlastní meta pole (nahrazuje Advanced Custom
+Fields)}\label{vlastnuxed-meta-pole-nahrazuje-advanced-custom-fields}
+
+Místo pluginu Advanced Custom Fields {[}9{]} jsou meta boxy
+implementovány přímo v PHP pomocí WordPress funkcí
+\texttt{add\_meta\_box()}, \texttt{get\_post\_meta()} a
+\texttt{update\_post\_meta()} {[}3{]}.
+
+Ukázka definice meta boxu pro zápasy:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{add\_meta\_box(}
+    \StringTok{\textquotesingle{}slavoj\_zapas\_detail\textquotesingle{}}\OtherTok{,}
+    \StringTok{\textquotesingle{}Detail zápasu\textquotesingle{}}\OtherTok{,}
+    \StringTok{\textquotesingle{}slavoj\_zapas\_meta\_box\_html\textquotesingle{}}\OtherTok{,}
+    \StringTok{\textquotesingle{}zapas\textquotesingle{}}\OtherTok{,}
+    \StringTok{\textquotesingle{}normal\textquotesingle{}}\OtherTok{,}
+    \StringTok{\textquotesingle{}high\textquotesingle{}}
+\NormalTok{)}\OtherTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+Pole pro jednotlivé CPT:
+
+\textbf{Zápas:} datum zápasu (date), čas výkopu (time), domácí tým
+(text), hostující tým (text), skóre (text), střelci (text).
+
+\textbf{Tým:} slug týmu (text), hlavní trenér (text), asistent trenéra
+(text), zdravotník (text), počet hráčů (automaticky vypočteno).
+
+\textbf{Hráč:} číslo dresu (number 1--99), rok narození (number), slug
+týmu (text).
+
+\textbf{Kontakt:} funkce/pozice (text), telefon (text), e-mail (email),
+pořadí zobrazení (number).
+
+\textbf{Sponzor:} webové stránky (url).
+
+\subsubsection{3.5 Filtrace obsahu}\label{filtrace-obsahu}
+
+Místo pluginů FacetWP nebo Search \& Filter Pro {[}10{]} jsou filtry
+implementovány jako HTML formuláře s GET parametry:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DataTypeTok{\textless{}}\KeywordTok{form}\OtherTok{ method}\OperatorTok{=}\StringTok{"get"}\OtherTok{ action}\OperatorTok{=}\StringTok{"}\ErrorTok{\textless{}}\StringTok{?php echo esc\_url(get\_post\_type\_archive\_link(\textquotesingle{}zapas\textquotesingle{})); ?\textgreater{}"}\DataTypeTok{\textgreater{}}
+    \DataTypeTok{\textless{}}\KeywordTok{select}\OtherTok{ name}\OperatorTok{=}\StringTok{"kat"}\OtherTok{ onchange}\OperatorTok{=}\StringTok{"this.form.submit()"}\DataTypeTok{\textgreater{}}
+        \DataTypeTok{\textless{}}\KeywordTok{option}\OtherTok{ value}\OperatorTok{=}\StringTok{""}\DataTypeTok{\textgreater{}}\NormalTok{Všechny týmy}\DataTypeTok{\textless{}/}\KeywordTok{option}\DataTypeTok{\textgreater{}}
+        \CommentTok{\textless{}!{-}{-} dynamicky generované možnosti {-}{-}\textgreater{}}
+    \DataTypeTok{\textless{}/}\KeywordTok{select}\DataTypeTok{\textgreater{}}
+    \DataTypeTok{\textless{}}\KeywordTok{noscript}\DataTypeTok{\textgreater{}\textless{}}\KeywordTok{button}\OtherTok{ type}\OperatorTok{=}\StringTok{"submit"}\DataTypeTok{\textgreater{}}\NormalTok{Filtrovat}\DataTypeTok{\textless{}/}\KeywordTok{button}\DataTypeTok{\textgreater{}\textless{}/}\KeywordTok{noscript}\DataTypeTok{\textgreater{}}
+\DataTypeTok{\textless{}/}\KeywordTok{form}\DataTypeTok{\textgreater{}}
+\end{Highlighting}
+\end{Shaded}
+
+PHP kód v šabloně načte GET parametry, sanitizuje je pomocí
+\texttt{sanitize\_text\_field()} a předá do \texttt{WP\_Query} s
+\texttt{tax\_query} a \texttt{meta\_query} {[}3{]}.
+
+Šablony s filtrací:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Šablona & Filtry \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{archive-zapas.php} & Tým, sezóna, stav zápasu \\
+\texttt{archive-tym.php} & Sezóna \\
+\texttt{archive-galerie.php} & Tým, sezóna \\
+\end{longtable}
+}
+
+Formuláře používají \texttt{onchange="this.form.submit()"} pro
+automatické odeslání při změně výběru, s
+\texttt{\textless{}noscript\textgreater{}} fallbackem pro prohlížeče bez
+JavaScriptu.
+
+\subsubsection{3.6 Řazení a kontextové filtrování
+taxonomií}\label{ux159azenuxed-a-kontextovuxe9-filtrovuxe1nuxed-taxonomiuxed}
+
+\paragraph{3.6.1 Problém}\label{probluxe9m}
+
+WordPress řadí termy taxonomií abecedně. Pro fotbalový klub je přirozené
+hierarchické pořadí: Muži A → Muži B → Dorost → Starší žáci → Mladší
+žáci → Přípravky. Navíc kategorie „Stará garda'' se má zobrazovat pouze
+u galerií, nikoli u zápasů nebo hráčů.
+
+\paragraph{3.6.2 Řešení}\label{ux159eux161enuxed}
+
+Pořadí je definováno centrálně ve funkci
+\texttt{slavoj\_kategorie\_poradi()}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{function}\NormalTok{ slavoj\_kategorie\_poradi() \{}
+    \ControlFlowTok{return} \DataTypeTok{array}\NormalTok{(}
+        \StringTok{\textquotesingle{}muzi{-}a\textquotesingle{}}\NormalTok{            =\textgreater{} }\StringTok{\textquotesingle{}Muži A\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}muzi{-}b\textquotesingle{}}\NormalTok{            =\textgreater{} }\StringTok{\textquotesingle{}Muži B\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}stara{-}garda\textquotesingle{}}\NormalTok{       =\textgreater{} }\StringTok{\textquotesingle{}Stará garda\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}dorost\textquotesingle{}}\NormalTok{            =\textgreater{} }\StringTok{\textquotesingle{}Dorost\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}starsi{-}zaci\textquotesingle{}}\NormalTok{       =\textgreater{} }\StringTok{\textquotesingle{}Starší žáci\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}mladsi{-}zaci\textquotesingle{}}\NormalTok{       =\textgreater{} }\StringTok{\textquotesingle{}Mladší žáci\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}starsi{-}pripravka\textquotesingle{}}\NormalTok{  =\textgreater{} }\StringTok{\textquotesingle{}Starší přípravka\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}mladsi{-}pripravka\textquotesingle{}}\NormalTok{  =\textgreater{} }\StringTok{\textquotesingle{}Mladší přípravka\textquotesingle{}}\OtherTok{,}
+        \StringTok{\textquotesingle{}mini{-}pripravka\textquotesingle{}}\NormalTok{    =\textgreater{} }\StringTok{\textquotesingle{}Mini přípravka\textquotesingle{}}\OtherTok{,}
+\NormalTok{    )}\OtherTok{;}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Globální filtr na WordPress hook \texttt{get\_terms} automaticky seřadí
+termy podle tohoto kanonického pořadí a odfiltruje kontextově omezené
+termy (např. „Stará garda'' se zobrazí pouze v kontextu galerií).
+
+\subsubsection{3.7 Šablony}\label{ux161ablony}
+
+\paragraph{3.7.1 Přehled šablon}\label{pux159ehled-ux161ablon}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Šablona & URL & Obsah \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{front-page.php} & \texttt{/} & Nadcházející zápasy, aktuality \\
+\texttt{archive-zapas.php} & \texttt{/zapasy/} & Filtrovaný seznam
+zápasů \\
+\texttt{archive-tym.php} & \texttt{/tymy/} & Karty týmů \\
+\texttt{archive-galerie.php} & \texttt{/galerie/} & Grid fotoalb \\
+\texttt{single-zapas.php} & \texttt{/zapasy/\{slug\}/} & Detail
+zápasu \\
+\texttt{single-tym.php} & \texttt{/tymy/\{slug\}/} & Profil týmu,
+soupiska \\
+\texttt{single-hrac.php} & \texttt{/hraci/\{slug\}/} & Profil hráče \\
+\texttt{single-galerie.php} & \texttt{/galerie/\{slug\}/} & Fotoalbum s
+lightboxem \\
+\texttt{page-historie.php} & \texttt{/historie/} & Historie klubu \\
+\texttt{page-kontakty.php} & \texttt{/kontakty/} & Kontakty výboru \\
+\texttt{page-sponzori.php} & \texttt{/sponzori/} & Loga partnerů \\
+\end{longtable}
+}
+
+\paragraph{3.7.2 Znovupoužitelné komponenty
+(template-parts)}\label{znovupouux17eitelnuxe9-komponenty-template-parts}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\texttt{card-match.php}} -- karta zápasu (domácí vs hosté,
+  datum, skóre, střelci)
+\item
+  \textbf{\texttt{hero-team.php}} -- hero sekce s názvem týmu a trenéry
+\item
+  \textbf{\texttt{site-header.php}} -- hlavička webu s navigací
+\item
+  \textbf{\texttt{site-footer.php}} -- patička webu
+\end{itemize}
+
+\subsubsection{3.8 CSS architektura}\label{css-architektura}
+
+Styly jsou rozdělené do komponentových souborů a načítány přes
+\texttt{wp\_enqueue\_style()} {[}3{]} s definovanými závislostmi:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{function}\NormalTok{ slavoj\_enqueue\_scripts() \{}
+    \VariableTok{$ver} \OperatorTok{=}\NormalTok{ wp\_get\_theme(){-}\textgreater{}get(}\StringTok{\textquotesingle{}Version\textquotesingle{}}\NormalTok{)}\OtherTok{;}
+\NormalTok{    wp\_enqueue\_style(}\StringTok{\textquotesingle{}bootstrap\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\textquotesingle{}}\OtherTok{,} \DataTypeTok{array}\NormalTok{()}\OtherTok{,} \StringTok{\textquotesingle{}5.3.3\textquotesingle{}}\NormalTok{)}\OtherTok{;}
+\NormalTok{    wp\_enqueue\_script(}\StringTok{\textquotesingle{}bootstrap{-}js\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\textquotesingle{}}\OtherTok{,} \DataTypeTok{array}\NormalTok{()}\OtherTok{,} \StringTok{\textquotesingle{}5.3.3\textquotesingle{}}\OtherTok{,} \KeywordTok{true}\NormalTok{)}\OtherTok{;}
+
+    \VariableTok{$css} \OperatorTok{=}\NormalTok{ get\_template\_directory\_uri() }\OperatorTok{.} \StringTok{\textquotesingle{}/assets/css/\textquotesingle{}}\OtherTok{;}
+\NormalTok{    wp\_enqueue\_style(}\StringTok{\textquotesingle{}slavoj{-}utilities\textquotesingle{}}\OtherTok{,}  \VariableTok{$css} \OperatorTok{.} \StringTok{\textquotesingle{}utilities.css\textquotesingle{}}\OtherTok{,}            \DataTypeTok{array}\NormalTok{(}\StringTok{\textquotesingle{}bootstrap\textquotesingle{}}\NormalTok{)}\OtherTok{,} \VariableTok{$ver}\NormalTok{)}\OtherTok{;}
+\NormalTok{    wp\_enqueue\_style(}\StringTok{\textquotesingle{}slavoj{-}header\textquotesingle{}}\OtherTok{,}     \VariableTok{$css} \OperatorTok{.} \StringTok{\textquotesingle{}components/header.css\textquotesingle{}}\OtherTok{,}    \DataTypeTok{array}\NormalTok{(}\StringTok{\textquotesingle{}slavoj{-}utilities\textquotesingle{}}\NormalTok{)}\OtherTok{,} \VariableTok{$ver}\NormalTok{)}\OtherTok{;}
+\NormalTok{    wp\_enqueue\_style(}\StringTok{\textquotesingle{}slavoj{-}buttons\textquotesingle{}}\OtherTok{,}    \VariableTok{$css} \OperatorTok{.} \StringTok{\textquotesingle{}components/buttons.css\textquotesingle{}}\OtherTok{,}   \DataTypeTok{array}\NormalTok{(}\StringTok{\textquotesingle{}slavoj{-}utilities\textquotesingle{}}\NormalTok{)}\OtherTok{,} \VariableTok{$ver}\NormalTok{)}\OtherTok{;}
+\NormalTok{    wp\_enqueue\_style(}\StringTok{\textquotesingle{}slavoj{-}cards\textquotesingle{}}\OtherTok{,}      \VariableTok{$css} \OperatorTok{.} \StringTok{\textquotesingle{}components/cards.css\textquotesingle{}}\OtherTok{,}     \DataTypeTok{array}\NormalTok{(}\StringTok{\textquotesingle{}slavoj{-}utilities\textquotesingle{}}\NormalTok{)}\OtherTok{,} \VariableTok{$ver}\NormalTok{)}\OtherTok{;}
+\NormalTok{    wp\_enqueue\_style(}\StringTok{\textquotesingle{}slavoj{-}main\textquotesingle{}}\OtherTok{,} \VariableTok{$css} \OperatorTok{.} \StringTok{\textquotesingle{}main.css\textquotesingle{}}\OtherTok{,} \DataTypeTok{array}\NormalTok{(}\StringTok{\textquotesingle{}slavoj{-}utilities\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}slavoj{-}buttons\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}slavoj{-}cards\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}slavoj{-}header\textquotesingle{}}\NormalTok{)}\OtherTok{,} \VariableTok{$ver}\NormalTok{)}\OtherTok{;}
+\NormalTok{\}}
+\NormalTok{add\_action(}\StringTok{\textquotesingle{}wp\_enqueue\_scripts\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}slavoj\_enqueue\_scripts\textquotesingle{}}\NormalTok{)}\OtherTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+Soubor \texttt{style.css} v kořeni tématu slouží pouze jako
+identifikátor pro WordPress (název tématu, verze, autor) a neobsahuje
+žádné styly. Veškeré styly a skripty jsou načítány přes
+\texttt{wp\_enqueue\_style()} a \texttt{wp\_enqueue\_script()} -- nikdy
+přímo v šablonách {[}3{]}.
+
+\begin{verbatim}
+assets/css/
+├── utilities.css              # Barvy, spacing, utility třídy
+├── main.css                   # Hlavní styly šablon
+└── components/
+    ├── header.css             # Navigace a hlavička
+    ├── nav-mobile.css         # Mobilní menu
+    ├── buttons.css            # Tlačítka
+    ├── hero.css               # Hero sekce
+    └── cards.css              # Karty zápasů, galerií, hráčů
+\end{verbatim}
+
+\subsubsection{3.9 Plugin Slavoj Custom
+Fields}\label{plugin-slavoj-custom-fields}
+
+Plugin je uložen v souboru \texttt{slavoj-custom-fields.php} a poskytuje
+administrační nástroje:
+
+\textbf{Vlastní sloupce v přehledech:} - Zápasy: datum (řaditelný
+chronologicky), tým, skóre - Hráči: číslo dresu (řaditelné numericky),
+pozice, tým
+
+Ukázka implementace vlastního sloupce:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{function}\NormalTok{ slavoj\_zapas\_admin\_column\_data(}\VariableTok{$column}\OtherTok{,} \VariableTok{$post\_id}\NormalTok{) \{}
+    \ControlFlowTok{if}\NormalTok{ (}\VariableTok{$column} \OperatorTok{===} \StringTok{\textquotesingle{}datum\_zapasu\textquotesingle{}}\NormalTok{) \{}
+        \VariableTok{$datum} \OperatorTok{=}\NormalTok{ get\_post\_meta(}\VariableTok{$post\_id}\OtherTok{,} \StringTok{\textquotesingle{}datum\_zapasu\textquotesingle{}}\OtherTok{,} \KeywordTok{true}\NormalTok{)}\OtherTok{;}
+        \ControlFlowTok{if}\NormalTok{ (}\VariableTok{$datum}\NormalTok{) \{}
+            \VariableTok{$dt} \OperatorTok{=} \BuiltInTok{DateTime}\NormalTok{::createFromFormat(}\StringTok{\textquotesingle{}Y{-}m{-}d\textquotesingle{}}\OtherTok{,} \VariableTok{$datum}\NormalTok{)}\OtherTok{;}
+            \KeywordTok{echo} \VariableTok{$dt} \OtherTok{?}\NormalTok{ esc\_html(}\VariableTok{$dt}\NormalTok{{-}\textgreater{}format(}\StringTok{\textquotesingle{}j. n. Y\textquotesingle{}}\NormalTok{)) }\OtherTok{:}\NormalTok{ esc\_html(}\VariableTok{$datum}\NormalTok{)}\OtherTok{;}
+\NormalTok{        \}}
+\NormalTok{    \}}
+    \CommentTok{// ...}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Dropdown filtry:} nad seznamy příspěvků lze filtrovat podle
+sezóny, kategorie týmu nebo týmu (u hráčů).
+
+\textbf{Nástrojová stránka} (Nástroje → Slavoj nastavení): - přehled
+registrovaných CPT a taxonomií - tlačítko „Vytvořit výchozí hodnoty
+taxonomií'' - tlačítko „Vytvořit ukázková data'' (zápasy, hráči,
+kontakty, galerie) - tlačítko „Vytvořit stránky webu''
+
+\subsubsection{3.10 Uživatelské role}\label{uux17eivatelskuxe9-role}
+
+Místo pluginu User Role Editor {[}11{]} je vlastní role registrována
+přímo v kódu:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{add\_role(}\StringTok{\textquotesingle{}slavoj\_editor\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}Správce obsahu\textquotesingle{}}\OtherTok{,} \DataTypeTok{array}\NormalTok{(}
+    \StringTok{\textquotesingle{}read\textquotesingle{}}\NormalTok{                   =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+    \StringTok{\textquotesingle{}edit\_posts\textquotesingle{}}\NormalTok{             =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+    \StringTok{\textquotesingle{}edit\_others\_posts\textquotesingle{}}\NormalTok{      =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+    \StringTok{\textquotesingle{}publish\_posts\textquotesingle{}}\NormalTok{          =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+    \StringTok{\textquotesingle{}upload\_files\textquotesingle{}}\NormalTok{           =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+    \StringTok{\textquotesingle{}manage\_categories\textquotesingle{}}\NormalTok{      =\textgreater{} }\KeywordTok{true}\OtherTok{,}
+    \CommentTok{// + oprávnění pro všechny CPT}
+\NormalTok{))}\OtherTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2917}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4583}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Role
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Popis
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Oprávnění
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Administrátor & Správce webu & Plný přístup \\
+Správce obsahu & Správce zápasů a obsahu & Editace CPT, nahrávání médií,
+bez nastavení WP \\
+\end{longtable}
+}
+
+\subsubsection{3.11 Optimalizace výkonu}\label{optimalizace-vuxfdkonu}
+
+Základní optimalizace jsou implementovány přímo v kódu tématu:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Optimalizace
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Implementace
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Lazy loading obrázků & Funkce \texttt{slavoj\_add\_lazy\_loading()}
+přidává \texttt{loading="lazy"} {[}12{]} \\
+Bootstrap z CDN & CSS a JS z jsdelivr.net -- využívá cache prohlížeče
+{[}5{]} \\
+Minimální JavaScript & Filtry přes HTML formuláře, bez AJAX knihoven \\
+Mobile-first CSS & Vlastní CSS psaný mobile-first, minimální velikost \\
+\end{longtable}
+}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{function}\NormalTok{ slavoj\_add\_lazy\_loading(}\VariableTok{$content}\NormalTok{) \{}
+    \ControlFlowTok{return} \FunctionTok{str\_replace}\NormalTok{(}\StringTok{\textquotesingle{}\textless{}img \textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}\textless{}img loading="lazy" \textquotesingle{}}\OtherTok{,} \VariableTok{$content}\NormalTok{)}\OtherTok{;}
+\NormalTok{\}}
+\NormalTok{add\_filter(}\StringTok{\textquotesingle{}the\_content\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}slavoj\_add\_lazy\_loading\textquotesingle{}}\NormalTok{)}\OtherTok{;}
+\NormalTok{add\_filter(}\StringTok{\textquotesingle{}post\_thumbnail\_html\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}slavoj\_add\_lazy\_loading\textquotesingle{}}\NormalTok{)}\OtherTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{3.12 Bezpečnost}\label{bezpeux10dnost}
+
+Projekt dodržuje standardní bezpečnostní praktiky WordPressu {[}3{]}
+{[}13{]}:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Sanitizace vstupů:} Všechna data z formulářů procházejí přes
+  \texttt{sanitize\_text\_field()} nebo \texttt{sanitize\_email()}.
+\item
+  \textbf{Escapování výstupů:} Veškerý výstup do HTML používá
+  \texttt{esc\_html()}, \texttt{esc\_attr()} nebo \texttt{esc\_url()}.
+\item
+  \textbf{Nonce ochrana:} Každý meta box formulář je chráněn WordPress
+  nonce tokenem (\texttt{wp\_nonce\_field} /
+  \texttt{wp\_verify\_nonce}).
+\item
+  \textbf{WP\_Query:} Databázové dotazy využívají výhradně WordPress
+  API, nikoli přímé SQL.
+\item
+  \textbf{Capability mapping:} Každý CPT má vlastní
+  \texttt{capability\_type} pro granulární řízení oprávnění.
+\item
+  \textbf{WPS Hide Login:} Bezplatný plugin z oficiálního repozitáře
+  WordPressu, který mění výchozí přihlašovací URL \texttt{/wp-login.php}
+  na vlastní adresu (např. \texttt{/prihlaseni/}). Přístup na
+  \texttt{/wp-login.php} i \texttt{/wp-admin/} (pro nepřihlášené) vrací
+  chybu 404. Tím se výrazně snižuje riziko automatizovaných brute-force
+  útoků, protože útočníci nemohou najít standardní přihlašovací stránku.
+  Nastavení pluginu: \textbf{Nastavení → WPS Hide Login} -- stačí zadat
+  požadovaný slug a uložit.
+\end{itemize}
+
+\subsubsection{3.13 JavaScript}\label{javascript}
+
+Projekt záměrně minimalizuje použití JavaScriptu. Celkový rozsah
+vlastního JS je přibližně 70 řádků {[}14{]}:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Filtry} -- \texttt{onchange="this.form.submit()"} s
+  \texttt{\textless{}noscript\textgreater{}} fallbackem (1 řádek na
+  formulář)
+\item
+  \textbf{Lightbox galerie} v \texttt{single-galerie.php}
+  (\textasciitilde55 řádků) -- kliknutí na foto, navigace šipkami/Escape
+\item
+  \textbf{Quick-add střelců} v \texttt{single-zapas.php}
+  (\textasciitilde12 řádků) -- administrační pomůcka
+\end{enumerate}
+
+Všechny funkce mají funkční fallback bez JavaScriptu. Žádné frameworky
+ani build nástroje nejsou použity.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{4 Testování}\label{testovuxe1nuxed}
+
+\subsubsection{4.1 Přehled testování}\label{pux159ehled-testovuxe1nuxed}
+
+Testování probíhalo průběžně během vývoje. Byly provedeny následující
+typy testů:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Funkční testování} -- ověření správné funkčnosti všech
+  stránek, filtrů a administrace
+\item
+  \textbf{Bezpečnostní kontrola kódu} -- kontrola sanitizace, escapování
+  a nonce ochrany
+\item
+  \textbf{Responzivní testování} -- ověření zobrazení na různých
+  zařízeních
+\item
+  \textbf{Kontrola WordPress best practices} -- dodržení standardů pro
+  vývoj témat {[}13{]}
+\end{enumerate}
+
+\subsubsection{4.2 Funkční testovací
+scénáře}\label{funkux10dnuxed-testovacuxed-scuxe9nuxe1ux159e}
+
+\paragraph{Scénář 1: Přidání nového
+zápasu}\label{scuxe9nuxe1ux159-1-pux159iduxe1nuxed-novuxe9ho-zuxe1pasu}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.5263}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Krok
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Akce
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Očekávaný výsledek
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Stav
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & Přihlášení do administrace & Zobrazí se dashboard & Ano \\
+2 & Klik na Zápasy → Přidat zápas & Zobrazí se formulář & Ano \\
+3 & Vyplnění polí (datum, čas, týmy, skóre) & Pole přijímají data &
+Ano \\
+4 & Přiřazení sezóny a kategorie týmu & Taxonomie přiřazeny & Ano \\
+5 & Klik na Publikovat & Zápas uložen & Ano \\
+6 & Zobrazení na \texttt{/zapasy/} & Zápas se zobrazí v seznamu & Ano \\
+7 & Klik na detail zápasu & Detail s daty se zobrazí & Ano \\
+\end{longtable}
+}
+
+\paragraph{Scénář 2: Filtrování
+zápasů}\label{scuxe9nuxe1ux159-2-filtrovuxe1nuxed-zuxe1pasux16f}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.5263}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Krok
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Akce
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Očekávaný výsledek
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Stav
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & Otevření \texttt{/zapasy/} & Zobrazí se všechny zápasy & Ano \\
+2 & Výběr „Muži A'' ve filtru týmu & Stránka se přenačte, zobrazí pouze
+Muži A & Ano \\
+3 & Výběr „2025/26'' ve filtru sezóny & Zobrazí pouze zápasy dané sezóny
+& Ano \\
+4 & Výběr „Odehrané'' ve filtru stavu & Zobrazí pouze odehrané zápasy &
+Ano \\
+5 & Reset filtrů (výběr „Všechny'') & Zobrazí se všechny zápasy & Ano \\
+\end{longtable}
+}
+
+\paragraph{Scénář 3: Soupiska
+týmu}\label{scuxe9nuxe1ux159-3-soupiska-tuxfdmu}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.5263}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Krok
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Akce
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Očekávaný výsledek
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Stav
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & Otevření \texttt{/tymy/} & Zobrazí se karty týmů & Ano \\
+2 & Klik na tým & Detail týmu se soupiskou & Ano \\
+3 & Ověření počtu hráčů & Odpovídá počtu hráčů v databázi & Ano \\
+4 & Kontrola řazení hráčů & Seřazeni podle čísla dresu vzestupně &
+Ano \\
+\end{longtable}
+}
+
+\paragraph{Scénář 4: Galerie}\label{scuxe9nuxe1ux159-4-galerie}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+Krok & Akce & Očekávaný výsledek & Stav \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & Otevření \texttt{/galerie/} & Zobrazí se přehled alb & Ano \\
+2 & Klik na album & Detail s fotogalerií & Ano \\
+3 & Klik na fotografii & Lightbox se otevře & Ano \\
+4 & Navigace šipkami/Escape & Funkční navigace, zavření & Ano \\
+\end{longtable}
+}
+
+\paragraph{Scénář 5: Uživatelská role -- Správce
+obsahu}\label{scuxe9nuxe1ux159-5-uux17eivatelskuxe1-role-spruxe1vce-obsahu}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.5263}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1579}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Krok
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Akce
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Očekávaný výsledek
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Stav
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & Přihlášení jako Správce obsahu & Dashboard bez nastavení WP & Ano \\
+2 & Editace zápasu & Povoleno & Ano \\
+3 & Nahrání obrázku & Povoleno & Ano \\
+4 & Přístup k Nastavení → Obecné & Zamítnuto & Ano \\
+5 & Přístup k Pluginy & Zamítnuto & Ano \\
+\end{longtable}
+}
+
+\subsubsection{4.3 Bezpečnostní
+kontrola}\label{bezpeux10dnostnuxed-kontrola}
+
+Kontrola kódu provedená v březnu 2026 potvrdila dodržení bezpečnostních
+standardů {[}13{]}:
+
+\begin{itemize}
+\tightlist
+\item
+  Ano Sanitizace vstupů: \texttt{sanitize\_text\_field()},
+  \texttt{sanitize\_email()}, \texttt{wp\_unslash()}
+\item
+  Ano Escapování výstupů: \texttt{esc\_html()}, \texttt{esc\_attr()},
+  \texttt{esc\_url()}
+\item
+  Ano Nonce ochrana formulářů: \texttt{wp\_nonce\_field()},
+  \texttt{wp\_verify\_nonce()}
+\item
+  Ano WP\_Query místo raw SQL
+\item
+  Ano Správné použití \texttt{wp\_reset\_postdata()} po custom queries
+\end{itemize}
+
+\subsubsection{4.4 Nalezené a opravené
+chyby}\label{nalezenuxe9-a-opravenuxe9-chyby}
+
+Během testování byly nalezeny a opraveny tyto chyby:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{\texttt{single-galerie.php}} -- sezóna se načítala z meta pole
+  místo z taxonomie. Opraveno na čtení z taxonomie \texttt{sezona}.
+\item
+  \textbf{\texttt{front-page.php}} -- Bootstrap třída \texttt{.card}
+  přidávala nechtěný rámeček. Opraveno přidáním CSS
+  \texttt{border:\ none}.
+\item
+  \textbf{\texttt{front-page.php}} -- horizontální scrollbar na
+  mobilních zařízeních. Opraveno přidáním Bootstrap třídy \texttt{g-0}
+  pro odstranění gutterů.
+\end{enumerate}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{5 Příručka
+administrátora}\label{pux159uxedruux10dka-administruxe1tora}
+
+\subsubsection{5.1 Návod pro správce -- administrace
+WordPress}\label{nuxe1vod-pro-spruxe1vce-administrace-wordpress}
+
+\paragraph{5.1.1 Přihlášení}\label{pux159ihluxe1ux161enuxed}
+
+Otevřete přihlašovací stránku webu a přihlaste se. Výchozí adresa
+WordPressu je \texttt{/wp-login.php}, ale na produkčním serveru je
+pomocí pluginu \textbf{WPS Hide Login} změněna na vlastní slug (viz
+sekce 3.12). V levém menu uvidíte sekce: \textbf{Zápasy}, \textbf{Týmy},
+\textbf{Hráči}, \textbf{Galerie}, \textbf{Sponzoři}, \textbf{Kontakty}.
+
+\paragraph{5.1.2 Správa zápasů}\label{spruxe1va-zuxe1pasux16f}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Klikněte \textbf{Zápasy → Přidat zápas}
+\item
+  Vyplňte titulek (např. „TJ Slavoj Mýto vs SK Nepomuk'')
+\item
+  V sekci \textbf{Detail zápasu} vyplňte datum, čas, domácí tým, hosty,
+  skóre a střelce
+\item
+  V pravém panelu přiřaďte \textbf{kategorii týmu} a \textbf{sezónu}
+\item
+  Klikněte \textbf{Publikovat}
+\end{enumerate}
+
+Pro zadání výsledku odehraného zápasu: otevřete existující zápas,
+vyplňte \textbf{Skóre} a \textbf{Střelce}, klikněte
+\textbf{Aktualizovat}.
+
+\paragraph{5.1.3 Správa týmů}\label{spruxe1va-tuxfdmux16f}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Klikněte \textbf{Týmy → Přidat tým}
+\item
+  Vyplňte název, identifikátor týmu (slug, např. \texttt{muzi-a}),
+  trenéry
+\item
+  Nastavte \textbf{Obrázek příspěvku} (týmová fotografie)
+\item
+  Přiřaďte sezónu a kategorii
+\item
+  \textbf{Počet hráčů} se vypočítá automaticky z přiřazených hráčů
+\end{enumerate}
+
+\paragraph{5.1.4 Správa hráčů}\label{spruxe1va-hruxe1ux10dux16f}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Klikněte \textbf{Hráči → Přidat hráče}
+\item
+  Vyplňte jméno, číslo dresu (1--99), rok narození, slug týmu
+\item
+  Přiřaďte pozici (Brankář / Hráč v poli) a sezónu
+\end{enumerate}
+
+\paragraph{5.1.5 Správa galerií}\label{spruxe1va-galeriuxed}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Klikněte \textbf{Galerie → Přidat album}
+\item
+  Vyplňte název alba
+\item
+  V obsahu příspěvku klikněte \textbf{Přidat média → Vytvořit galerii} →
+  vyberte fotky → \textbf{Vložit galerii}
+\item
+  Nastavte \textbf{Obrázek příspěvku} jako náhled alba
+\item
+  V pravém panelu přiřaďte \textbf{Kategorii týmu}
+\end{enumerate}
+
+\paragraph{5.1.6 Správa sponzorů}\label{spruxe1va-sponzorux16f}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Klikněte \textbf{Sponzoři → Přidat sponzora}
+\item
+  Vyplňte název firmy / partnera jako titulek příspěvku
+\item
+  V sekci \textbf{Detail sponzora} zadejte \textbf{Webové stránky} (URL,
+  např. \texttt{https://firma.cz})
+\item
+  Nastavte \textbf{Obrázek příspěvku} -- logo sponzora
+\item
+  Klikněte \textbf{Publikovat}
+\end{enumerate}
+
+\paragraph{5.1.7 Správa kontaktů}\label{spruxe1va-kontaktux16f}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Klikněte \textbf{Kontakty → Přidat kontakt}
+\item
+  Vyplňte jméno osoby jako titulek příspěvku (např. „Jaroslav Bejček'')
+\item
+  Vyplňte pole v sekci \textbf{Detail kontaktu}:
+\end{enumerate}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Pole & Popis & Příklad \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Funkce / Pozice & Role v klubu & \texttt{Předseda\ klubu} \\
+Telefon & Kontaktní telefon & \texttt{+420\ 777\ 000\ 000} \\
+E-mail & Kontaktní e-mail & \texttt{predseda@slavojmyto.cz} \\
+Pořadí zobrazení & Číslo pro řazení (0 = první) & \texttt{1} \\
+\end{longtable}
+}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Klikněte \textbf{Publikovat}
+\end{enumerate}
+
+\begin{quote}
+\textbf{Tip:} Nižší číslo v poli „Pořadí zobrazení'' = kontakt se
+zobrazí výše v seznamu na webu.
+\end{quote}
+
+\paragraph{5.1.8 Správa aktualit}\label{spruxe1va-aktualit}
+
+Aktuality využívají nativní WordPress příspěvky a zobrazují se na úvodní
+stránce.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Klikněte \textbf{Příspěvky → Přidat příspěvek}
+\item
+  Napište titulek a text aktuality
+\item
+  Nastavte \textbf{Obrázek příspěvku} (náhled na homepage)
+\item
+  Klikněte \textbf{Publikovat}
+\end{enumerate}
+
+\subsubsection{5.2 Příručka pro návštěvníka
+webu}\label{pux159uxedruux10dka-pro-nuxe1vux161tux11bvnuxedka-webu}
+
+Web TJ Slavoj Mýto je rozdělen do přehledných sekcí přístupných z
+hlavního menu. Níže je stručný popis uživatelského rozhraní.
+
+\textbf{Navigace:} Hlavní menu v záhlaví stránky obsahuje odkazy na
+Domů, Zápasy, Týmy, Galerie, Sponzoři, Kontakty a Historie. Na mobilních
+zařízeních se menu sbalí do hamburger ikony (☰), kliknutím se rozbalí.
+
+\textbf{Úvodní stránka (\texttt{/}):} Zobrazuje nejbližší nadcházející
+zápas, poslední výsledky a nejnovější aktuality. Slouží jako rozcestník
+k ostatním sekcím webu.
+
+\textbf{Zápasy (\texttt{/zapasy/}):} Přehled zápasů s filtry podle týmu,
+sezóny a stavu. Každý zápas zobrazuje datum, týmy, skóre (barevně --
+zelená = výhra, červená = prohra) a střelce. Kliknutím na zápas se
+zobrazí jeho detail.
+
+\textbf{Týmy (\texttt{/tymy/}):} Karty týmů s fotografiemi. Kliknutím na
+tým se zobrazí detail se soupiskou, realizačním týmem a nadcházejícími
+zápasy.
+
+\textbf{Galerie (\texttt{/galerie/}):} Přehled fotoalb s náhledovými
+obrázky. Kliknutím na album se zobrazí fotografie s lightboxem (zvětšení
+fotografie na celou obrazovku).
+
+\textbf{Sponzoři (\texttt{/sponzori/}):} Přehled partnerů klubu s logy.
+Kliknutím na logo se otevře web sponzora.
+
+\textbf{Kontakty (\texttt{/kontakty/}):} Seznam členů vedení klubu s
+funkcí, telefonem a e-mailem.
+
+\textbf{Historie (\texttt{/historie/}):} Stránka s historií a tradicemi
+klubu.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{6 Nasazení}\label{nasazenuxed}
+
+Tato kapitola popisuje nasazení webu na produkční hosting. Doporučeným
+řešením je český hosting \textbf{Wedos} s podporou PHP, MariaDB a FTP
+přístupu.
+
+\subsubsection{6.1 Nasazení na hosting
+Wedos}\label{nasazenuxed-na-hosting-wedos}
+
+\paragraph{Požadavky na hosting}\label{poux17eadavky-na-hosting}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Požadavek & Minimální hodnota \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+PHP & ≥ 8.0 \\
+MariaDB & ≥ 10.4 \\
+Diskový prostor & ≥ 1 GB \\
+FTP přístup & Ano \\
+\end{longtable}
+}
+
+\paragraph{Postup nasazení}\label{postup-nasazenuxed}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Vytvoření databáze} -- V klientské zóně Wedos (zákaznická
+  administrace) vytvořte novou MariaDB databázi. Poznamenejte si název
+  databáze, uživatelské jméno, heslo a hostname (obvykle
+  \texttt{localhost} nebo adresa uvedená v administraci Wedos).
+\item
+  \textbf{Příprava WordPressu} -- Stáhněte WordPress z
+  \href{https://wordpress.org/download/}{wordpress.org} a rozbalte na
+  lokálním počítači. Do složky WordPressu zkopírujte téma a plugin:
+
+\begin{verbatim}
+web/wp-content/themes/tj-slavoj-myto/   →  wp-content/themes/tj-slavoj-myto/
+web/wp-content/plugins/slavoj-custom-fields/  →  wp-content/plugins/slavoj-custom-fields/
+\end{verbatim}
+\item
+  \textbf{Nastavení \texttt{wp-config.php}} -- Přejmenujte
+  \texttt{wp-config-sample.php} na \texttt{wp-config.php} a vyplňte
+  údaje databáze:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{define}\NormalTok{( }\StringTok{\textquotesingle{}DB\_NAME\textquotesingle{}}\OtherTok{,}     \StringTok{\textquotesingle{}nazev\_databaze\textquotesingle{}}\NormalTok{ )}\OtherTok{;}
+\FunctionTok{define}\NormalTok{( }\StringTok{\textquotesingle{}DB\_USER\textquotesingle{}}\OtherTok{,}     \StringTok{\textquotesingle{}uzivatel\_databaze\textquotesingle{}}\NormalTok{ )}\OtherTok{;}
+\FunctionTok{define}\NormalTok{( }\StringTok{\textquotesingle{}DB\_PASSWORD\textquotesingle{}}\OtherTok{,} \StringTok{\textquotesingle{}heslo\_databaze\textquotesingle{}}\NormalTok{ )}\OtherTok{;}
+\FunctionTok{define}\NormalTok{( }\StringTok{\textquotesingle{}DB\_HOST\textquotesingle{}}\OtherTok{,}     \StringTok{\textquotesingle{}localhost\textquotesingle{}}\NormalTok{ )}\OtherTok{;}
+\FunctionTok{define}\NormalTok{( }\StringTok{\textquotesingle{}DB\_CHARSET\textquotesingle{}}\OtherTok{,}  \StringTok{\textquotesingle{}utf8mb4\textquotesingle{}}\NormalTok{ )}\OtherTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+  Vygenerujte bezpečnostní klíče na
+  \href{https://api.wordpress.org/secret-key/1.1/salt/}{api.wordpress.org/secret-key}
+  a vložte je do souboru.
+\item
+  \textbf{Nahrání souborů přes FTP} -- Připojte se k FTP serveru Wedos
+  pomocí klienta (např. FileZilla {[}doporučeno{]}). FTP údaje najdete v
+  klientské zóně Wedos. Nahrajte \textbf{obsah} složky WordPressu
+  (všechny soubory a podsložky) do kořenového adresáře webu
+  (\texttt{www/}).
+\item
+  \textbf{Instalace WordPressu} -- Otevřete v prohlížeči adresu vašeho
+  webu (např. \texttt{https://vasedomena.cz/}). WordPress spustí
+  instalačního průvodce -- vyplňte název webu
+  (\texttt{TJ\ Slavoj\ Mýto}), administrátorský účet a e-mail.
+\item
+  \textbf{Aktivace tématu a pluginu} -- V administraci aktivujte téma
+  \textbf{TJ Slavoj Mýto} (Vzhled → Témata) a plugin \textbf{Slavoj
+  Custom Fields} (Pluginy). Nastavte trvalé odkazy na \textbf{Název
+  příspěvku} (Nastavení → Trvalé odkazy).
+\item
+  \textbf{Prvotní nastavení obsahu} -- Přejděte na \textbf{Nástroje →
+  Slavoj nastavení} a klikněte „Vytvořit výchozí hodnoty taxonomií'' a
+  „Vytvořit stránky webu''. Nastavte hlavní stránku (Nastavení → Čtení →
+  Statická stránka → Domů) a vytvořte hlavní menu.
+\item
+  \textbf{SSL certifikát} -- V klientské zóně Wedos aktivujte SSL
+  certifikát (Let's Encrypt -- zdarma). V WordPress admin změňte URL
+  webu na \texttt{https://} (Nastavení → Obecné).
+\end{enumerate}
+
+\subsubsection{6.2 Další možnosti
+nasazení}\label{dalux161uxed-moux17enosti-nasazenuxed}
+
+Kromě Wedos lze web nasadit na jakýkoli hosting s podporou PHP ≥ 8.0 a
+MySQL/MariaDB (např. Active24, Blueboard). Postup je shodný -- liší se
+pouze přístup ke klientské zóně a konkrétní nastavení FTP a databáze.
+Pro lokální vývoj je doporučen XAMPP {[}6{]}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{7 Závěr}\label{zuxe1vux11br}
+
+Cílem této maturitní práce bylo vytvořit moderní webovou prezentaci pro
+fotbalový klub TJ Slavoj Mýto, která umožní správci klubu spravovat
+obsah bez znalosti programování. Tento cíl byl splněn.
+
+Výsledný web je postaven na systému WordPress s vlastním tématem
+\texttt{tj-slavoj-myto} a pluginem \texttt{slavoj-custom-fields}. Místo
+závislosti na externích pluginech byla klíčová funkcionalita
+implementována vlastním kódem -- registrace šesti typů obsahu, čtyř
+taxonomií, administrační meta boxy, vlastní sloupce, filtry a
+uživatelská role „Správce obsahu''.
+
+Web je plně responzivní díky frameworku Bootstrap 5 a mobile-first
+přístupu ke stylování. Kód dodržuje bezpečnostní standardy WordPressu
+(sanitizace, escapování, nonce) a minimalizuje použití JavaScriptu.
+
+\subsubsection{Splnění bodů
+zadání}\label{splnux11bnuxed-bodux16f-zaduxe1nuxed}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Bod zadání
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Stav
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Figma design (desktop + mobilní) & Ano Vytvořen \\
+WordPress téma s Bootstrap 5 & Ano Implementováno \\
+Custom post types (zápasy, týmy, hráči\ldots) & Ano 6 CPT + 4
+taxonomie \\
+Filtrování podle sezóny a týmu & Ano GET filtry na archivních
+stránkách \\
+Galerie fotografií & Ano CPT s nativní WordPress galerií + lightbox \\
+Optimalizace výkonu & Ano Lazy loading, CDN, minimální JS \\
+Uživatelské role & Ano Administrátor + Správce obsahu \\
+\end{longtable}
+}
+
+\subsubsection{Návrhy na
+rozšíření}\label{nuxe1vrhy-na-rozux161uxedux159enuxed}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Kalendářní modul} -- vizuální kalendář zápasů (doporučen
+  plugin The Events Calendar {[}17{]})
+\item
+  \textbf{SEO optimalizace} -- integrace pluginu Rank Math {[}18{]} nebo
+  Yoast SEO {[}19{]}
+\item
+  \textbf{Cache a komprese} -- nasazení WP Super Cache {[}20{]} a Smush
+  {[}21{]} pro produkční prostředí
+\item
+  \textbf{Vícejazyčnost} -- příprava pro anglickou verzi webu
+\item
+  \textbf{Statistiky hráčů} -- rozšíření dat hráčů o góly, asistence a
+  zápasy
+\end{enumerate}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Seznam použité
+literatury}\label{seznam-pouux17eituxe9-literatury}
+
+{[}1{]} BEJČEK, Lukáš. \emph{Zadání maturitní práce: Webová prezentace
+fotbalového klubu s databází zápasů a správou obsahu ve WordPressu}
+{[}dokument{]}. 2025. Soubor \texttt{ZADANI-MATURITNI-PRACE.md} v kořeni
+repozitáře.
+
+{[}2{]} WORDPRESS FOUNDATION. \emph{WordPress} {[}software{]}. Verze
+6.x. San Francisco (CA): WordPress Foundation, 2024 {[}cit.
+2026-03-27{]}. Dostupné z: https://wordpress.org
+
+{[}3{]} WORDPRESS FOUNDATION. \emph{WordPress Developer Resources}
+{[}online{]}. San Francisco (CA): WordPress Foundation, 2024 {[}cit.
+2026-03-27{]}. Dostupné z: https://developer.wordpress.org
+
+{[}4{]} OTTO, Mark a Jacob THORNTON. \emph{Bootstrap} {[}software{]}.
+Verze 5.3.3. {[}b.m.{]}: Bootstrap Team, 2024 {[}cit. 2026-03-27{]}.
+Dostupné z: https://getbootstrap.com
+
+{[}5{]} JSDELIVR. \emph{jsDelivr -- free CDN for open source}
+{[}online{]}. 2024 {[}cit. 2026-03-27{]}. Dostupné z:
+https://www.jsdelivr.com
+
+{[}6{]} APACHE FRIENDS. \emph{XAMPP} {[}software{]}. {[}b.m.{]}: Apache
+Friends, 2024 {[}cit. 2026-03-27{]}. Dostupné z:
+https://www.apachefriends.org
+
+{[}7{]} FIGMA, INC. \emph{Figma} {[}software{]}. San Francisco (CA):
+Figma, 2024 {[}cit. 2026-03-27{]}. Dostupné z: https://www.figma.com
+
+{[}8{]} FLAVOR, WebDevStudios. Custom Post Type UI. In: \emph{WordPress
+Plugin Directory} {[}online{]}. San Francisco (CA): WordPress
+Foundation, 2024 {[}cit. 2026-03-27{]}. Dostupné z:
+https://wordpress.org/plugins/custom-post-type-ui/
+
+{[}9{]} WP ENGINE. Advanced Custom Fields. In: \emph{WordPress Plugin
+Directory} {[}online{]}. San Francisco (CA): WordPress Foundation, 2024
+{[}cit. 2026-03-27{]}. Dostupné z:
+https://wordpress.org/plugins/advanced-custom-fields/
+
+{[}10{]} FACETWP, LLC. \emph{FacetWP -- Advanced Filtering for
+WordPress} {[}online{]}. 2024 {[}cit. 2026-03-27{]}. Dostupné z:
+https://facetwp.com
+
+{[}11{]} FLAVOR, Vladimir Garagulja. User Role Editor. In:
+\emph{WordPress Plugin Directory} {[}online{]}. San Francisco (CA):
+WordPress Foundation, 2024 {[}cit. 2026-03-27{]}. Dostupné z:
+https://wordpress.org/plugins/user-role-editor/
+
+{[}12{]} WORLD WIDE WEB CONSORTIUM (W3C). \emph{HTML Living Standard:
+Lazy loading} {[}online{]}. 2024 {[}cit. 2026-03-27{]}. Dostupné z:
+https://html.spec.whatwg.org/multipage/urls-and-fetching.html\#lazy-loading-attributes
+
+{[}13{]} WORDPRESS FOUNDATION. \emph{Theme Developer Handbook}
+{[}online{]}. San Francisco (CA): WordPress Foundation, 2024 {[}cit.
+2026-03-27{]}. Dostupné z: https://developer.wordpress.org/themes/
+
+{[}14{]} BEJČEK, Lukáš. \emph{JavaScript v projektu TJ Slavoj Mýto}
+{[}dokument{]}. 2026. Soubor \texttt{docs/pracovni/12-javascript.md} v
+repozitáři.
+
+{[}15{]} SOFTWARE FREEDOM CONSERVANCY. \emph{Git} {[}software{]}. Verze
+2.x. {[}b.m.{]}: Software Freedom Conservancy, 2024 {[}cit.
+2026-03-27{]}. Dostupné z: https://git-scm.com
+
+{[}16{]} DOCKER, INC. \emph{Docker} {[}software{]}. San Francisco (CA):
+Docker, 2024 {[}cit. 2026-03-27{]}. Dostupné z: https://www.docker.com
+
+{[}17{]} THE EVENTS CALENDAR. The Events Calendar. In: \emph{WordPress
+Plugin Directory} {[}online{]}. San Francisco (CA): WordPress
+Foundation, 2024 {[}cit. 2026-03-27{]}. Dostupné z:
+https://wordpress.org/plugins/the-events-calendar/
+
+{[}18{]} FLAVOR, Starter Sites. Starter Templates. Rank Math SEO. In:
+\emph{WordPress Plugin Directory} {[}online{]}. San Francisco (CA):
+WordPress Foundation, 2024 {[}cit. 2026-03-27{]}. Dostupné z:
+https://wordpress.org/plugins/seo-by-rank-math/
+
+{[}19{]} YOAST BV. Yoast SEO. In: \emph{WordPress Plugin Directory}
+{[}online{]}. San Francisco (CA): WordPress Foundation, 2024 {[}cit.
+2026-03-27{]}. Dostupné z: https://wordpress.org/plugins/wordpress-seo/
+
+{[}20{]} FLAVOR, Developer. WP Super Cache. In: \emph{WordPress Plugin
+Directory} {[}online{]}. San Francisco (CA): WordPress Foundation, 2024
+{[}cit. 2026-03-27{]}. Dostupné z:
+https://wordpress.org/plugins/wp-super-cache/
+
+{[}21{]} FLAVOR, Developer. Smush. In: \emph{WordPress Plugin Directory}
+{[}online{]}. San Francisco (CA): WordPress Foundation, 2024 {[}cit.
+2026-03-27{]}. Dostupné z: https://wordpress.org/plugins/wp-smushit/
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Příloha A -- Kopie zadání
+práce}\label{pux159uxedloha-a-kopie-zaduxe1nuxed-pruxe1ce}
+
+\textbf{Jméno a příjmení:} Lukáš Bejček \textbf{Studijní obor:}
+Informační technologie \textbf{Název tématu:} Webová prezentace
+fotbalového klubu s databází zápasů a správou obsahu ve WordPressu
+
+\subsubsection{Cíl práce}\label{cuxedl-pruxe1ce}
+
+Cílem práce je vytvořit moderní informační web pro fotbalový klub, který
+bude přehledně zobrazovat zápasy, týmy, historii, partnery a aktuální
+informace o dění v klubu. Web bude postaven na vlastním grafickém návrhu
+vytvořeném ve Figmě a nasazeném na systému WordPress s využitím vlastní
+šablony založené na Bootstrapu 5. Web bude připraven pro správu obsahu
+vedením klubu nebo pověřeným administrátorem.
+
+\subsubsection{Zásady pro
+vypracování}\label{zuxe1sady-pro-vypracovuxe1nuxed}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Vytvoření grafického návrhu ve Figmě. Návrh musí obsahovat samostatné
+  varianty pro desktop i mobilní zařízení, včetně hlavní stránky i
+  podstránek. Grafický návrh musí zahrnovat také vizuální podobu
+  použitých pluginů a komponent, aby zapadaly do celkového designu
+  stránky.
+\item
+  Tvorba šablony v Bootstrapu 5 a nasazení ve WordPressu. Použití
+  souborů header.php, footer.php, single.php, archive.php,
+  functions.php, styles.css, atd.
+\item
+  Zápasy a týmy jako vlastní typy obsahu
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    Vytvoření typu příspěvku „Zápas'' s poli: datum, čas, tým, soupeř,
+    výsledek, střelci, sezóna, status zápasu
+  \item
+    Vytvoření typu příspěvku „Tým'' s poli: název, sezóna, trenér,
+    asistenti, seznam hráčů
+  \item
+    Pluginy: Custom Post Type UI, Advanced Custom Fields, Pods
+    (volitelné)
+  \end{enumerate}
+\item
+  Filtrování a výpis podle sezóny nebo týmů
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    Možnost filtrování zápasů a týmů podle ročníku, stavu, nebo
+    kategorie
+  \item
+    Pluginy: FacetWP, Search \& Filter Pro
+  \end{enumerate}
+\item
+  Kalendářový modul
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    Implementace kalendáře, který umožní vizuální zobrazení
+    nadcházejících i odehraných zápasů
+  \item
+    Možnost filtrování podle týmů, kategorií nebo sezón
+  \item
+    Pluginy: The Events Calendar, Event Organiser, Simple Calendar
+  \end{enumerate}
+\item
+  Galerie
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    Vytvoření galerie s možností seskupení podle názvu nebo roku
+  \item
+    Pluginy: Modula, Envira Gallery, NextGEN Gallery
+  \end{enumerate}
+\item
+  Optimalizace výkonu a načítání
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    Cache (mezipaměť) -- ukládání stránek do mezipaměti pro rychlejší
+    načítání
+  \item
+    Lazy loading -- odložené načítání obrázků a externího obsahu až při
+    posunu stránky
+  \item
+    Minifikace -- zmenšení velikosti CSS a JS souborů
+  \item
+    Optimalizace obrázků -- komprese a správný formát (např. WebP)
+  \item
+    Kombinace CSS/JS -- snížení počtu HTTP požadavků
+  \item
+    Pluginy: WP Super Cache, LiteSpeed Cache, Smush
+  \end{enumerate}
+\item
+  SEO a analytika
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    Pluginy: Yoast SEO, Rank Math, propojení s Google Analytics
+  \end{enumerate}
+\item
+  Hosting a zabezpečení
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    Hosting, HTTPS certifikát, ochrana proti útokům a zálohování
+  \end{enumerate}
+\item
+  Uživatelské role a oprávnění
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    Administrátor, přispěvatel -- různá oprávnění pro správu obsahu
+  \item
+    Pluginy: User Role Editor, Members
+  \end{enumerate}
+\item
+  Odevzdávané výstupy
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    Podrobná dokumentace všech použitých pluginů
+  \item
+    Zdrojový kód WordPress šablony a popis všech jejích úprav
+  \item
+    Funkční web (na hostingu nebo jako lokalizovaný projekt s návodem ke
+    spuštění a veškerými přístupovými údaji)
+  \end{enumerate}
+\end{enumerate}
+
+\textbf{Rozsah dokumentace:} 15--50 stran \textbf{Forma MP:}
+elektronická
+
+\subsection{Příloha B -- Přístupové
+údaje}\label{pux159uxedloha-b-pux159uxedstupovuxe9-uxfadaje}
+
+\begin{quote}
+\textbf{Upozornění:} Tyto údaje jsou určeny výhradně pro lokální
+testování. Při nasazení na produkční server je nutné zvolit silná a
+unikátní hesla.
+\end{quote}
+
+\subsubsection{WordPress administrace}\label{wordpress-administrace}
+
+\textbf{URL:} \texttt{http://localhost/fotbal\_club/wp-admin/}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1395}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.4419}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1628}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2558}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Role
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Uživatelské jméno
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Heslo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Oprávnění
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Administrátor & \texttt{admin} & \texttt{admin123} & Plný přístup k
+celému WordPressu \\
+Správce obsahu & \texttt{redaktor} & \texttt{redaktor123} & Editace CPT,
+nahrávání médií, bez nastavení WP a pluginů \\
+\end{longtable}
+}
+
+\textbf{Administrátor} má plný přístup ke všem funkcím WordPressu včetně
+nastavení, pluginů, témat a všech typů obsahu.
+
+\textbf{Správce obsahu} může: - Přidávat, editovat a mazat zápasy, týmy,
+hráče, galerie, sponzory a kontakty - Nahrávat obrázky a média -
+Spravovat kategorie a taxonomie
+
+Správce obsahu \textbf{nemůže}: - Měnit nastavení WordPressu -
+Instalovat nebo mazat pluginy a témata - Spravovat uživatelské účty
+
+\subsubsection{Databáze (MySQL -- XAMPP)}\label{databuxe1ze-mysql-xampp}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Parametr & Hodnota \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Server & \texttt{localhost} \\
+Port & \texttt{3306} \\
+Uživatel & \texttt{root} \\
+Heslo & \emph{(prázdné -- výchozí XAMPP)} \\
+Databáze & \texttt{slavoj\_myto} \\
+phpMyAdmin & \texttt{http://localhost/phpmyadmin/} \\
+\end{longtable}
+}
