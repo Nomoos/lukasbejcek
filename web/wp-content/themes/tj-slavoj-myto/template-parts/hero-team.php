@@ -1,13 +1,22 @@
 <?php
 /**
- * Template part: hero-team.php
- * Modrý pruh s logem a volitelným názvem týmu.
- * Voláno přes get_template_part('template-parts/hero', 'team', $args).
+ * template-parts/hero-team.php — HERO PRUH S LOGEM TÝMU
+ * =======================================================
+ * Dekorativní komponenta — modrý pruh s logem klubu a volitelným názvem.
  *
- * Očekávané $args:
- *   'tym_nazev' => string – zobrazovaný název týmu (prázdný = skrytý popis)
+ * Voláno přes:
+ *   get_template_part('template-parts/hero', 'team', array('tym_nazev' => 'Muži A'));
+ *
+ * Toto je příklad JEDNODUCHÉ znovupoužitelné komponenty.
+ * Přijímá jen 1 parametr (tym_nazev) a vykreslí dekorativní pruh.
+ *
+ * POZN: V aktuálním stavu webu se tento template part NEPOUŽÍVÁ —
+ * šablony archive-zapas.php a archive-galerie.php mají podobný pruh
+ * přímo v sobě (inline HTML). V budoucnu by se dal nahradit voláním
+ * tohoto template partu (DRY princip = Don't Repeat Yourself).
  */
 
+// Načtení názvu týmu z $args (výchozí = prázdný string = nezobrazí se)
 $tym_nazev = isset($args['tym_nazev']) ? $args['tym_nazev'] : '';
 ?>
 <div class="team-hero">

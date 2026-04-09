@@ -1,10 +1,35 @@
 <?php
 /**
- * Template part: card-match.php
- * Karta jednoho zápasu – fotbalový styl.
- * Voláno přes get_template_part('template-parts/card', 'match', $args).
+ * template-parts/card-match.php — KARTA ZÁPASU (znovupoužitelná komponenta)
+ * ===========================================================================
+ * Toto je TEMPLATE PART — znovupoužitelný kousek HTML,
+ * volaný z více šablon přes:
+ *   get_template_part('template-parts/card', 'match', $args);
+ *
+ * POUŽÍVÁ SE V:
+ * - archive-zapas.php (výpis všech zápasů)
+ * - single-tym.php (příští zápas v detailu týmu)
+ *
+ * PŘEDÁNÍ DAT:
+ * Třetí parametr get_template_part() ($args) je asociativní pole.
+ * Uvnitř tohoto souboru je dostupné jako $args.
+ * Níže si z něj vytáhneme jednotlivé hodnoty s fallbacky.
+ *
+ * RESPONSIVE DESIGN (2 layouty):
+ * - MOBIL: každý tým na vlastním řádku + skóre vpravo
+ * - DESKTOP: tým | skóre | tým na jednom řádku (přes CSS d-none d-sm-block)
+ *
+ * BEM POJMENOVÁNÍ:
+ * match-card          = Block (hlavní komponenta)
+ * match-card__score   = Element (část komponenty)
+ * match-card--win     = Modifier (varianta komponenty)
  */
 
+/**
+ * Čtení hodnot z $args s výchozími hodnotami.
+ * isset() kontroluje, zda klíč existuje → zabrání PHP notice.
+ * Ternární operátor: isset(x) ? x : výchozí_hodnota
+ */
 $datum      = isset($args['datum'])      ? $args['datum']      : '';
 $datum_fmt  = isset($args['datum_fmt'])  ? $args['datum_fmt']  : '';
 $cas        = isset($args['cas'])        ? $args['cas']        : '';
@@ -21,9 +46,15 @@ $lbl_pravy  = isset($args['lbl_pravy'])  ? $args['lbl_pravy']  : 'Hosté';
 $home_cls   = isset($args['home_cls'])   ? $args['home_cls']   : 'match-card__team match-card__team--home';
 $away_cls   = isset($args['away_cls'])   ? $args['away_cls']   : 'match-card__team match-card__team--away';
 
-$je_odehrany = !empty($skore);
+$je_odehrany = !empty($skore); // Pokud je skóre vyplněné = zápas proběhl
 
-// Skóre pro mobilní inline zobrazení
+/**
+ * CSS TŘÍDY PRO MOBILNÍ SKÓRE
+ *
+ * strpos() = najde pozici podřetězce v řetězci (false = nenalezen)
+ * Kontrolujeme, zda score_cls obsahuje '--win', '--loss' nebo '--draw',
+ * abychom přidali odpovídající mobilní třídy (pro barevné zvýraznění).
+ */
 $score_home_cls = 'match-card__score-inline';
 $score_away_cls = 'match-card__score-inline';
 if ($je_odehrany && strpos($score_cls, '--win') !== false) {
@@ -40,7 +71,11 @@ if ($je_odehrany && strpos($score_cls, '--win') !== false) {
     $score_away_cls .= ' match-card__score-inline--upcoming';
 }
 
-// Rozbij skóre na dvě čísla pro mobilní zobrazení
+/**
+ * Rozbití skóre "3:1" na dvě čísla pro mobilní zobrazení.
+ * explode(':', '3:1') → ['3', '1']
+ * trim() = odstraní mezery kolem čísla
+ */
 $skore_domaci = '';
 $skore_hoste  = '';
 if ($je_odehrany && strpos($skore, ':') !== false) {
