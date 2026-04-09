@@ -1,4 +1,29 @@
 <?php
+/*
+ * =====================================================================
+ * HLAVIČKA PLUGINU (Plugin Header)
+ * =====================================================================
+ *
+ * Tento komentářový blok je POVINNÝ pro každý WordPress plugin.
+ * WordPress ho čte při procházení složky wp-content/plugins/ a podle
+ * něj zobrazuje plugin v administraci (Pluginy → Nainstalované pluginy).
+ *
+ * Je to obdobný princip jako hlavička v style.css u tématu — tam WordPress
+ * čte komentář na začátku souboru, aby zjistil název tématu, autora atd.
+ * Rozdíl: u tématu je hlavička v style.css, u pluginu v hlavním PHP souboru.
+ *
+ * Povinné pole:
+ *   - „Plugin Name"  = název zobrazený v administraci
+ * Volitelná pole:
+ *   - „Description"  = popis pluginu
+ *   - „Version"      = verze (pro přehled a aktualizace)
+ *   - „Author"       = autor
+ *   - „License"      = licence (WordPress ekosystém používá GPL)
+ *   - „Text Domain"  = identifikátor pro překlady (i18n)
+ *
+ * Bez tohoto bloku WordPress plugin vůbec nerozpozná a nezobrazí ho.
+ */
+
 /**
  * Plugin Name:       Slavoj Custom Fields
  * Plugin URI:        https://github.com/Nomoos/lukasbejcek
@@ -15,6 +40,23 @@
  * editovat zdrojový kód.
  */
 
+/*
+ * =====================================================================
+ * BEZPEČNOSTNÍ OCHRANA PROTI PŘÍMÉMU PŘÍSTUPU
+ * =====================================================================
+ *
+ * Konstanta ABSPATH je definována v souboru wp-load.php, který WordPress
+ * načítá při svém startu. Pokud ABSPATH neexistuje, znamená to, že někdo
+ * přistupuje k tomuto PHP souboru přímo přes URL (např. zadáním
+ * example.com/wp-content/plugins/slavoj-custom-fields/slavoj-custom-fields.php).
+ *
+ * To je bezpečnostní riziko — soubor by se spustil mimo WordPress a bez
+ * jeho ochranných mechanismů (autentizace, nonce, sanitizace...).
+ * Proto ukončíme běh skriptu funkcí exit;
+ *
+ * Tuto kontrolu by měl obsahovat KAŽDÝ PHP soubor pluginu i tématu.
+ * Je to standardní bezpečnostní vzor WordPress ekosystému.
+ */
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -26,6 +68,27 @@ if (!defined('ABSPATH')) {
 // ADMINISTRAČNÍ NÁSTROJOVÁ STRÁNKA
 // =====================================================================
 
+/*
+ * Registrace vlastní stránky v admin menu WordPressu.
+ *
+ * WordPress má systém háčků (hooks) — funkci „zavěsíme" na akci 'admin_menu'
+ * pomocí add_action(). WordPress pak naši funkci zavolá ve chvíli, kdy
+ * sestavuje menu v administraci.
+ *
+ * add_submenu_page() přidá podmenu pod existující hlavní položku.
+ * Parametry:
+ *   1. 'tools.php'               = rodičovská stránka (Nástroje)
+ *   2. 'Slavoj – Průvodce...'    = titulek stránky v <title>
+ *   3. 'Slavoj nastavení'        = text zobrazený v menu
+ *   4. 'manage_options'           = capability (oprávnění) — jen administrátor
+ *   5. 'slavoj-setup'            = slug stránky (v URL: ?page=slavoj-setup)
+ *   6. 'slavoj_cf_setup_page'    = callback funkce, která vykreslí obsah stránky
+ *
+ * Alternativy: add_menu_page() přidá zcela novou hlavní položku menu,
+ * add_options_page() přidá pod Nastavení, add_management_page() pod Nástroje.
+ * My používáme add_submenu_page() pod Nástroje (tools.php), protože naše
+ * stránka je nástrojová (seedování dat), ne konfigurační.
+ */
 function slavoj_cf_admin_menu() {
     add_submenu_page(
         'tools.php',
@@ -38,6 +101,23 @@ function slavoj_cf_admin_menu() {
 }
 add_action('admin_menu', 'slavoj_cf_admin_menu');
 
+/*
+ * Callback funkce, která vykreslí obsah admin stránky „Slavoj nastavení".
+ *
+ * Tato funkce generuje HTML přímo — WordPress ji zavolá, když administrátor
+ * klikne na odkaz v menu. Stránka obsahuje:
+ *   - Přehledové tabulky registrovaných CPT a taxonomií (informativní)
+ *   - Formuláře s tlačítky pro seedování dat (taxonomie, ukázková data, stránky)
+ *   - Nápovědu pro správu obsahu
+ *
+ * Třída CSS „wrap" je standardní WordPress třída pro admin stránky —
+ * zajistí správné odsazení a typografii v admin rozhraní.
+ *
+ * Formuláře používají wp_nonce_field() pro ochranu proti CSRF útokům
+ * a check_admin_referer() pro ověření nonce tokenu při odeslání.
+ * Nonce (= number used once) je bezpečnostní token, který WordPress
+ * generuje a ověřuje, aby zabránil podvrhnutým požadavkům.
+ */
 function slavoj_cf_setup_page() {
     ?>
     <div class="wrap">
@@ -198,6 +278,29 @@ function slavoj_cf_setup_page() {
 // SEED – vytvoření výchozích hodnot taxonomií
 // =====================================================================
 
+/*
+ * Seedovací funkce pro naplnění taxonomií výchozími hodnotami.
+ *
+ * Taxonomie ve WordPressu jsou klasifikační systémy — podobně jako
+ * kategorie a štítky u běžných příspěvků. My máme vlastní taxonomie
+ * (sezóna, kategorie-tymu, stav-zapasu, pozice-hrace).
+ *
+ * Taxonomie se registrují v functions.php tématu (register_taxonomy()),
+ * ale samotné hodnoty (termy) je třeba vytvořit zvlášť. Tato funkce
+ * to dělá automaticky.
+ *
+ * Vzor pro každý term:
+ *   1. term_exists($slug, 'taxonomie') — zkontroluje, zda term již existuje
+ *      (vrací ID termu nebo null). Tím předejdeme duplicitám.
+ *   2. wp_insert_term($nazev, 'taxonomie', array('slug' => $slug))
+ *      — vloží nový term do databáze. Parametry:
+ *        - $nazev    = zobrazovaný název (např. 'Muži A')
+ *        - taxonomie = do které taxonomie patří (např. 'kategorie-tymu')
+ *        - slug      = URL-přátelský identifikátor (např. 'muzi-a')
+ *
+ * Tento vzor „zkontroluj a pak vlož" (check-then-insert) je ve WordPress
+ * pluginech velmi běžný a zabraňuje chybám při opakovaném spuštění.
+ */
 function slavoj_cf_seed_taxonomies() {
     // Sezóny
     $sezony = array('2025/26', '2024/25', '2023/24');
@@ -249,13 +352,48 @@ function slavoj_cf_seed_taxonomies() {
     }
 }
 
-// Spustit seed při aktivaci pluginu
+/*
+ * register_activation_hook() — spustí zadanou funkci JEDNOU při aktivaci pluginu.
+ *
+ * Když administrátor v menu Pluginy klikne na „Aktivovat", WordPress zavolá
+ * funkci slavoj_cf_seed_taxonomies(). Tím se automaticky vytvoří výchozí
+ * hodnoty taxonomií, aniž by administrátor musel ručně klikat na tlačítko
+ * na stránce nastavení.
+ *
+ * __FILE__ = magická PHP konstanta odkazující na aktuální soubor.
+ * WordPress ji potřebuje, aby věděl, ke kterému pluginu hook patří.
+ *
+ * Existuje i register_deactivation_hook() pro úklid při deaktivaci
+ * a register_uninstall_hook() pro mazání dat při úplném odstranění pluginu.
+ */
 register_activation_hook(__FILE__, 'slavoj_cf_seed_taxonomies');
 
 // =====================================================================
 // ROZŠÍŘENÍ SLOUPCŮ V ADMIN PŘEHLEDU – ZÁPASY
 // =====================================================================
 
+/*
+ * Vlastní sloupce v admin přehledu příspěvků.
+ *
+ * Ve výchozím stavu WordPress v přehledu (Zápasy → Všechny zápasy) zobrazuje
+ * jen základní sloupce: Název, Datum. Pro správce webu je ale užitečné vidět
+ * rovnou i datum zápasu, tým a skóre — bez nutnosti otevírat každý záznam.
+ *
+ * Systém funguje ve dvou krocích:
+ *
+ * KROK 1 — Definice sloupců (filtr 'manage_{post_type}_posts_columns'):
+ *   WordPress předá pole stávajících sloupců ($columns) a my vrátíme
+ *   upravené pole s novými sloupci. Klíč = identifikátor, hodnota = záhlaví.
+ *   Nové sloupce vkládáme za sloupec 'title' průchodem přes foreach.
+ *
+ * KROK 2 — Naplnění daty (akce 'manage_{post_type}_posts_custom_column'):
+ *   Pro KAŽDÝ řádek tabulky WordPress zavolá callback funkci s parametry
+ *   $column (identifikátor sloupce) a $post_id (ID příspěvku).
+ *   Podle $column rozhodneme, jakou hodnotu zobrazíme — čteme ji pomocí
+ *   get_post_meta() pro vlastní pole nebo get_the_terms() pro taxonomie.
+ *
+ * Důležité: výstup vždy escapujeme pomocí esc_html() — ochrana proti XSS.
+ */
 function slavoj_zapas_admin_columns($columns) {
     $new = array();
     foreach ($columns as $key => $title) {
@@ -268,8 +406,14 @@ function slavoj_zapas_admin_columns($columns) {
     }
     return $new;
 }
+// Filtr manage_{post_type}_posts_columns — název filtru obsahuje slug CPT ('zapas').
+// Pro jiný CPT by to bylo manage_hrac_posts_columns, manage_tym_posts_columns atd.
 add_filter('manage_zapas_posts_columns', 'slavoj_zapas_admin_columns');
 
+// Callback pro naplnění vlastních sloupců daty — volá se pro každý řádek tabulky.
+// get_post_meta($post_id, 'klíč', true) — načte hodnotu vlastního pole.
+//   Třetí parametr true = vrátí jednu hodnotu (string), false = pole všech hodnot.
+// get_the_terms($post_id, 'taxonomie') — načte přiřazené termy dané taxonomie.
 function slavoj_zapas_admin_column_data($column, $post_id) {
     if ($column === 'datum_zapasu') {
         $datum = get_post_meta($post_id, 'datum_zapasu', true);
@@ -295,6 +439,8 @@ add_action('manage_zapas_posts_custom_column', 'slavoj_zapas_admin_column_data',
 // ROZŠÍŘENÍ SLOUPCŮ V ADMIN PŘEHLEDU – HRÁČI
 // =====================================================================
 
+// Stejný princip jako u zápasů výše — definice sloupců + callback pro data.
+// U hráčů zobrazujeme: číslo dresu, pozici (z taxonomie) a tým (z meta pole).
 function slavoj_hrac_admin_columns($columns) {
     $new = array();
     foreach ($columns as $key => $title) {
@@ -330,6 +476,8 @@ add_action('manage_hrac_posts_custom_column', 'slavoj_hrac_admin_column_data', 1
 // ROZŠÍŘENÍ SLOUPCŮ V ADMIN PŘEHLEDU – TÝMY
 // =====================================================================
 
+// Stejný princip — u týmů zobrazujeme trenéra, asistenta, zdravotníka a počet hráčů.
+// Callback používá switch místo if — je přehlednější pro více sloupců se stejnou logikou.
 function slavoj_tym_admin_columns($columns) {
     $new = array();
     foreach ($columns as $key => $title) {
@@ -365,6 +513,24 @@ add_action('manage_tym_posts_custom_column', 'slavoj_tym_admin_column_data', 10,
 // ŘAZENÍ SLOUPCŮ V ADMIN PŘEHLEDU – ZÁPASY PODLE DATA
 // =====================================================================
 
+/*
+ * Řaditelné (sortable) sloupce — kliknutím na záhlaví se tabulka seřadí.
+ *
+ * Ve výchozím stavu jsou řaditelné jen standardní sloupce (Název, Datum).
+ * Pro vlastní sloupce musíme:
+ *
+ * 1. Filtr 'manage_edit-{post_type}_sortable_columns' — řekne WordPressu,
+ *    že sloupec je klikatelný. Klíč = identifikátor sloupce, hodnota = query var.
+ *
+ * 2. Akce 'pre_get_posts' — WordPress sám neví, JAK má řadit podle vlastního
+ *    pole (meta). V pre_get_posts zachytíme hlavní dotaz a nastavíme:
+ *    - meta_key = podle kterého meta pole řadit
+ *    - orderby = 'meta_value' (textově) nebo 'meta_value_num' (číselně)
+ *
+ * pre_get_posts je velmi důležitý hook — umožňuje upravit WP_Query PŘED
+ * provedením SQL dotazu. Kontrolujeme is_admin() a is_main_query(), abychom
+ * neovlivnili frontendové dotazy ani vedlejší WP_Query instance.
+ */
 function slavoj_zapas_sortable_columns($columns) {
     $columns['datum_zapasu'] = 'datum_zapasu';
     return $columns;
@@ -385,6 +551,30 @@ add_action('pre_get_posts', 'slavoj_zapas_orderby');
 // =====================================================================
 // DROPDOWN FILTRY V ADMIN PŘEHLEDU
 // =====================================================================
+
+/*
+ * Dropdown filtry nad seznamem příspěvků v administraci.
+ *
+ * Hook 'restrict_manage_posts' se spouští při vykreslování filtrační lišty
+ * nad tabulkou příspěvků v admin přehledu. WordPress automaticky předá
+ * $post_type (typ příspěvku, který se právě prohlíží).
+ *
+ * Systém filtrování funguje ve dvou krocích:
+ *
+ * KROK 1 — Vykreslení dropdown <select> prvků (restrict_manage_posts):
+ *   Pro každou taxonomii načteme termy pomocí get_terms() a vykreslíme
+ *   HTML <select> s <option> prvky. Výběr uživatele se odešle jako
+ *   GET parametr v URL (např. ?sezona=2025-26&kategorie-tymu=muzi-a).
+ *
+ * KROK 2 — Úprava databázového dotazu (pre_get_posts):
+ *   Taxonomy filtry WordPress zpracuje sám (protože naše taxonomie mají
+ *   show_admin_column => true). Pro meta pole (jako tym_slug u hráčů)
+ *   musíme dotaz upravit ručně přes meta_query v pre_get_posts.
+ *
+ * sanitize_text_field() — vyčistí vstup od nebezpečných znaků (bezpečnost).
+ * wp_unslash() — odstraní lomítka přidaná PHP (magic quotes kompatibilita).
+ * esc_attr() / esc_html() — escapování výstupu do HTML (ochrana proti XSS).
+ */
 
 /**
  * Přidá dropdown filtry nad seznamem příspěvků v admin přehledu.
@@ -447,6 +637,13 @@ add_action( 'restrict_manage_posts', 'slavoj_admin_filters' );
 /**
  * Vykreslí dropdown pro filtrování hráčů podle tym_slug.
  * Načte všechny publikované týmy a zobrazí je jako volby.
+ *
+ * Tento filtr je speciální případ — hráči jsou propojeni s týmy přes
+ * meta pole 'tym_slug' (ne přes taxonomii), proto nemůžeme použít
+ * standardní taxonomy dropdown. Musíme dropdown sestavit ručně z CPT 'tym'.
+ *
+ * Řazení týmů respektuje kanonické pořadí z slavoj_kategorie_poradi()
+ * (Muži A, Muži B, Dorost...) pomocí usort() s vlastní porovnávací funkcí.
  */
 function slavoj_admin_filter_tym_slug() {
     $tymy = get_posts( array(
@@ -493,7 +690,19 @@ function slavoj_admin_filter_tym_slug() {
 }
 
 /**
- * Zpracuje taxonomy dropdown filtry a meta filtr tym_slug v admin WP_Query.
+ * Zpracuje meta filtr tym_slug v admin WP_Query.
+ *
+ * Tato funkce zachytí hlavní dotaz (pre_get_posts) a pokud uživatel
+ * vybral tým v dropdownu, přidá podmínku meta_query — WordPress pak
+ * v SQL dotazu hledá jen hráče s odpovídajícím meta polem tym_slug.
+ *
+ * meta_query je pole podmínek pro filtrování podle custom fields:
+ *   - 'key'     = název meta pole v databázi
+ *   - 'value'   = hledaná hodnota
+ *   - 'compare' = operátor porovnání ('=', '!=', 'LIKE', 'IN' atd.)
+ *
+ * Kontrola is_admin() + is_main_query() zajišťuje, že neovlivníme
+ * frontendové šablony ani vedlejší dotazy (widgety, menu apod.).
  */
 function slavoj_admin_filter_query( $query ) {
     if ( ! is_admin() || ! $query->is_main_query() ) {
@@ -528,6 +737,10 @@ add_action( 'pre_get_posts', 'slavoj_admin_filter_query' );
 // ŘAZENÍ SLOUPCŮ – HRÁČI PODLE ČÍSLA DRESU
 // =====================================================================
 
+// Stejný princip jako u řazení zápasů výše.
+// U čísla dresu používáme 'meta_value_num' (číselné řazení), protože
+// číslo dresu je číslo — 'meta_value' by řadilo textově (1, 10, 11, 2...).
+// U týmu řadíme textově ('meta_value'), protože tym_slug je řetězec.
 function slavoj_hrac_sortable_columns( $columns ) {
     $columns['cislo']    = 'cislo';
     $columns['tym_hrac'] = 'tym_hrac';
@@ -557,6 +770,28 @@ add_action( 'pre_get_posts', 'slavoj_hrac_orderby' );
 // =====================================================================
 // SEED – ukázková data pro testování (extrahována z original/)
 // =====================================================================
+
+/*
+ * Seedovací funkce pro naplnění webu ukázkovými daty.
+ *
+ * Při vývoji WordPress webu potřebujeme testovací data, abychom mohli
+ * kontrolovat, jak šablony zobrazují obsah. Tato funkce programově
+ * vytváří záznamy zápasů, týmů, hráčů, kontaktů, galerií a aktualit.
+ *
+ * Pro každý záznam se používá stejný vzor:
+ *   1. slavoj_post_exists() — zkontroluje, zda záznam již existuje
+ *   2. wp_insert_post() — vloží nový příspěvek (záznam) do databáze
+ *      Parametry: post_title, post_type (slug CPT), post_status ('publish')
+ *      Vrací: ID nového příspěvku nebo WP_Error při chybě
+ *   3. update_post_meta() — uloží vlastní pole (custom fields) k příspěvku
+ *      Parametry: $post_id, 'název_pole', 'hodnota'
+ *   4. wp_set_object_terms() — přiřadí příspěvek k termům taxonomie
+ *      Parametry: $post_id, 'slug_termu', 'název_taxonomie'
+ *
+ * Data níže jsou reálné údaje extrahované z původního webu (original/).
+ * Pole s daty (arrays) jsou záměrně ponechány bez komentářů — jsou to
+ * čistě datové struktury a jejich obsah je zřejmý z klíčů.
+ */
 
 /**
  * Vytvoří ukázková data (zápasy, tým, hráče, kontakty, galerie) pro testování.
@@ -1013,6 +1248,22 @@ function slavoj_cf_seed_demo_data() {
 // SEED – vytvoření WordPress stránek se šablonami tématu
 // =====================================================================
 
+/*
+ * Vytvoření navigačních stránek WordPressu.
+ *
+ * WordPress rozlišuje příspěvky (posts) a stránky (pages). Stránky jsou
+ * statický obsah (O nás, Kontakty...), příspěvky jsou chronologický obsah.
+ * Každá sekce našeho webu (Zápasy, Týmy, Galerie...) potřebuje svou stránku.
+ *
+ * Šablonu stránky přiřadíme přes meta pole '_wp_page_template' — WordPress
+ * pak místo výchozí page.php použije zadanou šablonu (např. page-zapasy.php).
+ * Toto je stejný mechanismus jako výběr šablony v editoru stránky v admin UI
+ * (pravý panel → Atributy stránky → Šablona).
+ *
+ * Stránka 'Domů' nemá explicitní šablonu — WordPress automaticky použije
+ * front-page.php, pokud je stránka nastavena jako úvodní v Nastavení → Čtení.
+ */
+
 /**
  * Vytvoří WordPress stránky (post_type = page) pro každou sekci webu
  * a přiřadí jim správnou šablonu tématu.
@@ -1086,8 +1337,24 @@ function slavoj_cf_seed_pages() {
     return $created;
 }
 
+/*
+ * =====================================================================
+ * POMOCNÉ FUNKCE
+ * =====================================================================
+ */
+
 /**
  * Pomocná funkce – zkontroluje, zda příspěvek s daným titulem a typem již existuje.
+ *
+ * Používá WP_Query s optimalizačními parametry:
+ *   - no_found_rows => true  — přeskočí počítání celkových výsledků (zrychlení)
+ *   - update_post_meta_cache => false — nenačítá meta data (nepotřebujeme je)
+ *   - update_post_term_cache => false — nenačítá taxonomie (nepotřebujeme je)
+ *   - posts_per_page => 1    — stačí najít jeden výsledek
+ *   - post_status => 'any'   — hledá ve všech stavech (i rozpracované, koš...)
+ *
+ * Tato optimalizace je důležitá, protože funkce se volá pro KAŽDÝ záznam
+ * v seed datech — bez ní by seedování bylo výrazně pomalejší.
  *
  * @param string $title     Titulek příspěvku.
  * @param string $post_type Typ příspěvku (CPT slug nebo 'post').
