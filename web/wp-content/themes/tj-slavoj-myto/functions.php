@@ -1,91 +1,213 @@
 <?php
 /**
- * TJ Slavoj Mýto - functions.php
- * Registrace menu, CPT, taxonomií, meta boxů a pomocných funkcí
+ * functions.php — MOZEK ŠABLONY
+ * ==============================
+ * Toto je nejdůležitější soubor celé šablony. WordPress ho načte
+ * automaticky při aktivaci tématu.
+ *
+ * CO FUNCTIONS.PHP DĚLÁ:
+ * 1. Registruje navigační menu (Hlavní menu, Patičkové menu)
+ * 2. Zapíná funkce tématu (náhledové obrázky, <title> tag, HTML5...)
+ * 3. Načítá CSS styly a JS skripty (Bootstrap + vlastní)
+ * 4. Registruje Custom Post Types — vlastní typy obsahu (Zápasy, Týmy, Hráči...)
+ * 5. Registruje Taxonomie — způsoby třídění obsahu (Sezóna, Kategorie týmu...)
+ * 6. Definuje Meta Boxy — vlastní pole v editoru (datum zápasu, skóre...)
+ * 7. Pomocné funkce pro šablony
+ *
+ * DŮLEŽITÝ PRINCIP:
+ * WordPress funguje na systému "hooks" (háčků):
+ *   add_action('název_háčku', 'moje_funkce')  → spustí funkci ve správný moment
+ *   add_filter('název_filtru', 'moje_funkce') → upraví data procházející filtrem
+ *
+ * Příklad: add_action('after_setup_theme', 'slavoj_menus')
+ *   = "Až WordPress dokončí načtení tématu, zavolej funkci slavoj_menus()"
  */
 
-// Výchozí URL embedu mapy (OpenStreetMap – Mýto, okr. Rokycany)
+/**
+ * define() = definuje PHP konstantu — hodnotu, která se nikdy nezmění.
+ * TJSM_DEFAULT_MAP_URL = výchozí URL pro embed mapy z OpenStreetMap.
+ * Používá se na stránce Kontakty, pokud admin nenastaví vlastní URL.
+ */
 define( 'TJSM_DEFAULT_MAP_URL', 'https://www.openstreetmap.org/export/embed.html?bbox=13.710%2C49.748%2C13.750%2C49.760&layer=mapnik&marker=49.7541%2C13.7308' );
 
 // =====================================================================
-// SETUP TÉMATU
+// SETUP TÉMATU — registrace menu a zapnutí funkcí
 // =====================================================================
 
+/**
+ * Registrace navigačních menu.
+ *
+ * register_nav_menus() říká WordPressu:
+ * "Moje šablona podporuje tato menu, admin je může nastavit
+ *  v Vzhled → Menu a přiřadit k těmto lokacím."
+ *
+ * Klíč pole   = identifikátor lokace (používáme v wp_nav_menu())
+ * Hodnota     = popisek viditelný v administraci
+ */
 function slavoj_menus() {
     register_nav_menus(array(
-        'primary'   => 'Hlavní menu',
-        'footer'    => 'Patičkové menu',
-        /* Zpětná kompatibilita se starším názvem */
-        'main_menu' => 'Hlavní menu (legacy)',
+        'primary'   => 'Hlavní menu',      // Navigace v hlavičce
+        'footer'    => 'Patičkové menu',    // Navigace v patičce
+        'main_menu' => 'Hlavní menu (legacy)', // Starší název, zpětná kompatibilita
     ));
 }
 add_action('after_setup_theme', 'slavoj_menus');
+// ↑ Háček 'after_setup_theme' = spustí se po načtení tématu,
+//   ideální moment pro registraci menu a theme supports.
 
+/**
+ * Zapnutí funkcí (features) tématu.
+ *
+ * WordPress má mnoho volitelných funkcí, které musí šablona
+ * explicitně zapnout přes add_theme_support().
+ */
 function slavoj_theme_support() {
+    // Povolí náhledové obrázky (Featured Image) u příspěvků a stránek
     add_theme_support('post-thumbnails');
+
+    // WordPress bude sám generovat <title> tag v <head>
+    // (místo ručního psaní <title>...</title> v header.php)
     add_theme_support('title-tag');
+
+    // Použij HTML5 značky pro tyto WordPress komponenty
+    // (místo starších XHTML verzí)
     add_theme_support('html5', array('search-form', 'comment-form', 'comment-list', 'gallery', 'caption'));
+
+    // Responzivní vkládání videí (YouTube, Vimeo) — přizpůsobí se šířce
     add_theme_support('responsive-embeds');
+
+    // Vytvoří vlastní velikost obrázku pro galerii:
+    // 400×400px, true = oříznout (crop) na přesný rozměr
     add_image_size('gallery-thumb', 400, 400, true);
 }
 add_action('after_setup_theme', 'slavoj_theme_support');
 
-// Načtení stylů a skriptů
+// =====================================================================
+// NAČTENÍ STYLŮ (CSS) A SKRIPTŮ (JS)
+// =====================================================================
+
+/**
+ * Enqueue = "zařadit do fronty" — WordPress způsob načítání CSS a JS.
+ *
+ * PROČ NEPOUŽÍVÁME <link> a <script> přímo v HTML?
+ * 1. WordPress řeší pořadí načítání (závislosti)
+ * 2. Zabrání duplicitnímu načtení stejného souboru
+ * 3. Pluginy mohou přidat vlastní styly/skripty stejným způsobem
+ * 4. Vše se vypíše na správném místě (wp_head / wp_footer)
+ *
+ * wp_enqueue_style(handle, URL, závislosti, verze)
+ *   handle     = unikátní identifikátor stylu
+ *   URL        = odkaz na CSS soubor
+ *   závislosti = pole handleů, které se musí načíst PŘED tímto stylem
+ *   verze      = číslo verze (prohlížeč ví, kdy stáhnout novou verzi)
+ *
+ * wp_enqueue_script(handle, URL, závislosti, verze, v_patičce)
+ *   v_patičce  = true → načte se před </body> (lepší pro výkon)
+ */
 function slavoj_enqueue_scripts() {
+    // Načte číslo verze z hlavičky style.css (aktuálně "3.1")
     $ver = wp_get_theme()->get('Version');
 
-    // Bootstrap CSS (grid, utilities) + Bootstrap JS bundle (navbar collapse – bez custom JS)
+    // ── Bootstrap z CDN (Content Delivery Network) ──
+    // CDN = soubory servírované z nejbližšího serveru → rychlejší načtení
     wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array(), '5.3.3', true);
 
-    // Komponenty CSS – načítány zvlášť (spolehlivější než @import uvnitř main.css)
+    // ── Vlastní CSS komponenty ──
+    // get_template_directory_uri() = URL složky šablony
     $css = get_template_directory_uri() . '/assets/css/';
+
+    // Každý CSS soubor má závislost (dependency) → WP je načte ve správném pořadí.
+    // Např. header.css závisí na utilities.css → utilities se načte první.
     wp_enqueue_style('slavoj-utilities',  $css . 'utilities.css',            array('bootstrap'), $ver);
     wp_enqueue_style('slavoj-header',     $css . 'components/header.css',    array('slavoj-utilities'), $ver);
     wp_enqueue_style('slavoj-nav-mobile', $css . 'components/nav-mobile.css', array('slavoj-header'), $ver);
     wp_enqueue_style('slavoj-buttons',    $css . 'components/buttons.css',   array('slavoj-utilities'), $ver);
     wp_enqueue_style('slavoj-hero',       $css . 'components/hero.css',      array('slavoj-utilities'), $ver);
     wp_enqueue_style('slavoj-cards',      $css . 'components/cards.css',     array('slavoj-utilities'), $ver);
-    // Hlavní šablona CSS
+
+    // Hlavní CSS — závisí na VŠECH komponentách (načte se jako poslední)
     wp_enqueue_style('slavoj-main', $css . 'main.css', array('slavoj-utilities', 'slavoj-buttons', 'slavoj-cards', 'slavoj-header', 'slavoj-hero', 'slavoj-nav-mobile'), $ver);
 }
 add_action('wp_enqueue_scripts', 'slavoj_enqueue_scripts');
+// ↑ Háček 'wp_enqueue_scripts' = správný moment pro registraci stylů/skriptů.
+//   WordPress je pak vypíše v wp_head() (CSS) a wp_footer() (JS).
 
 // ──────────────────────────────────────────────────────────────────────
-// BOOTSTRAP TŘÍDY PRO wp_nav_menu() (primary lokace)
-// Přidá nav-item na <li> a nav-link na <a> – kompatibilní s Bootstrap navbar.
+// BOOTSTRAP TŘÍDY PRO wp_nav_menu()
+// ──────────────────────────────────────────────────────────────────────
+//
+// PROBLÉM: wp_nav_menu() generuje <ul><li><a>, ale Bootstrap navbar
+//   potřebuje specifické CSS třídy: nav-item na <li>, nav-link na <a>.
+//
+// ŘEŠENÍ: WordPress filtry (add_filter) nám dovolí upravit HTML výstup
+//   menu bez přepisování celého Walker třídy.
+//
+// FILTR vs AKCE:
+//   add_action = "udělej něco" (bez návratové hodnoty)
+//   add_filter = "uprav tato data a vrať je" (MUSÍ vracet hodnotu)
 // ──────────────────────────────────────────────────────────────────────
 
 /**
- * Přidá Bootstrap třídu 'nav-item' na <li> položky hlavního menu.
+ * FILTR: Přidá Bootstrap třídu 'nav-item' na každé <li> v hlavním menu.
+ *
+ * WordPress generuje menu jako: <ul><li class="menu-item"><a>...</a></li></ul>
+ * My chceme:                    <ul><li class="menu-item nav-item"><a>...</a></li></ul>
+ *
+ * Parametry filtru 'nav_menu_css_class':
+ *   $classes = pole CSS tříd na <li> (WordPress přidává vlastní: menu-item, current-menu-item...)
+ *   $item    = objekt položky menu (název, URL, rodič...)
+ *   $args    = argumenty předané do wp_nav_menu()
+ *   $depth   = úroveň vnoření (0 = hlavní, 1 = submenu...)
+ *
+ * Čísla 10, 4 v add_filter:
+ *   10 = priorita (pořadí spuštění; nižší = dříve)
+ *   4  = kolik parametrů funkce přijímá
  */
 function slavoj_bootstrap_nav_item_class( $classes, $item, $args, $depth ) {
+    // Přidej třídu pouze pro menu na lokaci 'primary' (hlavní navigace)
     if ( isset( $args->theme_location ) && 'primary' === $args->theme_location ) {
-        $classes[] = 'nav-item';
+        $classes[] = 'nav-item'; // Přidá 'nav-item' do pole tříd
     }
-    return $classes;
+    return $classes; // FILTR musí VŽDY vrátit upravenou hodnotu
 }
 add_filter( 'nav_menu_css_class', 'slavoj_bootstrap_nav_item_class', 10, 4 );
 
 /**
- * Přidá Bootstrap třídy 'nav-link' (a 'active' pro aktuální stránku) na <a>.
+ * FILTR: Přidá Bootstrap třídy na <a> odkaz v hlavním menu.
+ *
+ * Přidává:
+ *   'nav-link'      → na každý odkaz (Bootstrap styl pro navigační odkaz)
+ *   'active'        → na odkaz aktuální stránky (zvýrazní v navigaci)
+ *   'aria-current'  → přístupnost: říká čtečce "toto je aktuální stránka"
+ *
+ * Parametry filtru 'nav_menu_link_attributes':
+ *   $attrs = pole HTML atributů <a> tagu (href, class, target...)
+ *   $item  = objekt položky menu
+ *   $args  = argumenty wp_nav_menu()
+ *   $depth = úroveň vnoření
  */
 function slavoj_bootstrap_nav_link_attrs( $attrs, $item, $args, $depth ) {
     if ( isset( $args->theme_location ) && 'primary' === $args->theme_location ) {
+        // Přidej 'nav-link' k existujícím třídám (nebo vytvoř novou)
         $cls = isset( $attrs['class'] ) ? $attrs['class'] . ' nav-link' : 'nav-link';
 
         if ( ! empty( $item->classes ) ) {
+            // 'current-menu-item' = WordPress automaticky přidá na <li> aktuální stránky
             if ( in_array( 'current-menu-item', (array) $item->classes, true ) ) {
-                $cls .= ' active';
-                $attrs['aria-current'] = 'page';
+                $cls .= ' active'; // Bootstrap zvýraznění aktivního odkazu
+                $attrs['aria-current'] = 'page'; // Přístupnost: "toto je aktuální stránka"
+
+            // 'current-page-ancestor' = rodičovská stránka v hierarchii
+            // (např. jsme na /tymy/muzi-a/ → odkaz "Týmy" v menu je ancestor)
             } elseif ( array_intersect( array( 'current-page-ancestor', 'current-menu-ancestor' ), (array) $item->classes ) ) {
-                $cls .= ' active';
-                /* Ancestor: active highlight but no aria-current (not the exact page) */
+                $cls .= ' active'; // Vizuálně zvýrazníme, ale BEZ aria-current
+                // (není to přesná stránka, jen rodič/předek)
             }
         }
-        $attrs['class'] = $cls;
+        $attrs['class'] = $cls; // Nastavíme finální třídy zpět do atributů
     }
-    return $attrs;
+    return $attrs; // Vrátíme upravené atributy
 }
 add_filter( 'nav_menu_link_attributes', 'slavoj_bootstrap_nav_link_attrs', 10, 4 );
 
