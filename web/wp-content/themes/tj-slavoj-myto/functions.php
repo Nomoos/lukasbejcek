@@ -212,12 +212,37 @@ function slavoj_bootstrap_nav_link_attrs( $attrs, $item, $args, $depth ) {
 add_filter( 'nav_menu_link_attributes', 'slavoj_bootstrap_nav_link_attrs', 10, 4 );
 
 // =====================================================================
-// CUSTOM POST TYPES
+// CUSTOM POST TYPES (vlastní typy příspěvků)
+// =====================================================================
+//
+// CO JSOU CUSTOM POST TYPES (CPT)?
+// WordPress ve výchozím stavu nabízí pouze dva typy obsahu: příspěvky
+// (posts) a stránky (pages). Pro fotbalový web ale potřebujeme evidovat
+// zápasy, týmy, hráče, galerie, sponzory a kontakty — každý z nich má
+// jiná data a jiné chování. Proto WordPress umožňuje registrovat
+// vlastní typy příspěvků pomocí funkce register_post_type().
+//
+// JAK FUNGUJE register_post_type()?
+// Funkce přijímá dva argumenty:
+//   1) slug (strojový název) — krátký identifikátor bez diakritiky,
+//      např. 'zapas'. Používá se v databázi, URL adresách i v kódu.
+//   2) pole parametrů (array) — konfigurace typu: popisky pro admin
+//      rozhraní, nastavení viditelnosti, URL přepisů, podporovaných
+//      funkcí editoru atd.
+//
+// Po registraci se CPT automaticky objeví v levém menu administrace
+// a WordPress pro něj vytvoří stránky pro přidání, úpravu, výpis
+// a mazání příspěvků daného typu.
+//
+// DŮLEŽITÉ: Registrace musí proběhnout při akci 'init' — viz
+// add_action() na konci této sekce.
 // =====================================================================
 
 function slavoj_register_post_types() {
 
     // --- ZÁPASY ---
+    // První CPT — u tohoto podrobně komentujeme KAŽDÝ parametr.
+    // U dalších CPT komentujeme jen to, co se liší.
     register_post_type('zapas', array(
         'labels' => array(
             'name'               => 'Zápasy',
@@ -438,9 +463,33 @@ function slavoj_register_taxonomies() {
 add_action('init', 'slavoj_register_taxonomies');
 
 // =====================================================================
-// META BOXY – ZÁPAS
+// META BOXY (vlastní pole v editoru administrace)
+// =====================================================================
+//
+// META BOX = vlastní panel s formulářovými poli v editoru příspěvku.
+// WordPress má výchozí pole: Název, Obsah, Náhledový obrázek.
+// Pro zápasy ale potřebujeme VLASTNÍ pole: datum, čas, domácí, hosté, skóre...
+//
+// PRINCIP META BOXU (3 kroky):
+//   1. REGISTRACE:  add_meta_box()       → řekne WP "přidej panel do editoru"
+//   2. VYKRESLENÍ:  callback funkce      → vypíše HTML formulář uvnitř panelu
+//   3. ULOŽENÍ:     save_post_{cpt} hook → uloží data z formuláře do databáze
+//
+// DATA se ukládají jako "post meta" — key-value páry v tabulce wp_postmeta.
+// Čtou se přes get_post_meta(), ukládají přes update_post_meta().
 // =====================================================================
 
+/**
+ * KROK 1: Registrace meta boxu pro zápasy.
+ *
+ * add_meta_box() parametry:
+ *   'slavoj_zapas_detail' = unikátní ID boxu (HTML id atribut)
+ *   'Detail zápasu'       = nadpis panelu viditelný v editoru
+ *   'slavoj_zapas_meta_box_html' = callback funkce vykreslující obsah
+ *   'zapas'               = pro který post type (CPT) box zobrazit
+ *   'normal'              = kontext: pod editorem obsahu (ne v postranním panelu)
+ *   'high'                = priorita: zobrazit co nejvýše v kontextu
+ */
 function slavoj_zapas_meta_boxes() {
     add_meta_box(
         'slavoj_zapas_detail',
@@ -452,9 +501,21 @@ function slavoj_zapas_meta_boxes() {
     );
 }
 add_action('add_meta_boxes', 'slavoj_zapas_meta_boxes');
+// ↑ Háček 'add_meta_boxes' = správný moment pro registraci meta boxů
 
+/**
+ * KROK 2: HTML obsah meta boxu (formulářová pole).
+ *
+ * $post = objekt aktuálně editovaného příspěvku (má ->ID, ->post_title...)
+ *
+ * wp_nonce_field() = vygeneruje skrytý <input> s bezpečnostním tokenem.
+ *   Stejný princip jako v single-zapas.php (ochrana proti CSRF).
+ *   Při uložení ověříme, že token odpovídá → formulář přišel z naší stránky.
+ */
 function slavoj_zapas_meta_box_html($post) {
     wp_nonce_field('slavoj_zapas_nonce', 'slavoj_zapas_nonce_field');
+
+    // Načtení aktuálních hodnot z databáze (pro předvyplnění formuláře)
     $datum   = get_post_meta($post->ID, 'datum_zapasu', true);
     $cas     = get_post_meta($post->ID, 'cas_zapasu', true);
     $domaci  = get_post_meta($post->ID, 'domaci', true);
@@ -491,15 +552,34 @@ function slavoj_zapas_meta_box_html($post) {
     <?php
 }
 
+/**
+ * KROK 3: Uložení dat z meta boxu do databáze.
+ *
+ * WordPress zavolá tuto funkci pokaždé, když se uloží zápas.
+ * Háček 'save_post_zapas' = 'save_post_{post_type}' → spustí se JEN pro CPT 'zapas'.
+ *
+ * BEZPEČNOSTNÍ KONTROLY (musí být VŽDY, v každé save funkci):
+ *   1. Existuje nonce? (formulář byl odeslán z naší stránky)
+ *   2. Je nonce platný? (wp_verify_nonce ověří token)
+ *   3. Nejde o autosave? (WP periodicky ukládá koncept — nechceme přepsat data)
+ *   4. Má uživatel oprávnění? (current_user_can)
+ *
+ * update_post_meta() = uloží/aktualizuje meta pole v databázi.
+ *   Pokud klíč neexistuje → vytvoří ho. Pokud existuje → přepíše hodnotu.
+ */
 function slavoj_zapas_save_meta($post_id) {
-    if (!isset($_POST['slavoj_zapas_nonce_field'])) return;
-    if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['slavoj_zapas_nonce_field'])), 'slavoj_zapas_nonce')) return;
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-    if (!current_user_can('edit_post', $post_id)) return;
+    if (!isset($_POST['slavoj_zapas_nonce_field'])) return;           // 1. Nonce neexistuje
+    if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['slavoj_zapas_nonce_field'])), 'slavoj_zapas_nonce')) return; // 2. Neplatný nonce
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;          // 3. Autosave
+    if (!current_user_can('edit_post', $post_id)) return;              // 4. Nemá oprávnění
 
+    // Projdi všechna pole a ulož je do databáze
     $fields = array('datum_zapasu', 'cas_zapasu', 'domaci', 'hoste', 'skore', 'strelci');
     foreach ($fields as $field) {
         if (isset($_POST[$field])) {
+            // sanitize_text_field() = vyčistí vstup (bezpečnost)
+            // wp_unslash() = odstraní zpětná lomítka (WP je automaticky přidává)
+            // update_post_meta() = uloží hodnotu do wp_postmeta tabulky
             update_post_meta($post_id, $field, sanitize_text_field(wp_unslash($_POST[$field])));
         }
     }
@@ -508,6 +588,13 @@ add_action('save_post_zapas', 'slavoj_zapas_save_meta');
 
 // =====================================================================
 // META BOXY – TÝM
+// =====================================================================
+// Stejný 3-krokový pattern jako u zápasů:
+//   1. slavoj_tym_meta_boxes()    → registrace (add_meta_box)
+//   2. slavoj_tym_meta_box_html() → vykreslení HTML formuláře
+//   3. slavoj_tym_save_meta()     → uložení do DB (save_post_tym)
+//
+// NAVÍC: slavoj_count_hracu_tymu() = automatický výpočet počtu hráčů.
 // =====================================================================
 
 function slavoj_tym_meta_boxes() {
@@ -559,9 +646,20 @@ function slavoj_tym_meta_box_html($post) {
 }
 
 /**
- * Vypočítá a uloží počet hráčů pro daný tým na základě aktuálního stavu hráčů CPT.
- * Hráči jsou filtrováni podle tym_slug týmu a sezóny týmu.
- * Pokud tým nemá přiřazenou sezónu, použije se aktuálně nejnovější sezóna.
+ * AUTOMATICKÝ VÝPOČET POČTU HRÁČŮ v týmu.
+ *
+ * Toto je příklad ODVOZENÉ HODNOTY — počet hráčů se NEPÍŠE ručně,
+ * ale VYPOČÍTÁ SE automaticky z databáze pokaždé, když se tým uloží.
+ *
+ * ALGORITMUS:
+ * 1. Zjisti tym_slug tohoto týmu (např. 'muzi-a')
+ * 2. Zjisti sezónu tohoto týmu (nebo použij nejnovější)
+ * 3. Spusť WP_Query: najdi všechny hráče s tym_slug = 'muzi-a' v dané sezóně
+ * 4. $query->found_posts = celkový počet nalezených hráčů
+ * 5. Ulož výsledek do meta pole 'pocet_hracu' tohoto týmu
+ *
+ * 'fields' => 'ids' = optimalizace: dotaz vrací jen pole ID (ne celé objekty),
+ *   protože nepotřebujeme data hráčů, jen jejich POČET.
  *
  * @param int $post_id  ID záznamu CPT tym
  * @return int  Počet nalezených hráčů
@@ -632,9 +730,15 @@ function slavoj_tym_save_meta($post_id) {
 add_action('save_post_tym', 'slavoj_tym_save_meta');
 
 /**
- * Po uložení hráče aktualizujeme pocet_hracu nadřízeného týmu.
+ * AUTOMATICKÁ AKTUALIZACE POČTU HRÁČŮ
+ * =====================================
+ * Když admin přidá/upraví/smaže hráče, počet hráčů v týmu se musí přepočítat.
  *
- * @param int $hrac_id  ID záznamu CPT hrac
+ * Toto je příklad ŘETĚZENÍ HOOKS:
+ *   Uložení hráče → save_post_hrac → přepočet pocet_hracu v týmu
+ *   Smazání hráče → before_delete_post → přepočet pocet_hracu v týmu
+ *
+ * Výsledek: admin nikdy nemusí ručně aktualizovat počet — je vždy aktuální.
  */
 function slavoj_update_pocet_hracu_po_zmene_hrace($hrac_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
@@ -642,21 +746,18 @@ function slavoj_update_pocet_hracu_po_zmene_hrace($hrac_id) {
 }
 add_action('save_post_hrac', 'slavoj_update_pocet_hracu_po_zmene_hrace');
 
-/**
- * Před smazáním hráče aktualizujeme pocet_hracu nadřízeného týmu.
- *
- * @param int $hrac_id  ID záznamu CPT hrac
- */
 function slavoj_update_pocet_hracu_pred_smazanim_hrace($hrac_id) {
-    if (get_post_type($hrac_id) !== 'hrac') return;
+    if (get_post_type($hrac_id) !== 'hrac') return; // Jen pro hráče (hook je obecný)
     slavoj_recalculate_tym_pocet_hracu($hrac_id);
 }
 add_action('before_delete_post', 'slavoj_update_pocet_hracu_pred_smazanim_hrace');
 
 /**
- * Pomocná funkce – najde tým podle tym_slug hráče a přepočítá pocet_hracu.
+ * Pomocná funkce — najde tým podle tym_slug hráče a přepočítá pocet_hracu.
  *
- * @param int $hrac_id  ID záznamu CPT hrac
+ * get_posts() s 'fields' => 'ids' = vrátí jen pole ID (optimalizace).
+ * foreach přes všechny nalezené týmy = pokud by existovalo více týmů
+ * se stejným slugem (nemělo by, ale pojistka).
  */
 function slavoj_recalculate_tym_pocet_hracu($hrac_id) {
     $tym_slug = get_post_meta($hrac_id, 'tym_slug', true);
@@ -682,6 +783,9 @@ function slavoj_recalculate_tym_pocet_hracu($hrac_id) {
 
 // =====================================================================
 // META BOXY – HRÁČ
+// =====================================================================
+// Stejný 3-krokový pattern: registrace → vykreslení → uložení.
+// Pole: cislo (číslo dresu), rok_narozeni, tym_slug (propojení s týmem).
 // =====================================================================
 
 function slavoj_hrac_meta_boxes() {
@@ -737,6 +841,10 @@ add_action('save_post_hrac', 'slavoj_hrac_save_meta');
 // =====================================================================
 // META BOXY – GALERIE
 // =====================================================================
+// Galerie má jen jedno meta pole: sezona.
+// Kategorie týmu se přiřazuje přes panel taxonomie (ne meta box).
+// Fotky se vkládají buď přes ACF galerie pole, nebo přímo do obsahu.
+// =====================================================================
 
 function slavoj_galerie_meta_boxes() {
     add_meta_box(
@@ -782,6 +890,9 @@ add_action('save_post_galerie', 'slavoj_galerie_save_meta');
 // =====================================================================
 // META BOXY – SPONZOR
 // =====================================================================
+// Jedno pole: web_sponzora (URL webu sponzora).
+// input type="url" = prohlížeč validuje formát URL.
+// =====================================================================
 
 function slavoj_sponzor_meta_boxes() {
     add_meta_box(
@@ -822,6 +933,10 @@ add_action('save_post_sponzor', 'slavoj_sponzor_save_meta');
 
 // =====================================================================
 // META BOXY – KONTAKT
+// =====================================================================
+// Pole: pozice, telefon, email, poradi (pořadí zobrazení na stránce).
+// POZN: email se sanitizuje přes sanitize_email() (ne sanitize_text_field),
+// protože e-mail má specifická pravidla pro platné znaky.
 // =====================================================================
 
 function slavoj_kontakt_meta_boxes() {
@@ -883,14 +998,26 @@ function slavoj_kontakt_save_meta($post_id) {
 add_action('save_post_kontakt', 'slavoj_kontakt_save_meta');
 
 // =====================================================================
-// POMOCNÉ FUNKCE
+// POMOCNÉ (HELPER) FUNKCE
+// =====================================================================
+//
+// Helper funkce = krátké funkce vykonávající jednu specifickou úlohu.
+// Používají se v šablonách (front-page.php, archive-zapas.php...).
+//
+// KONVENCE POJMENOVÁNÍ:
+//   slavoj_*  = prefix zajišťující, že název funkce nekoliduje
+//               s jinými pluginy nebo tématy (WordPress nemá namespace).
+//
+// @param a @return = PHPDoc anotace popisující vstupy a výstupy.
+//   Nejsou povinné, ale usnadňují práci s kódem (IDE autocomplete).
 // =====================================================================
 
 /**
  * Zjistí, zda je název týmu vlastním klubem TJ Slavoj Mýto.
+ * stripos() = case-insensitive hledání podřetězce (ignoruje velká/malá).
  *
  * @param string $nazev_tymu  Název týmu z meta pole domaci nebo hoste.
- * @return bool
+ * @return bool  true pokud jde o tým Slavoje
  */
 function slavoj_is_club_team($nazev_tymu) {
     return stripos($nazev_tymu, 'Slavoj') !== false
@@ -935,7 +1062,13 @@ function slavoj_kategorie_poradi() {
 }
 
 /**
- * Seřadí pole WP_Term objektů (taxonomie kategorie-tymu) dle kanonického pořadí.
+ * Seřadí pole WP_Term objektů dle kanonického pořadí (Muži A → B → Dorost → ...).
+ *
+ * usort() = PHP funkce pro řazení pole pomocí vlastní porovnávací funkce.
+ * use ($poradi) = closure "zachytí" proměnnou z vnějšího scope.
+ * array_search() = najde pozici slugu v poli pořadí.
+ * Pokud slug není v pořadí (false) → dáme ho na konec (999).
+ * Vrací: záporné číslo = $a před $b, kladné = $b před $a, 0 = stejné.
  *
  * @param array $terms  Pole WP_Term objektů.
  * @return array  Seřazené pole.
@@ -1061,12 +1194,23 @@ function slavoj_global_sort_kategorie_tymu_single( $terms, $post_id, $taxonomy )
 add_filter( 'get_the_terms', 'slavoj_global_sort_kategorie_tymu_single', 10, 3 );
 
 /**
- * Vrátí výsledek zápasu z pohledu TJ Slavoj Mýto.
+ * Vrátí výsledek zápasu Z POHLEDU TJ Slavoj Mýto.
+ *
+ * preg_match('/^(\d+):(\d+)$/', ...) = regulární výraz (regex):
+ *   ^ = začátek řetězce
+ *   (\d+) = jedna nebo více číslic (zachycení do $m[1])
+ *   : = doslova dvojtečka
+ *   (\d+) = další čísla (zachycení do $m[2])
+ *   $ = konec řetězce
+ *   → "3:1" → $m[1]=3, $m[2]=1
+ *
+ * Logika: zjistíme, zda je Slavoj domácí nebo hosté,
+ * pak porovnáme "naše" góly s "jejich" góly.
  *
  * @param string $domaci  Název domácího týmu.
  * @param string $hoste   Název hostujícího týmu.
- * @param string $skore   Skóre ve formátu "domácí:hosté", např. "3:1". Prázdný řetězec = nadcházející.
- * @return string  'vyhral' | 'prohral' | 'remiza' | '' (nezapas/nadcházející)
+ * @param string $skore   Skóre ve formátu "3:1". Prázdný = nadcházející.
+ * @return string  'vyhral' | 'prohral' | 'remiza' | ''
  */
 function slavoj_zapas_vysledek($domaci, $hoste, $skore) {
     if (empty($skore) || !preg_match('/^(\d+):(\d+)$/', $skore, $m)) {
@@ -1153,7 +1297,21 @@ function slavoj_fallback_footer_menu() {
 }
 
 /**
- * Nav Walker – přidá třídy nav__item a nav__link na položky wp_nav_menu().
+ * WALKER TŘÍDA — pokročilý způsob úpravy HTML výstupu wp_nav_menu().
+ *
+ * Walker = WordPress "procházeč" — objekt, který prochází stromovou strukturu
+ * (menu, komentáře, kategorie) a generuje HTML pro každý prvek.
+ *
+ * Walker_Nav_Menu = výchozí Walker pro menu. Naše třída ho DĚDÍ (extends)
+ * a přepisuje metodu start_el() = jak se vykreslí jeden prvek menu.
+ *
+ * POZN: V aktuálním kódu se tento Walker NEPOUŽÍVÁ v hlavním menu
+ * (tam jsou filtry nav_menu_css_class / nav_menu_link_attributes).
+ * Byl vytvořen jako alternativní přístup — obojí řeší stejný problém.
+ *
+ * DĚDIČNOST (OOP):
+ *   class Slavoj_Nav_Walker extends Walker_Nav_Menu
+ *   → zdědí vše z Walker_Nav_Menu, přepíše jen start_el()
  */
 class Slavoj_Nav_Walker extends Walker_Nav_Menu {
     /**
@@ -1316,12 +1474,27 @@ add_filter('the_content', 'slavoj_add_lazy_loading');
 add_filter('post_thumbnail_html', 'slavoj_add_lazy_loading');
 
 // =====================================================================
-// FRONTEND AKCE – ULOŽENÍ SKÓRE A STŘELCŮ (admin-post.php handler)
+// FRONTEND AKCE — ULOŽENÍ SKÓRE Z FRONTENDU
+// =====================================================================
+//
+// Tato sekce zpracovává formulář z single-zapas.php (správcovský panel).
+//
+// JAK TO FUNGUJE:
+//   1. Správce vyplní skóre/střelce na stránce zápasu (frontend)
+//   2. Formulář odešle data na admin-post.php (method="post")
+//   3. WordPress spustí háček 'admin_post_{action}' podle hidden pole 'action'
+//   4. Naše funkce data ověří (nonce + oprávnění) a uloží do DB
+//   5. wp_redirect() přesměruje zpět na stránku zápasu s ?slavoj_saved=1
+//
+// DVOU-HÁČKOVÝ PATTERN:
+//   admin_post_{action}        → pro PŘIHLÁŠENÉ uživatele
+//   admin_post_nopriv_{action} → pro NEPŘIHLÁŠENÉ (odmítneme)
 // =====================================================================
 
 /**
  * Zpracuje formulář pro zápis skóre a střelců z frontendu (single-zapas.php).
- * Dostupné pouze pro přihlášené uživatele s oprávněním edit_post.
+ * wp_die() = ukončí skript s chybovou zprávou (pokud něco nesedí).
+ * wp_redirect() = HTTP přesměrování (301/302) na jinou URL.
  */
 function slavoj_handle_update_zapas() {
     if (!isset($_POST['slavoj_zapas_update_nonce'])) {
@@ -1358,12 +1531,24 @@ add_action('admin_post_nopriv_slavoj_update_zapas', function () {
 });
 
 // =====================================================================
-// CUSTOMIZER – KONTAKTNÍ INFORMACE A NASTAVENÍ WEBU
+// CUSTOMIZER — NASTAVENÍ WEBU PŘES ŽIVÝ NÁHLED
+// =====================================================================
+//
+// WordPress Customizer = rozhraní "Vzhled → Přizpůsobit" v administraci.
+// Umožňuje adminovi měnit nastavení s ŽIVÝM NÁHLEDEM (vidí změny hned).
+//
+// PRINCIP (3 kroky):
+//   1. add_section()  → vytvoří záložku v Customizeru ("Kontaktní informace")
+//   2. add_setting()  → definuje DATOVÝ KLÍČ + výchozí hodnotu
+//   3. add_control()  → přidá VSTUPNÍ POLE (text, email, url...) do záložky
+//
+// Hodnoty se pak čtou přes get_theme_mod('klíč', 'výchozí_hodnota').
+// Používáme v patičce (site-footer.php) a na stránce kontaktů.
 // =====================================================================
 
 /**
  * Registrace nastavení Customizeru: adresa klubu, e-mail a URL mapy.
- * Editovatelné přes Vzhled → Přizpůsobit v administraci WordPress.
+ * $wp_customize = objekt Customizeru předaný WordPressem.
  */
 function tjsm_customize_register( $wp_customize ) {
     $wp_customize->add_section( 'tjsm_kontakt', array(
