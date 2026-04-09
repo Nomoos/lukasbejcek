@@ -1,9 +1,14 @@
 <?php
 /**
- * Template Name: Sponzoři
- * Stránka se sponzory klubu TJ Slavoj Mýto
- * Obsahuje: mřížka sponzorů se stejnou velikostí, logo, název, proklik na web
+ * page-sponzori.php — STRÁNKA SPONZORŮ
+ * =======================================
+ * Zobrazuje mřížku sponzorských karet — logo, název, odkaz na web.
+ * Šablona pro stránku se slugem "sponzori".
+ *
+ * DATA: Sponzoři jsou CPT 'sponzor' s meta polem 'web_sponzora' (URL webu).
+ * Pokud sponzor má web → karta je klikací odkaz. Pokud ne → jen div.
  */
+
 get_header();
 ?>
 
@@ -12,6 +17,7 @@ get_header();
 
   <div class="row g-4 justify-content-center">
     <?php
+    // Načte všechny sponzory bez omezení počtu
     $args = array(
         'post_type'      => 'sponzor',
         'posts_per_page' => -1,
@@ -21,13 +27,23 @@ get_header();
     if ($sponzori_query->have_posts()) :
         while ($sponzori_query->have_posts()) :
             $sponzori_query->the_post();
+
+            // Načtení URL webu sponzora z meta pole
             $web_sponzora = get_post_meta(get_the_ID(), 'web_sponzora', true);
-            $has_link = !empty($web_sponzora);
+            $has_link = !empty($web_sponzora); // Má sponzor web?
             ?>
             <div class="col-md-4 col-lg-3">
+
               <?php if ($has_link) : ?>
+                <!-- Pokud má web → celá karta je odkaz (<a>)
+                     target="_blank"        = otevře v novém tabu
+                     rel="noopener noreferrer" = bezpečnostní atributy:
+                       noopener  = nová stránka nemá přístup k window.opener
+                       noreferrer = neposílá Referer hlavičku (soukromí)
+                     d-block = Bootstrap: display:block (aby <a> fungoval jako blok) -->
                 <a href="<?php echo esc_url($web_sponzora); ?>" target="_blank" rel="noopener noreferrer" class="sponsor-card d-block">
               <?php else : ?>
+                <!-- Pokud nemá web → karta je obyčejný <div> -->
                 <div class="sponsor-card">
               <?php endif; ?>
 
@@ -43,6 +59,7 @@ get_header();
                 </div>
                 <h5 class="mb-1"><?php the_title(); ?></h5>
 
+              <!-- Uzavíráme buď </a> nebo </div> podle toho, zda sponzor má web -->
               <?php if ($has_link) : ?>
                 </a>
               <?php else : ?>
