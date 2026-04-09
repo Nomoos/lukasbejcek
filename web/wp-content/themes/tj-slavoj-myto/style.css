@@ -1,4 +1,19 @@
 /*
+ * ===== POVINNÁ HLAVIČKA WORDPRESS TÉMATU =====
+ *
+ * WordPress vyžaduje soubor style.css v kořeni šablony.
+ * Tento komentář musí obsahovat metadata tématu ve formátu klíč: hodnota.
+ * WordPress je čte a zobrazuje v Administraci → Vzhled → Šablony.
+ *
+ * Theme Name   – název šablony zobrazený v administraci
+ * Theme URI    – odkaz na web/repozitář šablony
+ * Author       – autor šablony
+ * Description  – krátký popis šablony
+ * Version      – číslo verze (měníme při každé větší úpravě)
+ * License      – typ licence (GPL = open source, povinné pro WordPress.org)
+ * Text Domain  – identifikátor pro překlady (__() a _e() funkce)
+ */
+/*
 Theme Name: TJ Slavoj Mýto
 Theme URI: https://github.com/Nomoos/lukasbejcek
 Author: Lukáš Bejček
@@ -9,6 +24,10 @@ Text Domain: tj-slavoj-myto
 */
 
 /*
- * Všechny styly jsou v assets/css/main.css (enqueued via functions.php).
- * Tento soubor slouží pouze jako WordPress theme stylesheet identifier.
+ * DŮLEŽITÉ: Tento soubor NEOBSAHUJE žádné vlastní styly.
+ * Všechny CSS styly jsou rozděleny do souborů v assets/css/
+ * a načítají se přes wp_enqueue_style() ve functions.php.
+ *
+ * WordPress tento soubor potřebuje pouze kvůli hlavičce nahoře —
+ * bez ní by šablonu vůbec nerozpoznal.
  */
