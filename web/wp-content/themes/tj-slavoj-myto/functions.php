@@ -244,43 +244,79 @@ function slavoj_register_post_types() {
     // První CPT — u tohoto podrobně komentujeme KAŽDÝ parametr.
     // U dalších CPT komentujeme jen to, co se liší.
     register_post_type('zapas', array(
-        /**
-         * 'labels' = texty zobrazené v administraci WordPress.
-         * Každý klíč odpovídá konkrétnímu místu v admin UI:
-         *   name             → záhlaví seznamu ("Zápasy")
-         *   singular_name    → jednotné číslo ("Zápas")
-         *   add_new          → tlačítko v menu ("Přidat zápas")
-         *   add_new_item     → nadpis stránky přidání
-         *   edit_item        → nadpis stránky úpravy
-         *   not_found        → text když seznam je prázdný
-         *   menu_name        → text v levém admin menu
-         */
+
+        // 'labels' — pole textů zobrazených v administraci WordPressu.
+        // Každý klíč odpovídá konkrétnímu místu v admin rozhraní:
         'labels' => array(
-            'name'               => 'Zápasy',
-            'singular_name'      => 'Zápas',
-            'add_new'            => 'Přidat zápas',
-            'add_new_item'       => 'Přidat nový zápas',
-            'edit_item'          => 'Upravit zápas',
-            'new_item'           => 'Nový zápas',
-            'view_item'          => 'Zobrazit zápas',
-            'search_items'       => 'Hledat zápasy',
-            'not_found'          => 'Žádné zápasy nenalezeny',
-            'not_found_in_trash' => 'Žádné zápasy v koši',
-            'all_items'          => 'Všechny zápasy',
-            'menu_name'          => 'Zápasy',
+            'name'               => 'Zápasy',            // Název v menu a přehledech (množné číslo)
+            'singular_name'      => 'Zápas',             // Jednotné číslo — v nadpisech a hlášeních
+            'add_new'            => 'Přidat zápas',      // Text tlačítka "Přidat nový" v podmenu
+            'add_new_item'       => 'Přidat nový zápas', // Nadpis stránky pro přidání nového záznamu
+            'edit_item'          => 'Upravit zápas',     // Nadpis stránky pro úpravu existujícího
+            'new_item'           => 'Nový zápas',        // Text pro nově vytvořený příspěvek
+            'view_item'          => 'Zobrazit zápas',    // Odkaz "Zobrazit" po uložení příspěvku
+            'search_items'       => 'Hledat zápasy',     // Placeholder ve vyhledávacím poli
+            'not_found'          => 'Žádné zápasy nenalezeny',   // Zpráva, když výpis nevrátí výsledky
+            'not_found_in_trash' => 'Žádné zápasy v koši',       // Totéž pro obsah koše
+            'all_items'          => 'Všechny zápasy',    // Text podmenu "Všechny položky"
+            'menu_name'          => 'Zápasy',            // Hlavní text v levém admin menu
         ),
-        'public'              => true,  // Viditelný na frontendu i v admin
-        'has_archive'         => true,  // Má archivní stránku (/zapasy/) → archive-zapas.php
-        'rewrite'             => array('slug' => 'zapasy'), // URL: /zapasy/nazev-zapasu/
-        'supports'            => array('title', 'thumbnail'), // Editor podporuje: název + náhled. obrázek
-        'menu_icon'           => 'dashicons-awards',  // Ikona v admin menu (WordPress Dashicons)
-        'show_in_rest'        => true,   // Zpřístupní v REST API + Gutenberg editor
-        'taxonomies'          => array('sezona', 'kategorie-tymu', 'stav-zapasu'), // Přiřazené taxonomie
-        'capability_type'     => array('zapas', 'zapasy'), // Vlastní oprávnění (edit_zapas, edit_zapasy...)
-        'map_meta_cap'        => true,   // Mapuje vlastní oprávnění na standardní WP capability systém
+
+        // 'public' => true — CPT je viditelný na webu (frontend) i v administraci.
+        // Pokud false, příspěvky tohoto typu nelze zobrazit návštěvníkům.
+        'public'              => true,
+
+        // 'has_archive' => true — WordPress automaticky vytvoří archivní
+        // stránku (výpis všech zápasů) na URL /zapasy/. Šablona pro tuto
+        // stránku je archive-zapas.php. Pokud false, archiv neexistuje
+        // a výpis musíme řešit vlastní page šablonou (page-zapasy.php).
+        'has_archive'         => true,
+
+        // 'rewrite' — nastavení URL přepisů (pretty permalinks).
+        // 'slug' určuje část URL adresy: web.cz/zapasy/nazev-zapasu.
+        // WordPress interně přepíše hezkou URL na ?post_type=zapas&p=123.
+        'rewrite'             => array('slug' => 'zapasy'),
+
+        // 'supports' — určuje, které části editoru WordPress nabídne.
+        // 'title'     = textové pole pro nadpis příspěvku
+        // 'thumbnail' = náhledový obrázek (featured image)
+        // Další možnosti: 'editor' (WYSIWYG obsah), 'excerpt' (výtah),
+        // 'comments', 'revisions', 'custom-fields', 'page-attributes'...
+        // U zápasu nepotřebujeme editor — data zadáváme přes meta boxy.
+        'supports'            => array('title', 'thumbnail'),
+
+        // 'menu_icon' — ikona v levém admin menu. WordPress obsahuje
+        // vestavěnou sadu ikon Dashicons (viz developer.wordpress.org/resource/dashicons/).
+        // Zde 'dashicons-awards' = ikona trofeje, vhodná pro zápasy.
+        'menu_icon'           => 'dashicons-awards',
+
+        // 'show_in_rest' => true — zpřístupní tento CPT pro WordPress
+        // REST API a tím i pro blokový editor (Gutenberg). Pokud false,
+        // CPT používá starý klasický editor.
+        'show_in_rest'        => true,
+
+        // 'taxonomies' — seznam taxonomií (klasifikací) přiřazených
+        // tomuto CPT. Taxonomie musí být zvlášť registrované — viz sekce
+        // TAXONOMIE níže. Zápas patří do sezóny, kategorie týmu a má stav.
+        'taxonomies'          => array('sezona', 'kategorie-tymu', 'stav-zapasu'),
+
+        // 'capability_type' — základ pro generování uživatelských oprávnění.
+        // WordPress z toho automaticky vytvoří: edit_zapas, edit_zapasy,
+        // delete_zapas, publish_zapasy atd. To umožňuje přes role (role
+        // a capability systém) řídit, kdo smí zápasy spravovat.
+        // Pole [singular, plural] zajistí správné české tvary.
+        'capability_type'     => array('zapas', 'zapasy'),
+
+        // 'map_meta_cap' => true — říká WordPressu, aby automaticky
+        // namapoval meta-oprávnění (edit_post, delete_post, read_post)
+        // na naše vlastní capability_type výše. Bez tohoto nastavení
+        // by oprávnění nefungovala správně a uživatelé by nemohli
+        // příspěvky upravovat.
+        'map_meta_cap'        => true,
     ));
 
     // --- TÝMY ---
+    // Struktura je stejná jako u zápasů — komentujeme jen ODLIŠNOSTI.
     register_post_type('tym', array(
         'labels' => array(
             'name'               => 'Týmy',
@@ -301,13 +337,18 @@ function slavoj_register_post_types() {
         'rewrite'             => array('slug' => 'tymy'),
         'supports'            => array('title', 'thumbnail'),
         'menu_icon'           => 'dashicons-groups',
+        // show_in_rest => false — týmy NEPOUŽÍVAJÍ blokový editor ani
+        // REST API. Zobrazujeme je pouze přes vlastní šablony na frontendu.
         'show_in_rest'        => false,
+        // Týmy sdílejí jen sezónu a kategorii — nemají stav zápasu.
         'taxonomies'          => array('sezona', 'kategorie-tymu'),
         'capability_type'     => array('tym', 'tymy'),
         'map_meta_cap'        => true,
     ));
 
     // --- HRÁČI ---
+    // Odlišnosti od zápasů: nemají archiv, podporují jen nadpis,
+    // a mají vlastní taxonomii pozice-hrace (Brankář, Obránce...).
     register_post_type('hrac', array(
         'labels' => array(
             'name'               => 'Hráči',
@@ -320,17 +361,26 @@ function slavoj_register_post_types() {
             'menu_name'          => 'Hráči',
         ),
         'public'              => true,
+        // has_archive => false — hráči nemají vlastní archivní stránku.
+        // Výpis hráčů řešíme v rámci šablony týmu (single-tym.php).
         'has_archive'         => false,
         'rewrite'             => array('slug' => 'hraci'),
+        // supports => jen 'title' — hráč nepotřebuje náhledový obrázek
+        // ani editor. Všechna data (číslo dresu, rok narození, tým)
+        // zadáváme přes vlastní meta boxy.
         'supports'            => array('title'),
         'menu_icon'           => 'dashicons-id',
         'show_in_rest'        => true,
+        // Kromě sezóny a kategorie týmu má hráč navíc taxonomii
+        // 'pozice-hrace' (Brankář, Obránce, Záložník, Útočník).
         'taxonomies'          => array('sezona', 'kategorie-tymu', 'pozice-hrace'),
         'capability_type'     => array('hrac', 'hraci'),
         'map_meta_cap'        => true,
     ));
 
     // --- GALERIE ---
+    // Odlišnosti: supports zahrnuje i 'editor' (WYSIWYG), protože
+    // do galerie vkládáme popis alba. Také má archivní stránku.
     register_post_type('galerie', array(
         'labels' => array(
             'name'               => 'Galerie',
@@ -345,15 +395,22 @@ function slavoj_register_post_types() {
         'public'              => true,
         'has_archive'         => true,
         'rewrite'             => array('slug' => 'galerie'),
+        // supports zahrnuje navíc 'editor' — galerie jako jediný CPT
+        // využívá WYSIWYG editor pro popis/obsah fotoalba.
         'supports'            => array('title', 'editor', 'thumbnail'),
         'menu_icon'           => 'dashicons-format-gallery',
         'show_in_rest'        => true,
         'taxonomies'          => array('sezona', 'kategorie-tymu'),
+        // capability_type 'album'/'alba' — jiný základ než slug CPT.
+        // WordPress to umožňuje; slug je 'galerie', ale oprávnění
+        // se generují z 'album' (edit_album, publish_alba...).
         'capability_type'     => array('album', 'alba'),
         'map_meta_cap'        => true,
     ));
 
     // --- SPONZOŘI ---
+    // Odlišnosti: nemají archiv, nemají žádné taxonomie — sponzoři
+    // nejsou členěni do sezón ani kategorií, zobrazují se všichni.
     register_post_type('sponzor', array(
         'labels' => array(
             'name'               => 'Sponzoři',
@@ -365,16 +422,21 @@ function slavoj_register_post_types() {
             'menu_name'          => 'Sponzoři',
         ),
         'public'              => true,
+        // has_archive => false — sponzoři se zobrazují na vlastní stránce
+        // (page-sponzori.php), nikoliv přes WordPress archiv.
         'has_archive'         => false,
         'rewrite'             => array('slug' => 'sponzori'),
         'supports'            => array('title', 'thumbnail'),
         'menu_icon'           => 'dashicons-star-filled',
         'show_in_rest'        => true,
+        // Bez 'taxonomies' — sponzoři nejsou řazeni do sezón ani kategorií.
         'capability_type'     => array('sponzor', 'sponzori'),
         'map_meta_cap'        => true,
     ));
 
     // --- KONTAKTY ---
+    // Odlišnosti: nemají archiv ani taxonomie — kontakty (funkcionáři
+    // klubu) se zobrazují na jedné stránce (page-kontakty.php).
     register_post_type('kontakt', array(
         'labels' => array(
             'name'               => 'Kontakty',
@@ -386,62 +448,103 @@ function slavoj_register_post_types() {
             'menu_name'          => 'Kontakty',
         ),
         'public'              => true,
+        // has_archive => false — kontakty nemají archivní stránku.
         'has_archive'         => false,
         'rewrite'             => array('slug' => 'kontakty'),
         'supports'            => array('title', 'thumbnail'),
         'menu_icon'           => 'dashicons-phone',
         'show_in_rest'        => true,
+        // Bez 'taxonomies' — kontakty nejsou členěny do kategorií.
         'capability_type'     => array('kontakt', 'kontakty'),
         'map_meta_cap'        => true,
     ));
 }
+// add_action('init', ...) — registraci CPT napojujeme na akci 'init'.
+// WordPress spouští 'init' po načtení jádra, ale PŘED zpracováním
+// požadavku. To je správný okamžik pro registraci CPT a taxonomií,
+// protože WordPress musí o nich vědět dříve, než začne zpracovávat
+// URL adresy a načítat šablony.
 add_action('init', 'slavoj_register_post_types');
-// ↑ Háček 'init' = WordPress je plně inicializován, správný moment pro registraci CPT.
-//   POZOR: registrace na jiném háčku (např. 'after_setup_theme') by nefungovala!
 
 // =====================================================================
-// TAXONOMIE (způsoby třídění a filtrování obsahu)
+// TAXONOMIE (klasifikace / třídění obsahu)
 // =====================================================================
 //
-// TAXONOMIE = systém pro kategorizaci příspěvků do skupin.
-// WordPress má vestavěné: kategorie (categories) a štítky (tags).
-// My registrujeme VLASTNÍ: sezóna, kategorie-tymu, stav-zapasu, pozice-hrace.
+// CO JSOU TAXONOMIE?
+// Taxonomie jsou systém třídění obsahu ve WordPressu. Výchozí WordPress
+// má dvě: kategorie (categories) a štítky (tags). My si registrujeme
+// vlastní taxonomie pro třídění zápasů, týmů, hráčů a galerií.
 //
-// register_taxonomy('slug', ['post_type1', 'post_type2'], parametry)
-//   1. argument = slug taxonomie
-//   2. argument = pole CPT, na které se taxonomie váže
-//   3. argument = konfigurace (labels, hierarchie, viditelnost...)
+// HIERARCHICKÁ vs. NEHIERARCHICKÁ TAXONOMIE:
+//   - hierarchical => true  — chová se jako KATEGORIE: termy (položky)
+//     mohou mít rodiče a potomky (stromová struktura). V admin rozhraní
+//     se zobrazí jako zaškrtávací políčka (checkboxy).
+//   - hierarchical => false — chová se jako ŠTÍTKY: plochý seznam bez
+//     stromové struktury. V admin rozhraní se zadávají jako textový vstup.
 //
-// HIERARCHICKÁ vs NEHIERARCHICKÁ:
-//   hierarchical => true  = jako WordPress Kategorie (stromová struktura, rodič-potomek)
-//   hierarchical => false = jako WordPress Štítky (plochý seznam, bez hierarchie)
+// SDÍLENÉ TAXONOMIE:
+// Jednu taxonomii lze přiřadit více CPT najednou (druhý argument
+// register_taxonomy je pole CPT slugů). Např. 'sezona' je sdílená
+// pro zápasy, týmy, hráče i galerie — to umožňuje filtrovat obsah
+// napříč typy podle sezóny.
 //
-// SDÍLENÁ TAXONOMIE: jednu taxonomii lze přiřadit více CPT.
-//   Např. 'sezona' je sdílená pro zapas, tym, hrac i galerie.
-//   → zápas i tým mohou mít přiřazenou sezónu "2025/26"
+// JAK FUNGUJE register_taxonomy()?
+// Přijímá tři argumenty:
+//   1) slug taxonomie — strojový název, např. 'sezona'
+//   2) pole CPT slugů — ke kterým typům příspěvků taxonomie patří
+//   3) pole parametrů — popisky, nastavení hierarchie, viditelnosti atd.
 // =====================================================================
 
 function slavoj_register_taxonomies() {
 
-    // Sezóna (sdílená pro Zápasy, Týmy, Hráče, Galerie)
-    register_taxonomy('sezona', array('zapas', 'tym', 'hrac', 'galerie'), array(
+    // --- SEZÓNA ---
+    // První taxonomie — podrobně komentujeme KAŽDÝ parametr.
+    // U dalších komentujeme jen odlišnosti.
+    //
+    // Sdílená pro: Zápasy, Týmy, Hráče, Galerie.
+    // Příklady termů: '2024-25', '2025-26'.
+    register_taxonomy(
+        'sezona',                                          // 1) slug taxonomie
+        array('zapas', 'tym', 'hrac', 'galerie'),          // 2) pole CPT, ke kterým patří
+        array(                                             // 3) pole parametrů:
+
+        // 'labels' — texty v admin rozhraní (stejný princip jako u CPT).
         'labels' => array(
-            'name'          => 'Sezóny',
-            'singular_name' => 'Sezóna',
-            'add_new_item'  => 'Přidat sezónu',
-            'edit_item'     => 'Upravit sezónu',
-            'all_items'     => 'Všechny sezóny',
-            'menu_name'     => 'Sezóny',
+            'name'          => 'Sezóny',            // Název v přehledech (množné číslo)
+            'singular_name' => 'Sezóna',            // Jednotné číslo
+            'add_new_item'  => 'Přidat sezónu',     // Nadpis formuláře pro přidání nového termu
+            'edit_item'     => 'Upravit sezónu',    // Nadpis stránky pro úpravu termu
+            'all_items'     => 'Všechny sezóny',    // Text pro výpis všech termů
+            'menu_name'     => 'Sezóny',            // Text v podmenu CPT
         ),
-        'hierarchical'      => false,  // Plochý seznam (ne strom)
-        'public'            => true,   // Viditelná na frontendu
-        'rewrite'           => array('slug' => 'sezona'), // URL: /sezona/2025-26/
-        'show_admin_column' => true,   // Zobrazí sloupec v admin přehledu
+
+        // 'hierarchical' => false — sezóna je NEHIERARCHICKÁ taxonomie
+        // (jako štítky/tags). Sezóny nemají rodiče ani potomky, jsou to
+        // prosté hodnoty: 2024-25, 2025-26 atd.
+        'hierarchical'      => false,
+
+        // 'public' => true — taxonomie je viditelná na frontendu.
+        // WordPress pro ni vytvoří archivní stránky (web.cz/sezona/2024-25/).
+        'public'            => true,
+
+        // 'rewrite' — URL přepisy pro archiv taxonomie.
+        // Výsledná URL: web.cz/sezona/2024-25/
+        'rewrite'           => array('slug' => 'sezona'),
+
+        // 'show_admin_column' => true — v přehledu příspěvků (výpis
+        // zápasů, týmů...) se zobrazí sloupec "Sezóna". To usnadňuje
+        // orientaci a filtrování přímo v admin tabulce.
+        'show_admin_column' => true,
+
+        // 'show_in_rest' => true — zpřístupní taxonomii pro REST API
+        // a blokový editor (stejně jako u CPT).
         'show_in_rest'      => true,
     ));
 
-    // Kategorie týmu (Muži A, Muži B, Dorost, …)
-    // hierarchical => true = stromová struktura (jako WP kategorie, s rodič-potomek)
+    // --- KATEGORIE TÝMU ---
+    // Sdílená pro: Zápasy, Týmy, Hráče, Galerie.
+    // Příklady termů: Muži A, Muži B, Dorost, Žáci, Přípravka...
+    // Odlišnost: hierarchical => true (viz komentář níže).
     register_taxonomy('kategorie-tymu', array('zapas', 'tym', 'hrac', 'galerie'), array(
         'labels' => array(
             'name'          => 'Kategorie týmu',
@@ -451,6 +554,11 @@ function slavoj_register_taxonomies() {
             'all_items'     => 'Všechny kategorie',
             'menu_name'     => 'Kategorie týmu',
         ),
+        // hierarchical => true — chová se jako KATEGORIE (na rozdíl
+        // od sezóny). V admin rozhraní se zobrazí jako zaškrtávací
+        // políčka (checkboxy) místo textového vstupu. Termy mohou mít
+        // stromovou strukturu (rodič → potomek), i když to zde
+        // nevyužíváme — všechny kategorie jsou na jedné úrovni.
         'hierarchical'      => true,
         'public'            => true,
         'rewrite'           => array('slug' => 'kategorie-tymu'),
@@ -458,7 +566,11 @@ function slavoj_register_taxonomies() {
         'show_in_rest'      => true,
     ));
 
-    // Stav zápasu (Nadcházející, Odehraný, Zrušený) — JEN pro CPT zapas
+    // --- STAV ZÁPASU ---
+    // Odlišnosti: přiřazena POUZE k CPT 'zapas' (ne ke všem typům).
+    // Příklady termů: Nadcházející, Odehraný, Zrušený.
+    // Nehierarchická (hierarchical => false), protože stavy jsou prostý
+    // seznam bez stromové struktury.
     register_taxonomy('stav-zapasu', array('zapas'), array(
         'labels' => array(
             'name'          => 'Stav zápasu',
@@ -475,7 +587,11 @@ function slavoj_register_taxonomies() {
         'show_in_rest'      => true,
     ));
 
-    // Pozice hráče (Brankář, Obránce, Záložník, Útočník) — JEN pro CPT hrac
+    // --- POZICE HRÁČE ---
+    // Odlišnosti: přiřazena POUZE k CPT 'hrac'.
+    // Příklady termů: Brankář, Obránce, Záložník, Útočník.
+    // Hierarchická (hierarchical => true) — v admin rozhraní se zobrazí
+    // jako zaškrtávací políčka, což je přehlednější pro výběr pozice.
     register_taxonomy('pozice-hrace', array('hrac'), array(
         'labels' => array(
             'name'          => 'Pozice hráče',
@@ -492,6 +608,9 @@ function slavoj_register_taxonomies() {
         'show_in_rest'      => true,
     ));
 }
+// Stejně jako CPT, i taxonomie se registrují při akci 'init'.
+// Obě registrační funkce (slavoj_register_post_types i tato) běží
+// na stejné akci, WordPress je zavolá v pořadí registrace.
 add_action('init', 'slavoj_register_taxonomies');
 
 // =====================================================================
