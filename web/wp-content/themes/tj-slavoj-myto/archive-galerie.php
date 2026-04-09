@@ -1,22 +1,37 @@
 <?php
 /**
- * Archiv galerie – seznam fotoalb TJ Slavoj Mýto
- * Obsahuje: filtry (tým, sezóna), mřížka fotoalb s náhledem a názvem
+ * archive-galerie.php — ARCHIV (VÝPIS) FOTOALB
+ * ================================================
+ * Zobrazuje mřížku fotoalb s filtrováním podle kategorie a sezóny.
+ * WordPress použije na URL: /galerie/ (archiv CPT 'galerie').
+ *
+ * SPECIFIKA GALERIE:
+ * - Kategorie jsou definovány PEVNÝM polem (ne z DB) — obsahují
+ *   virtuální slug 'zaci' (sloučení starsi-zaci + mladsi-zaci)
+ * - Na rozdíl od archive-zapas.php je výchozí filtr prázdný (vše)
+ * - <noscript> tlačítko = záloha pro uživatele bez JavaScriptu
  */
+
 get_header();
 
-// Získání filtrů z GET parametrů
+// Filtry z URL — výchozí = prázdný string (zobrazit vše)
 $filtr_kategorie = isset($_GET['kategorie']) ? sanitize_text_field(wp_unslash($_GET['kategorie'])) : '';
 $filtr_sezona    = isset($_GET['sezona'])    ? sanitize_text_field(wp_unslash($_GET['sezona']))    : '';
 
-// Pevný seznam kategorií pro galerii – nezávislý na DB termech.
-// 'zaci' je virtuální slug (sloučení starsi-zaci + mladsi-zaci).
+/**
+ * PEVNÝ SEZNAM KATEGORIÍ pro galerii.
+ *
+ * Na rozdíl od archive-zapas.php (kde se kategorie berou z DB přes get_terms()),
+ * tady je pole definované přímo v kódu. Důvod:
+ * - Slug 'zaci' reálně v DB neexistuje (je "virtuální")
+ * - V galerii chceme jiný výběr než v zápasech (vč. Stará garda)
+ */
 $galerie_kategorie = array(
     'muzi-a'           => 'Muži A',
     'muzi-b'           => 'Muži B',
     'stara-garda'      => 'Stará garda',
     'dorost'           => 'Dorost',
-    'zaci'             => 'Žáci',
+    'zaci'             => 'Žáci',             // Virtuální: starsi-zaci + mladsi-zaci
     'starsi-pripravka' => 'Starší přípravka',
     'mladsi-pripravka' => 'Mladší přípravka',
     'mini-pripravka'   => 'Minipřípravka',
@@ -39,7 +54,7 @@ $dostupne_sezony = get_terms(array(
       </p>
     </header>
 
-    <!-- FILTRY – selecty odešlou formulář ihned po změně; tlačítko jako záloha bez JS -->
+    <!-- FILTRY — selecty s auto-submit po změně výběru -->
     <form method="get" action="<?php echo esc_url(get_post_type_archive_link('galerie')); ?>" aria-label="Filtrování galerie">
       <div class="row g-2 mb-4">
 
@@ -67,6 +82,9 @@ $dostupne_sezony = get_terms(array(
           </select>
         </div>
 
+        <!-- <noscript> = obsah zobrazený JEN pokud má uživatel vypnutý JavaScript.
+             Bez JS nefunguje onchange auto-submit → potřebujeme klasické tlačítko.
+             Progresivní vylepšení: web funguje i bez JS, jen s horším UX. -->
         <noscript>
           <div class="col-12 col-md-auto">
             <button type="submit" class="btn btn-primary">Filtrovat</button>
@@ -103,7 +121,15 @@ $dostupne_sezony = get_terms(array(
       $tax_query = array();
 
       if ($filtr_kategorie) {
-          // 'zaci' je virtuální slug – zobrazuje alba Starších i Mladších žáků.
+          /**
+           * VIRTUÁLNÍ SLUG 'zaci':
+           * Slug 'zaci' v databázi neexistuje. Když ho uživatel vybere,
+           * přeložíme ho na DVA reálné slugy: 'starsi-zaci' a 'mladsi-zaci'.
+           * WP_Query pak hledá alba přiřazená k LIBOVOLNÉMU z nich.
+           *
+           * Ternární operátor:
+           *   podmínka ? hodnota_pokud_true : hodnota_pokud_false
+           */
           $terms_pro_query = ($filtr_kategorie === 'zaci')
               ? array('starsi-zaci', 'mladsi-zaci')
               : $filtr_kategorie;

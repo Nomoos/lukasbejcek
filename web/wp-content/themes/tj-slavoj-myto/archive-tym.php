@@ -1,29 +1,48 @@
 <?php
 /**
- * Archiv týmů CPT (archive-tym.php)
- * Zobrazuje seznam týmů s filtrováním podle sezóny (toggle pills)
+ * archive-tym.php — ARCHIV (VÝPIS) TÝMŮ
+ * ========================================
+ * Zobrazuje karty všech týmů s filtrováním podle sezóny.
+ * WordPress použije na URL: /tym/ (archiv CPT 'tym').
+ *
+ * NOVÝ KONCEPT: Filtrování přes "pills" (pilulkové tlačítka)
+ * místo <select> — alternativní UI pattern pro malý počet možností.
+ * Každý pill je obyčejný <a> odkaz s GET parametrem.
  */
+
 get_header();
 
+// Filtr sezóny z URL (výchozí = nejnovější sezóna)
 $filtr_sezona = isset($_GET['sezona']) ? sanitize_text_field(wp_unslash($_GET['sezona'])) : slavoj_get_latest_sezona_slug();
 $sezony       = get_terms(array('taxonomy' => 'sezona', 'hide_empty' => true, 'orderby' => 'name', 'order' => 'DESC'));
+// get_post_type_archive_link() = URL archivu daného CPT (např. /tym/)
 $base_url     = get_post_type_archive_link('tym');
 ?>
 
 <div class="container py-4">
+  <!-- post_type_archive_title() = vypíše název archivu CPT
+       (nastavitelné přes labels → name při register_post_type) -->
   <h1 class="fw-bold mb-1"><?php post_type_archive_title(); ?></h1>
   <p class="text-muted mb-4">Přehled týmů <?php bloginfo('name'); ?></p>
 
-  <!-- FILTR SEZÓN (toggle pills) -->
+  <!-- FILTR SEZÓN — pills (tlačítkové odkazy) -->
   <?php if (!is_wp_error($sezony) && $sezony) : ?>
     <nav class="filter-pills mb-4" aria-label="Filtrování podle sezóny">
       <?php foreach ($sezony as $sez) :
           $is_active = ($filtr_sezona === $sez->slug);
+
+          /**
+           * add_query_arg() = přidá GET parametr do URL.
+           * Např. add_query_arg('sezona', '2024-25', '/tym/') → /tym/?sezona=2024-25
+           *
+           * Pokud je pill aktivní → odkaz vede zpět na base_url (zruší filtr).
+           */
           $href      = $is_active
               ? esc_url($base_url)
               : esc_url(add_query_arg('sezona', $sez->slug, $base_url));
           $cls       = 'filter-pill' . ($is_active ? ' filter-pill--active' : '');
       ?>
+        <!-- aria-current="true" = přístupnost: říká čtečce "toto je aktuální volba" -->
         <a href="<?php echo $href; ?>"
            class="<?php echo esc_attr($cls); ?>"
            <?php if ($is_active) echo 'aria-current="true"'; ?>>
@@ -33,14 +52,15 @@ $base_url     = get_post_type_archive_link('tym');
     </nav>
   <?php endif; ?>
 
-  <!-- SEZNAM TÝMŮ -->
+  <!-- SEZNAM TÝMŮ — karty v Bootstrap gridu -->
   <div class="row g-4">
     <?php
     $args = array(
         'post_type'      => 'tym',
-        'posts_per_page' => -1,
+        'posts_per_page' => -1, // Všechny týmy
     );
 
+    // Podmíněné přidání tax_query (jen pokud je filtr aktivní)
     if ($filtr_sezona) {
         $args['tax_query'] = array(
             array(
@@ -58,15 +78,26 @@ $base_url     = get_post_type_archive_link('tym');
             $tymy_query->the_post();
             $trener = esc_html(get_post_meta(get_the_ID(), 'hlavni_trener', true));
             $pocet  = esc_html(get_post_meta(get_the_ID(), 'pocet_hracu', true));
+
+            /**
+             * get_the_terms() = načte termy přiřazené k TOMUTO příspěvku.
+             * Rozdíl od get_terms():
+             *   get_terms()     = VŠECHNY termy taxonomie
+             *   get_the_terms() = jen termy přiřazené KONKRÉTNÍMU příspěvku
+             *
+             * Vrací pole termů nebo WP_Error → musíme vždy kontrolovat !is_wp_error()
+             */
             $kat_terms = get_the_terms(get_the_ID(), 'kategorie-tymu');
             $kat_nazev = (!is_wp_error($kat_terms) && $kat_terms) ? $kat_terms[0]->name : '';
             ?>
+            <!-- Celá karta je obalená <a> → kliknutí kamkoli otevře detail -->
             <div class="col-md-4 col-lg-3">
               <a href="<?php the_permalink(); ?>" class="text-decoration-none">
                 <div class="card h-100 shadow-sm border-0 team-card">
                   <div class="card-body text-center p-4">
                     <?php if (has_post_thumbnail()) : ?>
                       <div class="mb-3">
+                        <!-- rounded-circle = Bootstrap: kulatý obrázek -->
                         <?php the_post_thumbnail('thumbnail', array('class' => 'rounded-circle team-thumb')); ?>
                       </div>
                     <?php else : ?>
