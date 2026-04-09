@@ -1,18 +1,31 @@
 <?php
 /**
- * Detail hráče CPT (single-hrac.php)
- * Zobrazuje profil hráče: fotografie, číslo dresu, rok narození, pozice, tým
+ * single-hrac.php — DETAIL JEDNOHO HRÁČE
+ * =========================================
+ * WordPress použije na URL: /hrac/jmeno-hrace/
+ *
+ * Zobrazuje: fotku, číslo dresu, rok narození, pozici, odkaz na tým.
+ *
+ * ZAJÍMAVOST: Odkaz na tým se zjišťuje přes WP_Query —
+ * hledáme CPT 'tym', jehož meta pole 'tym_slug' odpovídá
+ * meta poli 'tym_slug' tohoto hráče. Není to přímý odkaz (post ID),
+ * ale textové propojení přes sdílený slug.
  */
+
 get_header();
 
 while (have_posts()) : the_post();
-    $cislo        = get_post_meta(get_the_ID(), 'cislo', true);
-    $rok_narozeni = get_post_meta(get_the_ID(), 'rok_narozeni', true);
-    $tym_slug     = get_post_meta(get_the_ID(), 'tym_slug', true);
 
-    $pozice_terms = get_the_terms(get_the_ID(), 'pozice-hrace');
-    $kat_terms    = get_the_terms(get_the_ID(), 'kategorie-tymu');
+    // Meta pole hráče
+    $cislo        = get_post_meta(get_the_ID(), 'cislo', true);        // Číslo dresu
+    $rok_narozeni = get_post_meta(get_the_ID(), 'rok_narozeni', true); // Rok narození
+    $tym_slug     = get_post_meta(get_the_ID(), 'tym_slug', true);     // Slug týmu (propojení)
 
+    // Taxonomie přiřazené hráči
+    $pozice_terms = get_the_terms(get_the_ID(), 'pozice-hrace');   // Brankář / Obránce / ...
+    $kat_terms    = get_the_terms(get_the_ID(), 'kategorie-tymu'); // Muži A / Dorost / ...
+
+    // Bezpečné čtení názvu termu
     $pozice_nazev = (!is_wp_error($pozice_terms) && $pozice_terms) ? $pozice_terms[0]->name : '';
     $kat_nazev    = (!is_wp_error($kat_terms) && $kat_terms) ? $kat_terms[0]->name : '';
 ?>
@@ -68,6 +81,18 @@ while (have_posts()) : the_post();
             <div class="col-md-4">
               <strong>Tým:</strong><br>
               <?php
+              /**
+               * PROPOJENÍ HRÁČ → TÝM přes meta pole.
+               *
+               * WP_Query hledá CPT 'tym', kde meta_key 'tym_slug'
+               * má stejnou hodnotu jako tym_slug tohoto hráče.
+               *
+               * Pokud najde tým → zobrazí odkaz na jeho detail.
+               * Pokud ne → zobrazí jen textový slug.
+               *
+               * POZN: 'meta_key' + 'meta_value' je starší syntaxe WP_Query.
+               * Novější je meta_query s polem. Obojí funguje.
+               */
               $tym_q = new WP_Query(array(
                   'post_type'      => 'tym',
                   'posts_per_page' => 1,
@@ -80,7 +105,7 @@ while (have_posts()) : the_post();
                        . esc_html(get_the_title()) . '</a>';
                   wp_reset_postdata();
               } else {
-                  echo esc_html($tym_slug);
+                  echo esc_html($tym_slug); // Fallback: jen text
               }
               ?>
             </div>

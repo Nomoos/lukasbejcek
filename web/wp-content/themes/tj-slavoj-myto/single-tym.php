@@ -1,16 +1,29 @@
 <?php
 /**
- * Detail týmu CPT (single-tym.php)
- * Zobrazuje informace o týmu a soupisku hráčů
+ * single-tym.php — DETAIL JEDNOHO TÝMU
+ * =======================================
+ * WordPress použije na URL: /tym/nazev-tymu/
+ *
+ * Zobrazuje: info box trenérů, popis, soupisku hráčů, příští zápas.
+ *
+ * PROPOJENÍ TÝM ↔ HRÁČI:
+ * Hráči nejsou propojeni přímým vztahem (post relationship).
+ * Místo toho mají meta pole 'tym_slug', které odpovídá
+ * meta poli 'tym_slug' u týmu → propojení přes sdílený slug.
+ * Funkce slavoj_vypis_hrace_tymu() v functions.php dělá WP_Query
+ * a najde všechny hráče se shodným tym_slug.
  */
+
 get_header();
 
 while (have_posts()) : the_post();
+
+    // Meta pole týmu
     $pocet_hracu   = get_post_meta(get_the_ID(), 'pocet_hracu', true);
     $hlavni_trener = get_post_meta(get_the_ID(), 'hlavni_trener', true);
     $asistent      = get_post_meta(get_the_ID(), 'asistent_trenera', true);
     $zdravotnik    = get_post_meta(get_the_ID(), 'zdravotnik', true);
-    $tym_slug      = get_post_meta(get_the_ID(), 'tym_slug', true);
+    $tym_slug      = get_post_meta(get_the_ID(), 'tym_slug', true); // Klíč pro propojení s hráči
 
     $kat_terms  = get_the_terms(get_the_ID(), 'kategorie-tymu');
     $sez_terms  = get_the_terms(get_the_ID(), 'sezona');
@@ -90,13 +103,25 @@ while (have_posts()) : the_post();
     </div>
   </div>
 
-  <!-- SOUPISKA HRÁČŮ -->
+  <!-- SOUPISKA HRÁČŮ — načtená přes helper funkci -->
   <?php if ($tym_slug) : ?>
     <div class="row mt-2">
       <div class="col-md-12">
         <h5 class="fw-bold mb-3">Soupiska hráčů</h5>
         <div class="p-3 border rounded-3">
-          <?php slavoj_vypis_hrace_tymu($tym_slug); ?>
+          <?php
+          /**
+           * slavoj_vypis_hrace_tymu() = helper funkce z functions.php.
+           * Najde všechny hráče (CPT 'hrac'), jejichž meta pole 'tym_slug'
+           * odpovídá tym_slug tohoto týmu, a vypíše je jako tabulku.
+           *
+           * Toto je příklad PROPOJENÍ BEZ PŘÍMÉ RELACE:
+           *   Tým "Muži A" má tym_slug = 'muzi-a'
+           *   Hráč "Jan Novák" má tym_slug = 'muzi-a'
+           *   → funkce je propojí přes shodnou hodnotu
+           */
+          slavoj_vypis_hrace_tymu($tym_slug);
+          ?>
         </div>
       </div>
     </div>
@@ -120,6 +145,11 @@ while (have_posts()) : the_post();
       );
 
       if ($kat_terms && !is_wp_error($kat_terms)) {
+          /**
+           * wp_list_pluck() = z pole objektů vytáhne jednu vlastnost.
+           * Např. z [{ term_id: 5, name: 'Muži A' }] → [5]
+           * 'field' => 'term_id' = porovnáváme podle ID termu (ne slugu)
+           */
           $zapasy_args['tax_query'][] = array(
               'taxonomy' => 'kategorie-tymu',
               'field'    => 'term_id',

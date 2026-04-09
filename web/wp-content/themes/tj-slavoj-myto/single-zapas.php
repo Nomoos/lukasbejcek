@@ -1,11 +1,23 @@
 <?php
 /**
- * Detail zápasu CPT (single-zapas.php)
- * Zobrazuje detailní informace o jednom zápase
+ * single-zapas.php — DETAIL JEDNOHO ZÁPASU
+ * ===========================================
+ * WordPress použije na URL: /zapas/nazev-zapasu/
+ * (single-{post_type}.php pro CPT 'zapas')
+ *
+ * NEJKOMPLEXNĚJŠÍ ŠABLONA — obsahuje:
+ * - Hlavičku zápasu (domácí vs hosté, skóre)
+ * - Detail (datum, čas, střelci, popis)
+ * - Správcovský formulář (editace skóre z frontendu!)
+ * - wp_nonce_field() — ochrana proti CSRF útokům
+ * - current_user_can() — oprávnění uživatele
  */
+
 get_header();
 
 while (have_posts()) : the_post();
+
+    // Načtení VŠECH meta polí zápasu z databáze
     $datum   = get_post_meta(get_the_ID(), 'datum_zapasu', true);
     $cas     = get_post_meta(get_the_ID(), 'cas_zapasu', true);
     $domaci  = get_post_meta(get_the_ID(), 'domaci', true);
@@ -13,16 +25,30 @@ while (have_posts()) : the_post();
     $skore   = get_post_meta(get_the_ID(), 'skore', true);
     $strelci = get_post_meta(get_the_ID(), 'strelci', true);
 
-    // Kategorie týmu a sezóna z taxonomií
+    // Načtení taxonomií přiřazených k zápasu
     $kategorie_tymu = get_the_terms(get_the_ID(), 'kategorie-tymu');
     $sezony         = get_the_terms(get_the_ID(), 'sezona');
     $stav_terms     = get_the_terms(get_the_ID(), 'stav-zapasu');
 
+    /**
+     * Bezpečné čtení názvu termu z pole.
+     * get_the_terms() může vrátit: pole termů | false | WP_Error
+     * → VŽDY musíme kontrolovat !is_wp_error() && neprázdné pole
+     *
+     * [0]->name = název prvního (a obvykle jediného) termu
+     */
     $nazev_tymu  = (!is_wp_error($kategorie_tymu) && $kategorie_tymu) ? $kategorie_tymu[0]->name : '';
     $nazev_sez   = (!is_wp_error($sezony) && $sezony) ? $sezony[0]->name : '';
     $stav_zapasu = (!is_wp_error($stav_terms) && $stav_terms) ? $stav_terms[0]->name : ($skore ? 'Odehraný' : 'Nadcházející');
 
-    // Formátování data
+    /**
+     * Formátování data přes PHP třídu DateTime.
+     * DateTime::createFromFormat('Y-m-d', '2026-04-09')
+     *   = vytvoří objekt z řetězce ve formátu rok-měsíc-den
+     * ->format('j. n. Y') = převede na český formát "9. 4. 2026"
+     *
+     * POZN: jiný přístup než v archive-zapas.php (tam strtotime + date_i18n)
+     */
     $datum_format = '';
     if ($datum) {
         $dt = DateTime::createFromFormat('Y-m-d', $datum);
@@ -125,8 +151,16 @@ while (have_posts()) : the_post();
         </div>
       <?php endif; ?>
 
-      <!-- SPRÁVCOVSKÝ FORMULÁŘ – viditelný jen přihlášeným s oprávněním edit_post -->
+      <!-- ================================================================
+           SPRÁVCOVSKÝ FORMULÁŘ — viditelný JEN přihlášeným správcům
+           ================================================================ -->
       <?php if (current_user_can('edit_post', get_the_ID())) : ?>
+      <!--
+        current_user_can('edit_post', ID) = WP funkce pro kontrolu oprávnění.
+        Vrací true jen pokud přihlášený uživatel SMÍ upravit tento příspěvek.
+        Pro nepřihlášené a čtenáře vrátí false → celý blok se nezobrazí.
+        Toto je KLÍČOVÉ pro bezpečnost — nikdy nezobrazovat editaci veřejně!
+      -->
         <div class="border rounded p-4 mb-4 admin-box">
           <h5 class="fw-bold mb-3 admin-box__title">
             ✏️ Správa zápasu
@@ -134,14 +168,38 @@ while (have_posts()) : the_post();
           </h5>
 
           <?php
-          // Zpráva po uložení
+          // Flash zpráva po úspěšném uložení (přidána do URL jako ?slavoj_saved=1)
           if (isset($_GET['slavoj_saved']) && $_GET['slavoj_saved'] === '1') :
           ?>
             <div class="alert alert-success py-2 mb-3">✅ Zápas byl úspěšně uložen.</div>
           <?php endif; ?>
 
+          <!--
+            FORMULÁŘ pro úpravu skóre a střelců z frontendu (bez nutnosti jít do adminu).
+
+            method="post"  = data se odesílají v těle požadavku (ne v URL)
+            action="admin-post.php" = WordPress endpoint pro zpracování formulářů.
+              WP přijme data a zavolá akci 'admin_post_{action}'.
+
+            BEZPEČNOST FORMULÁŘE:
+          -->
           <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+
             <?php wp_nonce_field('slavoj_update_zapas_' . get_the_ID(), 'slavoj_zapas_update_nonce'); ?>
+            <!--
+              wp_nonce_field() = OCHRANA PROTI CSRF (Cross-Site Request Forgery).
+
+              CSRF útok: útočník vytvoří stránku s formulářem, který odešle data
+              na NÁŠ web. Pokud by nebyla ochrana, správce by nevědomky
+              změnil skóre zápasu pouhým kliknutím na odkaz.
+
+              Nonce = "Number used ONCE" = jednorázový token.
+              WP vygeneruje skrytý <input> s unikátním kódem.
+              Při zpracování formuláře WP ověří, že kód odpovídá —
+              pokud ne (= formulář nepřišel z naší stránky), odmítne ho.
+            -->
+
+            <!-- Skrytá pole: jakou akci provést + ID příspěvku -->
             <input type="hidden" name="action" value="slavoj_update_zapas">
             <input type="hidden" name="post_id" value="<?php echo esc_attr(get_the_ID()); ?>">
 
@@ -232,6 +290,21 @@ while (have_posts()) : the_post();
         </div>
 
         <script>
+        /**
+         * VANILLA JAVASCRIPT — přidání střelce kliknutím na tlačítko.
+         *
+         * (function() { ... })(); = IIFE (Immediately Invoked Function Expression)
+         *   Funkce se okamžitě spustí a její proměnné NEZANÁŠÍ globální scope.
+         *   → nemůže kolidovat s jinými skripty na stránce.
+         *
+         * querySelectorAll() = najde VŠECHNY elementy s danou CSS třídou
+         * forEach()          = projde je jeden po druhém
+         * addEventListener() = naváže událost (klik) na funkci
+         * this.dataset.name  = přečte data-name atribut z tlačítka (jméno hráče)
+         *
+         * Logika: klik na "+ Přidat" → jméno hráče se připojí do pole Střelci
+         * (oddělené čárkou, pokud tam už něco je)
+         */
         (function () {
           document.querySelectorAll('.slavoj-add-scorer').forEach(function (btn) {
             btn.addEventListener('click', function () {
