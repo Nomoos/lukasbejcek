@@ -1,9 +1,11 @@
-# Handout pro maturitní komisi
+# INTERNÍ PŘÍPRAVA K Q&A (autor, NE pro komisi)
+
+> ⚠️ **POZOR:** Tento dokument **NENÍ určen k rozdání komisi**. Slouží Lukášovi pro **vlastní přípravu na Q&A** — detailní odpovědi k natrénování, banka pravděpodobných otázek.
+>
+> Pro komisi se rozdává krátký **`STRUCNY-PREHLED.md`** (1 strana A4, neutrální).
 
 **Maturitní práce:** Webová prezentace fotbalového klubu s databází zápasů a správou obsahu ve WordPressu
 **Autor:** Lukáš Bejček · **Vedoucí:** Mgr. Jaromír Háka · **Oponent:** Mgr. Miloslav Bělský
-
-> **K tisku:** 1 strana A4, oboustranně. Strana 1 — souhrn projektu. Strana 2 — odpovědi na otázky z posudků.
 
 ---
 
