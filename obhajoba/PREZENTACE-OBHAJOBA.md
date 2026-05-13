@@ -250,7 +250,7 @@ Pod tím mini-thumbnaily 4 stránek z dokumentace: titulní, ER diagram, srovná
 >
 > **AJAX filtry — toto je vědomá volba.** Aktuální GET implementace je SEO-friendly, indexovatelná, URL sdílitelná. AJAX by ale byl legitimní upgrade — endpoint `wp_ajax_filter_zapasy` v pluginu, fetch na `admin-ajax.php`, HTML fragment přes `get_template_part`, History API kvůli sdílitelnosti URL.
 >
-> **SEO plugin a Google Analytics 4 byly plánovány do odevzdání**, časově se nestihly. Integrace je triviální — Yoast nebo Rank Math + GA4 přes `wp_head` hook, řádově desítky řádků kódu. **Cache plugin chybí — to také uznávám**, pro produkci doplním LiteSpeed Cache.
+> **SEO plugin uznávám jako mezeru.** Řešil jsem pouze `alt` atributy u obrázků a meta tagy přímo v `header.php`. Dedikovaný plugin Yoast nebo Rank Math by přidal sitemap, breadcrumbs a structured data. **Google Analytics 4 byla plánována do odevzdání**, časově se nestihla — napojení je triviální přes `wp_head` hook nebo plugin Site Kit by Google. **Cache plugin také chybí — to uznávám**, pro produkci doplním LiteSpeed Cache.
 >
 > **Plnohodnotný kalendář** by se dal udělat přes FullCalendar.js a WordPress REST API — to je legitimní rozšíření, na kterém bych pracoval jako první po obhajobě."
 

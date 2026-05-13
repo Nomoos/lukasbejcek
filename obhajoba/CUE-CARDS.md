@@ -60,19 +60,20 @@
 
 **Klíčové fráze:**
 - „Dva deployment artefakty: **šablona** + **plugin `slavoj-custom-fields`**"
-- „Plugin v `wp-content/plugins/`, vlastní header, aktivace v administraci"
-- **„Klíčové rozhodnutí — proč jsem nepoužil ACF. Tři důvody:** porozumění · breaking changes · obhajitelnost"
-- ACF konkrétně: „**ACF 5 → 6 mělo breaking changes v meta API**"
-- „**Výhody a nevýhody tohoto přístupu:** transparentnost · žádná závislost · výkon vs. víc kódu k údržbě"
+- **„Většina funkcionality vychází z principů doporučených pluginů — portoval jsem do vlastního pluginu jen optimalizovanou výseč."**
+- „Bez balastu: UI builder, lokalizace, advanced fields, které nevyužívám"
+- **„Tři důvody:** porozumění · breaking changes (ACF 5→6 v meta API) · obhajitelnost"
+- „**Výhody:** výkon · transparentnost · žádná závislost — **nevýhody:** víc kódu k údržbě"
 
 **Časové kotvy:**
 - @ 0:00 — „Druhá oblast — vlastní přínos"
 - @ 0:20 — „Dva deployment artefakty…"
-- @ 0:35 — „Klíčové rozhodnutí — proč jsem nepoužil ACF…"
-- @ 1:00 — „Výhody a nevýhody tohoto přístupu…"
+- @ 0:35 — „Klíčové rozhodnutí — jak jsem k vlastnímu pluginu došel…"
+- @ 1:00 — „Výhody a nevýhody…"
 
 **Nezapomenout:**
-- **NEZNÍT VINNĚ.** Vlastní impl. je hlavní přínos, ne slabost.
+- **NEŘÍKAT „nepoužívám pluginy"** — narrative je **„portovaná optimalizovaná výseč"** (čestnější + technicky obhajitelné).
+- **NEZNÍT VINNĚ.** Optimalizace pluginů na potřebnou výseč je hlavní přínos, ne slabost.
 - **NIKDY neříkat „Pan Bělský se ptá" / „Pan Háka se ptá"** — odpověď je v autonomní argumentaci.
 
 ---
@@ -135,7 +136,9 @@
 | Kategorie | Téma | Fráze |
 |-----------|------|-------|
 | **PŘIJMOUT** | Lazy LCP | „**Toto je oprávněná připomínka oponenta.** V další verzi bych to řešil…" |
-| **PŘIJMOUT** | Cache + SEO plugin | „**To uznávám.** Pro produkci doplním LiteSpeed a Yoast." |
+| **PŘIJMOUT** | Cache plugin | „**Cache plugin chybí — to uznávám.** LiteSpeed pro produkci." |
+| **PŘIJMOUT** | SEO plugin | „**Uznávám — řešil jsem jen alt atributy a meta tagy v kódu.** Plugin Yoast / Rank Math by přidal sitemap, breadcrumbs, structured data." |
+| **VYSVĚTLIT** | GA4 (analytika) | „**Bylo plánováno do odevzdání, časově se nestihlo.** Triviální přes `wp_head` hook nebo Site Kit." |
 | **VYSVĚTLIT/OBHÁJIT** | AJAX vs. GET | „**Toto je vědomá volba.** GET je SEO-friendly, sdílitelný. AJAX legitimní upgrade." |
 | **OBHÁJIT** | Kalendář (full) | „Legitimní rozšíření — FullCalendar.js + REST API." |
 

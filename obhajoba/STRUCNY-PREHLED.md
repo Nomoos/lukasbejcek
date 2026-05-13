@@ -21,7 +21,7 @@ Vytvořit moderní informační web fotbalového klubu TJ Slavoj Mýto se správ
 
 ## Vlastní přínos
 
-Veškerá funkcionalita implementována **vlastním PHP kódem** místo doporučených pluginů (ACF, CPT UI, FacetWP, User Role Editor). Motivace: hlubší porozumění WordPress API, nezávislost na breaking changes externích pluginů, transparentnost a obhajitelnost každého řádku kódu.
+Funkcionalita implementována ve vlastním pluginu `slavoj-custom-fields`. Většina vychází z principů doporučených pluginů (ACF, CPT UI, FacetWP, User Role Editor), ale **portována jen jako optimalizovaná výseč** — bez UI builderu, balastu lokalizací a advanced fields, které projekt nevyužívá. Motivace: hlubší porozumění WordPress API, nezávislost na breaking changes externích pluginů, transparentnost a obhajitelnost každého řádku kódu.
 
 ## Použité technologie
 
@@ -31,19 +31,22 @@ WordPress 6.x · PHP · MySQL · Bootstrap 5.3.3 · HTML5 (`<dialog>` pro lightb
 
 | Připomínka | Reakce |
 |------------|--------|
-| **Vlastní implementace vs. ACF/CPT UI** | Vědomé rozhodnutí — stabilní WP core API, nezávislost na breaking changes externích pluginů. |
+| **Vlastní implementace vs. ACF/CPT UI** | Vědomé rozhodnutí — portovaná optimalizovaná výseč z doporučených pluginů místo plné integrace s balastem. Stabilní WP core API. |
 | **Kalendářový modul** | Řešen funkčním ekvivalentem: interaktivní banner s nadcházejícími zápasy + filtry tým/sezóna/stav. Plnohodnotný kalendář jako rozšíření. |
 | **Lazy loading na LCP banneru** | Oprávněná připomínka. V další verzi vyřeším výjimkou pro hero sekci, nebo přechodem na nativní `wp_get_attachment_image` (WP 5.5+). |
 | **Sdílená taxonomie napříč CPT** | Designové rozhodnutí. Konzistenci dat by zajistila validační vrstva v `save_post` hooku. |
 | **AJAX filtry** | Aktuální GET implementace je vědomá volba (SEO, sdílitelná URL). AJAX doplnitelný přes `wp_ajax` endpoint + History API. |
-| **Cache a SEO plugin** | Uznávám, v projektu chybí. Pro produkci doplním LiteSpeed Cache a Yoast (nebo Rank Math) s GA4. |
+| **SEO plugin** | Uznávám — řešil jsem pouze `alt` atributy a meta tagy v kódu (header.php). Dedikovaný plugin Yoast / Rank Math by přidal sitemap, breadcrumbs a structured data. |
+| **GA4 (analytika)** | Plánováno do odevzdání, časově se nestihlo. Integrace přes `wp_head` hook nebo plugin Site Kit by Google je triviální. |
+| **Cache plugin** | Uznávám, v projektu chybí. Pro produkci doplním LiteSpeed Cache. |
 
 ## Možná rozšíření
 
 - AJAX filtry s History API
 - Plnohodnotný gridový kalendář přes FullCalendar.js a WP REST API
 - Cache plugin LiteSpeed Cache
-- SEO plugin Yoast / Rank Math + napojení na Google Analytics 4
+- SEO plugin Yoast / Rank Math (sitemap, breadcrumbs, structured data)
+- Google Analytics 4 přes `wp_head` hook nebo Site Kit by Google
 
 ---
 

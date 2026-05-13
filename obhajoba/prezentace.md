@@ -86,16 +86,18 @@ style: |
 
 ---
 
-# Vlastní implementace místo pluginů
+# Vlastní implementace = optimalizovaná výseč pluginů
 
 **Dva deployment artefakty:** šablona `tj-slavoj-myto` + vlastní plugin `slavoj-custom-fields`
 
-| Doporučený plugin | Nahrazeno |
-|-------------------|-----------|
-| Advanced Custom Fields | `register_meta` + admin meta boxy v pluginu |
-| CPT UI | `register_post_type` v `functions.php` |
-| FacetWP | `WP_Query` + GET parametry |
-| User Role Editor | `add_role` + `current_user_can` |
+| Doporučený plugin | Portovaná optimalizovaná výseč |
+|-------------------|-------------------------------|
+| Advanced Custom Fields | `register_meta` + jen potřebné meta boxy |
+| CPT UI | `register_post_type`, bez UI builderu |
+| FacetWP | `WP_Query` + GET, jen použité filtry |
+| User Role Editor | `add_role` + `current_user_can`, reálné role klubu |
+
+Místo plné integrace **portováno jen to, co projekt potřebuje** — bez UI builderu, balastu lokalizací a advanced fields bez uplatnění.
 
 **Tři důvody:** porozumění WordPress API · nezávislost na breaking changes (ACF 5 → 6 mělo breaking changes v meta API; `register_post_type` je stabilní 10+ let) · obhajitelnost každého řádku kódu
 
@@ -167,9 +169,10 @@ style: |
 | Téma | Postoj | Plán |
 |------|--------|------|
 | **Lazy loading na LCP banneru** | uznávám | výjimka pro hero, nebo nativní `wp_get_attachment_image` (WP 5.5+) |
-| **AJAX filtry** | vědomá volba (SEO) | `wp_ajax_filter_zapasy` + History API |
+| **AJAX filtry** | vědomá volba (SEO URL) | `wp_ajax_filter_zapasy` + History API |
 | **Cache plugin** | uznávám | LiteSpeed Cache |
-| **SEO plugin + analytika** | uznávám | Yoast / Rank Math + GA4 |
+| **SEO plugin** | uznávám — jen `alt` atributy a meta tagy v kódu | Yoast / Rank Math |
+| **GA4 (analytika)** | plánováno, časově nestihnuto | `wp_head` hook nebo Site Kit |
 | **Plnohodnotný kalendář** | rozšíření | FullCalendar.js + REST API |
 
 </div>

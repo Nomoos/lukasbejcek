@@ -66,21 +66,24 @@ Dva deployment artefakty:
 
 | Doporučený plugin | Nahrazeno |
 |-------------------|-----------|
-| Advanced Custom Fields | register_meta + admin meta boxy v pluginu |
-| CPT UI | register_post_type ve functions.php |
-| FacetWP | WP_Query + GET parametry |
-| User Role Editor | add_role + current_user_can |
+| Advanced Custom Fields | register_meta + jen potřebné meta boxy |
+| CPT UI | register_post_type ve functions.php, bez UI builderu |
+| FacetWP | WP_Query + GET parametry, jen použité filtry |
+| User Role Editor | add_role + current_user_can, jen reálné role klubu |
 
+Většina funkcionality vychází z principů doporučených pluginů — portována jen optimalizovaná výseč.
 Tři důvody: porozumění WP API · nezávislost na breaking changes · obhajitelnost
 
 ### SPEAKER NOTES
 Druhá oblast — kvalita praktické části a vlastní přínos. Oba posudky jako hlavní přínos uvádějí, že nepoužívám doporučené pluginy a vše implementuji vlastním PHP kódem.
 
-Práce má dva samostatné deployment artefakty: šablonu tj-slavoj-myto a vlastní WordPress plugin slavoj-custom-fields. Šablona řeší prezentační logiku — frontend, template hierarchy, styling. Plugin řeší správu obsahu — admin meta boxy, validace, registraci vlastních rolí. To je stejný architektonický princip jako kombinace standardní šablony plus ACF — jen že plugin je psaný mnou. Plugin je nasazený standardním způsobem v wp-content/plugins/, má vlastní header komentář a aktivuje se v administraci.
+Práce má dva samostatné deployment artefakty: šablonu tj-slavoj-myto a vlastní WordPress plugin slavoj-custom-fields. Šablona řeší prezentační logiku, plugin řeší správu obsahu — admin meta boxy, validace, role.
 
-Klíčové rozhodnutí — proč jsem nepoužil Advanced Custom Fields. Tři důvody. Za prvé, hlubší porozumění WordPress API — to oponent v posudku ocenil. Za druhé, nezávislost na breaking changes externích pluginů. ACF mělo breaking changes v meta API mezi verzemi 5 a 6, naproti tomu WordPress core funkce register_post_type a register_meta jsou stabilní víc než deset let. Za třetí, obhajitelnost — mohu vysvětlit každý řádek kódu, ne pouze klik v administraci.
+Klíčové rozhodnutí — jak jsem k vlastnímu pluginu došel. Většina funkcionality vychází z principů doporučených pluginů ACF, CPT UI, FacetWP a User Role Editor. Místo plné integrace jsem prošel jejich logiku a portoval do vlastního pluginu jen optimalizovanou výseč — pouze ty části, které projekt skutečně potřebuje. Tím jsem se vyhnul balastu, který by plné pluginy přinášely: stovky řádků pro UI builder, který nevyužívám, lokalizace pro desítky jazyků, advanced fields bez uplatnění v tomto projektu.
 
-Výhody a nevýhody tohoto přístupu. Výhody: porozumění, žádná závislost na třetích stranách, lepší výkon, transparentnost. Nevýhody: víc kódu k údržbě, žádný UI builder pro netechnické adminy. Pro klubový web s nízkou frekvencí změn převažují výhody.
+Tři důvody pro tento přístup. Za prvé, hlubší porozumění WordPress API — abych mohl něco optimalizovat, musel jsem nejdřív pochopit, jak to funguje. Za druhé, nezávislost na breaking changes externích pluginů. ACF mělo breaking changes v meta API mezi verzemi 5 a 6, naproti tomu WordPress core funkce register_post_type a register_meta jsou stabilní víc než deset let. Za třetí, obhajitelnost — mohu vysvětlit každý řádek kódu, ne pouze klik v administraci.
+
+Výhody a nevýhody. Výhody: lepší výkon (žádné nevyužité features), transparentnost, žádná závislost na třetích stranách. Nevýhody: víc kódu k údržbě, žádný UI builder pro netechnické adminy. Pro klubový web s nízkou frekvencí změn převažují výhody.
 
 ---
 
@@ -153,9 +156,10 @@ Slabá místa a rozšíření
 | Téma | Postoj | Plán |
 |------|--------|------|
 | Lazy loading na LCP banneru | uznávám | výjimka pro hero / nativní wp_get_attachment_image |
-| AJAX filtry | vědomá volba (SEO) | wp_ajax + History API |
+| AJAX filtry | vědomá volba (SEO URL) | wp_ajax + History API |
 | Cache plugin | uznávám | LiteSpeed Cache |
-| SEO + analytika | uznávám | Yoast / Rank Math + GA4 |
+| SEO plugin | uznávám — jen alt atributy a meta tagy v kódu | Yoast / Rank Math |
+| GA4 (analytika) | plánováno, časově nestihnuto | wp_head hook nebo Site Kit |
 | Plnohodnotný kalendář | rozšíření | FullCalendar.js + REST API |
 
 ### SPEAKER NOTES
@@ -165,7 +169,7 @@ Lazy loading — toto je oprávněná připomínka oponenta. Implementoval jsem 
 
 AJAX filtry — toto je vědomá volba. Aktuální GET implementace je SEO-friendly, indexovatelná, URL sdílitelná. AJAX by ale byl legitimní upgrade — endpoint wp_ajax_filter_zapasy v pluginu, fetch na admin-ajax.php, HTML fragment přes get_template_part, History API kvůli sdílitelnosti URL.
 
-Cache a SEO plugin chybí — to uznávám. Pro produkční nasazení doplním LiteSpeed Cache a Yoast nebo Rank Math s napojením na Google Analytics. Jsou to triviální doplnění.
+SEO plugin uznávám jako mezeru — řešil jsem pouze alt atributy u obrázků a meta tagy přímo v header.php. Dedikovaný plugin Yoast nebo Rank Math by přidal sitemap, breadcrumbs a structured data. Google Analytics 4 byla plánována do odevzdání, časově se nestihla — napojení je triviální přes wp_head hook nebo plugin Site Kit by Google. Cache plugin také chybí — pro produkci doplním LiteSpeed Cache.
 
 Plnohodnotný kalendář by se dal udělat přes FullCalendar.js a WordPress REST API — to je legitimní rozšíření, na kterém bych pracoval jako první po obhajobě.
 
