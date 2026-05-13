@@ -94,16 +94,21 @@ Drobné stylistické nedostatky a jednoduché formulace. Grafická úprava stand
 | Jazyk | velmi dobrá | velmi dobrá |
 | **Celkové** | **chvalitebně** | **chvalitebně** |
 
-### Slabá místa, na která se komise pravděpodobně zeptá
+### Slabá místa — připravené reakce v prezentaci
 
-1. **Chybějící kalendářový modul** (bod 5 zadání) — připravit odpověď: jak by se implementoval (FullCalendar.js / vlastní šablona s `WP_Query` orderby date)
-2. **SEO/analytika** (bod 8) — připravit odpověď: Yoast/Rank Math by se napojil, GA4 přes `wp_head` hook
-3. **Cache plugin** (bod 7a) — pouze CDN, mělo by být LiteSpeed/WP Super Cache
-4. **`<h5></h5>` prázdný tag** v banneru — opravit před obhajobou!
-5. **`noindex, nofollow`** meta — opravit na produkci!
-6. **Galerie online** — fotky nahrát před obhajobou
-7. **Lazy loading přes `str_replace`** — LCP obrázek v banneru by neměl mít `loading="lazy"` (zhorší Core Web Vitals)
-8. **"Stará garda" v taxonomii sdílené napříč CPT** — vysvětlit kontextové filtrování
+> **Pozn.:** Scope je locknut na prezentační materiály — kód se před obhajobou neupravuje. Tato místa jsou v prezentaci a Q&A zmíněna jako vědomá rozhodnutí nebo přijaté připomínky.
+
+| Slabé místo | Kategorie reakce | Kde je v prezentaci |
+|-------------|------------------|---------------------|
+| Chybějící kalendářový modul (bod 5) | **OBHÁJIT** — funkční ekvivalent přes banner + filtry je pro klubový web dostačující; plnohodnotný grid by byl overkill, dával by smysl až s dalšími typy událostí (akce, prodej lístků) | slide 2 + slide 7 |
+| SEO plugin (bod 8) | **PŘIJMOUT** — řešeno jen alt atributy a meta tagy v kódu | slide 7 |
+| GA4 / analytika (bod 8) | **VYSVĚTLIT** — plánováno do odevzdání, časově nestihnuto | slide 7 |
+| Cache plugin (bod 7a) | **PŘIJMOUT** — pouze CDN, plán LiteSpeed Cache | slide 7 |
+| Lazy loading na LCP banneru | **PŘIJMOUT** — oprávněná připomínka, v další verzi výjimka nebo `wp_get_attachment_image` | slide 7 |
+| Sdílená taxonomie napříč CPT (Stará garda) | **VYSVĚTLIT** — designové rozhodnutí, řešení v `save_post` hooku | slide 4 |
+| Prázdný `<h5></h5>` v banneru | (jen pokud se zeptají) — drobné opomenutí | Q&A |
+| Meta `noindex, nofollow` na produkci | (jen pokud se zeptají) — opomenutí, snadno opravitelné | Q&A |
+| Galerie bez online fotek | (jen pokud se zeptají) — testovací data, klub teprve dodá produkční fotky | Q&A |
 
 ### Otázky pro obhajobu — sumář (6 otázek celkem)
 

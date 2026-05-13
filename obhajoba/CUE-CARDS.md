@@ -39,18 +39,18 @@
 
 ---
 
-## Slide 2 — Splnění zadání + reframe kalendáře (1:30)
+## Slide 2 — Splnění zadání (1:30)
 
 **Klíčové fráze (nesmí chybět):**
 - „6 CPT — o tři navíc oproti zadání"
-- „Kalendář = banner + filtry, funkční ekvivalent"
-- „Plnohodnotný gridový kalendář by se dal doplnit přes **FullCalendar.js + REST API**"
-- „Cache + SEO plugin — plán pro produkci"
+- „Kalendář = banner + filtry, funkční ekvivalent. Pro klubový web plně dostačující."
+- „Plnohodnotný kalendář by dával smysl až s prodejem lístků nebo dalšími typy událostí"
+- „Optimalizace a SEO jen na úrovni kódu — cache plugin a SEO plugin v plánu pro produkci"
 
 **Časové kotvy:**
-- @ 0:00 — „Sekce první posudku — splnění zadání"
+- @ 0:00 — „Začnu shrnutím splnění zadání…"
 - @ 0:40 — „Bod 5 — kalendář — vyřešen funkčním ekvivalentem"
-- @ 1:15 — „Body 7 a 8 — cache a SEO plugin — plán"
+- @ 1:15 — „Body 7 a 8 — optimalizace a SEO — řešeno jen na úrovni kódu"
 
 **Nezapomenout:** komise vidí tabulku zadání → soustředit se na **bod 5**.
 
@@ -66,10 +66,10 @@
 - „**Výhody:** výkon · transparentnost · žádná závislost — **nevýhody:** víc kódu k údržbě"
 
 **Časové kotvy:**
-- @ 0:00 — „Druhá oblast — vlastní přínos"
+- @ 0:00 — „Klíčovým technickým přínosem práce je…"
 - @ 0:20 — „Dva deployment artefakty…"
-- @ 0:35 — „Klíčové rozhodnutí — jak jsem k vlastnímu pluginu došel…"
-- @ 1:00 — „Výhody a nevýhody…"
+- @ 0:35 — „Většina funkcionality vychází z principů doporučených pluginů…"
+- @ 1:00 — „Výhody a nevýhody tohoto přístupu…"
 
 **Nezapomenout:**
 - **NEŘÍKAT „nepoužívám pluginy"** — narrative je **„portovaná optimalizovaná výseč"** (čestnější + technicky obhajitelné).
@@ -123,7 +123,7 @@
 - „Popsané nasazení **obou artefaktů** — šablony i pluginu"
 
 **Časové kotvy:**
-- @ 0:00 — „Sekce třetí a čtvrtá — dokumentace a jazyk"
+- @ 0:00 — „Dokumentace má čtyřicet stran…"
 
 **Nezapomenout:** krátký slide, **nezdržovat se**.
 
@@ -140,7 +140,7 @@
 | **PŘIJMOUT** | SEO plugin | „**Uznávám — řešil jsem jen alt atributy a meta tagy v kódu.** Plugin Yoast / Rank Math by přidal sitemap, breadcrumbs, structured data." |
 | **VYSVĚTLIT** | GA4 (analytika) | „**Bylo plánováno do odevzdání, časově se nestihlo.** Triviální přes `wp_head` hook nebo Site Kit." |
 | **VYSVĚTLIT/OBHÁJIT** | AJAX vs. GET | „**Toto je vědomá volba.** GET je SEO-friendly, sdílitelný. AJAX legitimní upgrade." |
-| **OBHÁJIT** | Kalendář (full) | „Legitimní rozšíření — FullCalendar.js + REST API." |
+| **OBHÁJIT** | Kalendář (full) | „Aktuální řešení je pro klub plně dostačující. FullCalendar by byl overkill — dával by smysl až s prodejem lístků nebo dalšími typy událostí." |
 
 **Časové kotvy:**
 - @ 0:00 — „K oblastem, kde projekt má slabší body…"

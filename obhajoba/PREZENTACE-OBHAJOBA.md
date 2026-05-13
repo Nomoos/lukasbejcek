@@ -94,21 +94,22 @@
 | 2. Šablona v Bootstrapu 5 | ✅ vlastní |
 | 3. CPT zápas, tým, hráč | ✅ + 3 navíc (galerie, sponzor, kontakt) |
 | 4. Filtrování dle sezóny/týmu | ✅ GET parametry |
-| **5. Kalendářový modul** | **🔄 reframe: banner + filtry** |
+| **5. Kalendářový modul** | **🔄 funkční ekvivalent: banner + filtry** |
 | 6. Galerie | ✅ + lightbox |
-| 7. Optimalizace | ⚠️ částečně (minifikace, WebP — cache plánována) |
-| 8. SEO & analytika | ⚠️ plán: Yoast + GA4 |
+| 7. Optimalizace | ⚠️ částečně (minifikace, WebP, lazy load — cache plánována) |
+| 8. SEO | ⚠️ řešeno jen alt atributy + meta tagy v kódu |
+| 8b. Analytika (GA4) | ⚠️ plánováno, časově nestihnuto |
 | 9. Hosting, HTTPS | ✅ |
 | 10. Role | ✅ vlastní RBAC |
 
 Pod tabulkou screenshot side-by-side: **banner s nadcházejícími zápasy** vs. **filtry na /zapasy**.
 
-**Mluvený text (zahrnuje odpověď na Háka Q3 — kalendář):**
-> „Pojďme po sekcích posudku. **Sekce první — splnění zadání.** Splněno: vlastní téma v Bootstrapu 5, šest custom post types — což jsou tři navíc oproti zadání — čtyři taxonomie, filtrování, lightbox galerie, role, hosting a HTTPS.
+**Mluvený text:**
+> „Začnu shrnutím splnění zadání. Splněno: vlastní téma v Bootstrapu 5, šest vlastních typů obsahu — což jsou tři navíc oproti zadání — čtyři taxonomie, filtrování, lightbox galerie, role, hosting a HTTPS.
 >
-> Bod 5 zadání — **kalendářový modul** — vyřešen funkčním ekvivalentem ve dvou částech. Na homepage je **interaktivní banner s nadcházejícími zápasy** ve vizuálních kartách — to pokrývá vizuální zobrazení. Na stránce Zápasy jsou **filtry podle týmu, sezóny a stavu** — to pokrývá kategorické a časové filtrování. Společně plní stejnou UX funkci jako dedikovaný kalendář, ale bez závislosti na pluginu třetí strany. Plnohodnotný gridový kalendář by se dal doplnit přes knihovnu FullCalendar.js napojenou na WordPress REST API.
+> Bod 5 zadání — kalendářový modul — je vyřešen funkčním ekvivalentem ve dvou částech. Na homepage je interaktivní banner s nadcházejícími zápasy ve vizuálních kartách. Na stránce Zápasy jsou filtry podle týmu, sezóny a stavu. Aktuální řešení je pro klubový web plně dostačující — klub na webu prezentuje pouze zápasy. Plnohodnotný gridový kalendář by dával smysl až ve chvíli, kdy by web prezentoval i další události — klubové akce, prodej lístků, ples.
 >
-> Body 7 a 8 — cache plugin a SEO plugin — jsou aktuálně řešeny částečně, na úrovni kódu (minifikace, WebP, meta tagy). Pro produkci je plán LiteSpeed Cache plus Yoast nebo Rank Math."
+> Body 7 a 8 — optimalizace a SEO — jsou aktuálně řešeny jen na úrovni kódu: minifikace, WebP, lazy loading, alt atributy a meta tagy v hlavičce. Cache plugin a SEO plugin jsou v plánu pro produkční nasazení."
 
 ---
 
@@ -143,8 +144,8 @@ functions.php  →  helpery, registrace CPT a taxonomií
 | FacetWP | `WP_Query` + GET parametry — jen použitý typ filtrů |
 | User Role Editor | `add_role` + `current_user_can`, jen reálné role klubu |
 
-**Mluvený text (autonomní argumentace, implicitně pokrývá Bělský Q1 + Háka Q1):**
-> „Druhá oblast — kvalita praktické části a vlastní přínos. Oba posudky jako hlavní přínos uvádějí, že nepoužívám doporučené pluginy a vše implementuji vlastním PHP kódem.
+**Mluvený text:**
+> „Klíčovým technickým přínosem práce je přístup ke správě obsahu vlastním kódem místo plné integrace doporučených pluginů.
 >
 > Práce má **dva samostatné deployment artefakty**: šablonu `tj-slavoj-myto` a vlastní WordPress plugin **`slavoj-custom-fields`**. Šablona řeší prezentační logiku, plugin řeší správu obsahu — admin meta boxy, validace, role.
 >
@@ -178,10 +179,10 @@ functions.php  →  helpery, registrace CPT a taxonomií
 - `galerie` ↔ `sezona`, `kategorie-tymu` (zde i „Stará garda")
 - `hrac` ↔ `pozice-hrace`, `kategorie-tymu`
 
-**Mluvený text (autonomní argumentace, implicitně pokrývá Bělský Q2):**
-> „Datový model — šest typů obsahu, čtyři taxonomie. Sezóna je **taxonomie, ne meta pole**, protože je sdílená napříč zápasy, týmy a galeriemi. Kategorie týmu funguje stejně.
+**Mluvený text:**
+> „Datový model je postavený na šesti vlastních typech obsahu a čtyřech taxonomiích. Sezóna je taxonomie, ne meta pole, protože je sdílená napříč zápasy, týmy a galeriemi. Kategorie týmu funguje stejně.
 >
-> **Klíčový designový rys — sdílená taxonomie napříč CPT.** Kategorie 'Stará garda' se prakticky používá jen u galerií, ale technicky je dostupná i pro zápasy. Filtrování ve frontendu běží přes `WP_Query` s `tax_query`, takže zápas omylem přiřazený ke Staré gardě se v UI mimo její archiv nezobrazí. Data v databázi by ale byla nekonzistentní. Správné řešení je **validační vrstva v `save_post` hooku**, která pro CPT `zapas` povolí jen kategorie A-mužstvo až Minipřípravka, a Starou gardu jen pro CPT `galerie`. Alternativou je registrovat taxonomii samostatně pro každý CPT, ale ztratila by se výhoda sdílení."
+> Sdílení taxonomií napříč CPT je vědomé designové rozhodnutí. Kategorie 'Stará garda' se prakticky používá jen u galerií, ale technicky je dostupná i pro zápasy. Filtrování ve frontendu běží přes `WP_Query` s `tax_query`, takže zápas omylem přiřazený ke Staré gardě se v UI mimo její archiv nezobrazí. Data v databázi by ale byla nekonzistentní. Správné řešení je validační vrstva v `save_post` hooku, která pro CPT `zapas` povolí jen reálné kategorie A-mužstvo až Minipřípravka. Alternativou je registrovat taxonomii samostatně pro každý CPT, ale ztratila by se výhoda sdílení."
 
 ---
 
@@ -221,9 +222,7 @@ Pod tím malý popisek:
 Pod tím mini-thumbnaily 4 stránek z dokumentace: titulní, ER diagram, srovnávací tabulka, testovací scénář.
 
 **Mluvený text:**
-> „**Sekce třetí a čtvrtá posudku — dokumentace a jazyk.** Dokumentace má čtyřicet stran, oponent ji hodnotí jako vynikající. Obsahuje analýzu původního řešení, srovnávací tabulky pluginy versus vlastní implementace, ER diagram datového modelu, **popis nasazení obou artefaktů — šablony i pluginu `slavoj-custom-fields`**, testovací scénáře a příručku administrátora. Shoda s externími zdroji je nula procent.
->
-> *Pan Háka v posudku zmiňuje malý důraz na reálné nasazení standardních pluginů — to je dáno tím, že jsem je nahradil vlastní implementací. Nasazení vlastního pluginu je přitom popsané standardním WordPress způsobem.*"
+> „Dokumentace má čtyřicet stran a oponent ji hodnotí jako vynikající. Obsahuje analýzu původního řešení, srovnávací tabulky pluginy versus vlastní implementace, ER diagram datového modelu, popis nasazení obou artefaktů — šablony i pluginu `slavoj-custom-fields` — testovací scénáře a příručku administrátora. Shoda s externími zdroji je nula procent."
 
 ---
 
@@ -239,12 +238,13 @@ Pod tím mini-thumbnaily 4 stránek z dokumentace: titulní, ER diagram, srovná
 |-------|------|------|
 | Lazy loading na LCP banneru (Bělský 3) | ⚠️ uznáno | Výjimka pro hero, nebo `wp_get_attachment_image` nativní |
 | AJAX filtry (Háka 2) | vědomá volba | Doplnitelné přes `wp_ajax` + `admin-ajax.php`, History API |
-| Kalendář — plnohodnotný grid (Bělský, Háka 3) | reframe (banner+filtry) | FullCalendar.js + REST API |
+| Kalendář — plnohodnotný grid (Bělský, Háka 3) | YAGNI — aktuální banner + filtry dostačující | rozšíření až s dalšími typy událostí (akce, prodej lístků) |
 | Cache plugin | chybí | LiteSpeed Cache |
-| SEO plugin + analytika | chybí | Yoast / Rank Math + GA4 |
+| SEO plugin | chybí (jen alt atributy + meta tagy v kódu) | Yoast / Rank Math |
+| GA4 (analytika) | plánováno, časově nestihnuto | `wp_head` hook |
 
-**Mluvený text (rozlišuje: přijmout / vysvětlit / obhájit):**
-> „K oblastem, kde projekt má slabší body — chci je sám zmínit, protože je znám.
+**Mluvený text:**
+> „Závěrem chci sám zmínit body, které v práci považuji za slabší.
 >
 > **Lazy loading — toto je oprávněná připomínka oponenta.** Implementoval jsem ho přes `str_replace` na všechny `<img>` tagy, **včetně LCP obrázku v hero sekci**. To zhorší Largest Contentful Paint a Core Web Vitals. V další verzi bych to řešil výjimkou pro hero, nebo lépe přechodem na nativní `wp_get_attachment_image` z WordPress 5.5+, který první obrázek na stránce vyloučí automaticky a navíc přidá `fetchpriority=high`.
 >
@@ -252,7 +252,7 @@ Pod tím mini-thumbnaily 4 stránek z dokumentace: titulní, ER diagram, srovná
 >
 > **SEO plugin uznávám jako mezeru.** Řešil jsem pouze `alt` atributy u obrázků a meta tagy přímo v `header.php`. Dedikovaný plugin Yoast nebo Rank Math by přidal sitemap, breadcrumbs a structured data. **Google Analytics 4 byla plánována do odevzdání**, časově se nestihla — napojení je triviální přes `wp_head` hook nebo plugin Site Kit by Google. **Cache plugin také chybí — to uznávám**, pro produkci doplním LiteSpeed Cache.
 >
-> **Plnohodnotný kalendář** by se dal udělat přes FullCalendar.js a WordPress REST API — to je legitimní rozšíření, na kterém bych pracoval jako první po obhajobě."
+> **Plnohodnotný gridový kalendář** považuji v tomto kontextu za overkill. Pro klub, jehož web prezentuje jen zápasy, banner s nadcházejícími zápasy a filtry tým/sezóna/stav plní stejnou funkci. Knihovnu jako FullCalendar.js bych přidával až ve chvíli, kdy by web prezentoval i jiné události — klubové akce, prodej lístků. Aktuální řešení je z hlediska potřeb klubu plně dostačující."
 
 ---
 
@@ -265,8 +265,8 @@ Pod tím mini-thumbnaily 4 stránek z dokumentace: titulní, ER diagram, srovná
 | ✅ Hotovo | 🔄 Rozšiřitelné | 🎯 Výsledek |
 |----------|----------------|-------------|
 | 6 CPT, vlastní plugin | AJAX filtry | chvalitebně (oba) |
-| Banner + filtry (kalendář) | FullCalendar.js | dokumentace „vynikající" |
-| Galerie + lightbox | Cache + SEO plugin | 0 % shoda |
+| Banner + filtry | Cache plugin | dokumentace „vynikající" |
+| Galerie + lightbox | SEO plugin + GA4 | 0 % shoda |
 
 Velký nadpis: **„Děkuji za pozornost. Web mám otevřený pro případné dotazy."**
 
@@ -318,7 +318,7 @@ Velký nadpis: **„Děkuji za pozornost. Web mám otevřený pro případné do
 | Bělský 3 (lazy loading LCP) | 7 | „Lazy loading… banner v hero sekci je LCP element…" |
 | Háka 1 (impl. vs. pluginy) | 3 | „Výhody a nevýhody tohoto přístupu…" |
 | Háka 2 (AJAX filtry) | 7 | „AJAX filtry. Aktuální GET implementace je vědomá volba…" |
-| Háka 3 (plnohodnotný kalendář) | 2 + 7 | Slide 2: reframe banner+filtry; slide 7: plán FullCalendar.js |
+| Háka 3 (plnohodnotný kalendář) | 2 + 7 | Slide 2: banner + filtry = funkční ekvivalent; slide 7: aktuální řešení dostačující, FullCalendar pouze s dalšími typy událostí |
 
 > **Důsledek:** Lukáš odpovědi vysvětluje **jako vlastní rozhodnutí, ne jako reakci na komisi**. V Q&A když komise otázku položí, Lukáš se odkáže: „Jak jsem zmínil v prezentaci, hlavní důvod je X — a rád to rozvedu detailněji o Y a Z." Tím dodržuje etiketu „počkat na položení otázky" a zároveň ukazuje, že měl odpověď připravenou.
 

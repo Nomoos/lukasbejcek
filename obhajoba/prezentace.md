@@ -86,7 +86,7 @@ style: |
 
 ---
 
-# Vlastní implementace = optimalizovaná výseč pluginů
+# Vlastní implementace — optimalizovaná výseč pluginů
 
 **Dva deployment artefakty:** šablona `tj-slavoj-myto` + vlastní plugin `slavoj-custom-fields`
 
@@ -173,7 +173,7 @@ Místo plné integrace **portováno jen to, co projekt potřebuje** — bez UI b
 | **Cache plugin** | uznávám | LiteSpeed Cache |
 | **SEO plugin** | uznávám — jen `alt` atributy a meta tagy v kódu | Yoast / Rank Math |
 | **GA4 (analytika)** | plánováno, časově nestihnuto | `wp_head` hook nebo Site Kit |
-| **Plnohodnotný kalendář** | rozšíření | FullCalendar.js + REST API |
+| **Plnohodnotný kalendář** | aktuální řešení dostačující | FullCalendar.js pouze při rozšíření na další typy událostí |
 
 </div>
 

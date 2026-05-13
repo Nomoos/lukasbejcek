@@ -31,22 +31,25 @@
 | **5** | **Kalendářový modul** | 🔄 funkční ekvivalent: banner na homepage + filtry na /zapasy |
 | 6 | Galerie | ✅ s lightboxem |
 | 7 | Optimalizace (cache, lazy, WebP, minifikace) | ⚠️ částečně — cache plugin v plánu (LiteSpeed) |
-| 8 | SEO & analytika | ⚠️ plán: Yoast + GA4 |
+| 8 | SEO | ⚠️ řešeno jen alt atributy + meta tagy v kódu |
+| 8b | Analytika (GA4) | ⚠️ plánováno do odevzdání, časově nestihnuto |
 | 9 | Hosting + HTTPS | ✅ |
 | 10 | Role | ✅ vlastní RBAC (`add_role` + `current_user_can`) |
 
 ### Klíčové architektonické rozhodnutí
 
-**Vlastní implementace místo doporučených pluginů (ACF, CPT UI, FacetWP, User Role Editor).**
+**Vlastní implementace = portovaná optimalizovaná výseč z principů doporučených pluginů.**
 
-| Doporučený plugin | Nahrazeno |
+Většina funkcionality vychází z principů doporučených pluginů (ACF, CPT UI, FacetWP, User Role Editor). Místo plné integrace jsem prošel jejich logiku a portoval do vlastního pluginu `slavoj-custom-fields` jen optimalizovanou výseč — pouze to, co projekt skutečně potřebuje.
+
+| Doporučený plugin | Portovaná optimalizovaná výseč |
 |---|---|
-| ACF | `register_meta` + admin meta boxy ve vlastním pluginu |
-| CPT UI | `register_post_type` v `functions.php` |
-| FacetWP | `WP_Query` + GET parametry |
-| User Role Editor | `add_role` + `current_user_can` |
+| ACF | `register_meta` + jen potřebné meta boxy |
+| CPT UI | `register_post_type` v `functions.php`, bez UI builderu |
+| FacetWP | `WP_Query` + GET parametry, jen použité filtry |
+| User Role Editor | `add_role` + `current_user_can`, jen reálné role klubu |
 
-**Důvody:** porozumění WP API · nezávislost na breaking changes externích pluginů · obhajitelnost každého řádku kódu.
+**Důvody:** porozumění WP API (abych mohl optimalizovat, musel jsem nejdřív pochopit) · nezávislost na breaking changes externích pluginů · obhajitelnost každého řádku kódu.
 
 ### Hodnocení posudků
 
@@ -66,7 +69,7 @@
 
 ### Bělský — Q1: Proč jste se rozhodl nepoužít plugin Advanced Custom Fields?
 
-Tři důvody: **(1)** hlubší porozumění WordPress API — oponent v posudku ocenil. **(2)** Nezávislost na breaking changes ACF (přechod ACF 5 → 6 měl breaking changes v meta API). WordPress core funkce `register_post_type` a `register_meta` jsou stabilní 10+ let. **(3)** Obhajitelnost u maturity — můžu vysvětlit každý řádek kódu, ne pouze klik v administraci. U klubového webu s nízkou frekvencí změn převažují výhody minimální údržby.
+Nejde o nepoužití principů — většina funkcionality vychází z principů ACF a dalších doporučených pluginů. **Místo plné integrace jsem portoval do vlastního pluginu jen optimalizovanou výseč** — pouze ty části, které projekt potřebuje. Tři důvody: **(1)** hlubší porozumění WordPress API (abych mohl optimalizovat, musel jsem nejdřív pochopit logiku) — oponent v posudku ocenil. **(2)** Nezávislost na breaking changes ACF (přechod ACF 5 → 6 měl breaking changes v meta API). WordPress core funkce `register_post_type` a `register_meta` jsou stabilní 10+ let. **(3)** Obhajitelnost — můžu vysvětlit každý řádek kódu, ne pouze klik v administraci. U klubového webu s nízkou frekvencí změn převažují výhody minimální údržby.
 
 ### Bělský — Q2: Sdílená taxonomie `kategorie-tymu` a kategorie „Stará garda"
 
@@ -78,7 +81,7 @@ Filtrování ve frontendu běží přes `WP_Query` s `tax_query`. Zápas omylem 
 
 ### Háka — Q1: Výhody a nevýhody vlastní implementace oproti pluginům?
 
-**Výhody:** porozumění kódu · žádná závislost na třetích stranách · lepší výkon (žádné nevyužité features) · obhajitelnost. **Nevýhody:** víc kódu k údržbě · žádný UI builder pro netechnické adminy · žádná komunita pro support. Pro klubový web s nízkou frekvencí změn převažují výhody.
+Vlastní implementace v projektu znamená **portovaná optimalizovaná výseč** z principů doporučených pluginů, ne kód od nuly. **Výhody:** lepší výkon (žádné nevyužité features), transparentnost, žádná závislost na třetích stranách, hlubší porozumění kódu, obhajitelnost. **Nevýhody:** víc kódu k údržbě, žádný UI builder pro netechnické adminy, žádná komunita pro support. Pro klubový web s nízkou frekvencí změn převažují výhody.
 
 ### Háka — Q2: Jak rozšířit filtry o AJAX?
 
@@ -86,7 +89,9 @@ Vytvořil bych endpoint `wp_ajax_filter_zapasy` + `wp_ajax_nopriv_filter_zapasy`
 
 ### Háka — Q3: Jak implementovat plnohodnotný kalendářový modul?
 
-Tři varianty. **(1) Nejjednodušší:** vlastní šablona `page-kalendar.php` s gridem 7×5, generovaným z `WP_Query` orderby date. **(2) Nejúplnější:** knihovna `FullCalendar.js` napojená na WordPress REST API endpoint `/wp-json/wp/v2/zapas` s vlastním transformerem dat. **(3) Plug-and-play:** plugin The Events Calendar, ale vyžaduje mapování CPT `zapas` na CPT pluginu. Aktuálně je v projektu **funkční ekvivalent** přes interaktivní banner na homepage + filtry tým/sezóna/stav na stránce Zápasů.
+Plnohodnotný gridový kalendář považuji v tomto kontextu za **overkill**. Pro klub, jehož web prezentuje pouze zápasy, je aktuální řešení — banner s nadcházejícími zápasy plus filtry tým/sezóna/stav — z hlediska potřeb plně dostačující.
+
+Knihovnu jako FullCalendar.js bych přidával až ve chvíli, kdy by se web rozšířil o **další typy událostí**: klubové akce, ples, prodej lístků, jiné týmové aktivity. V tom případě jsou tři varianty: **(1)** vlastní šablona `page-kalendar.php` s gridem 7×5, generovaným z `WP_Query` orderby date. **(2)** knihovna `FullCalendar.js` napojená na WordPress REST API endpoint `/wp-json/wp/v2/zapas` s vlastním transformerem dat. **(3)** plugin The Events Calendar, ale vyžaduje mapování CPT `zapas` na CPT pluginu.
 
 ---
 
@@ -110,4 +115,4 @@ Kód šablony i pluginu je vlastní. WordPress hook system a template hierarchy 
 
 ### Co byste dělal jinak?
 
-**(1)** Od začátku přidat SEO a cache plugin — to bylo v zadání. **(2)** AJAX filtry pro lepší UX. **(3)** Podrobnější administrátorská příručka pro vedení klubu.
+**(1)** Více času na SEO plugin a Google Analytics 4 — věděl jsem o nich, stihl jsem jen základní meta tagy v hlavičce a alt atributy u obrázků. **(2)** AJAX filtry pro lepší UX bez page reloadu. **(3)** Podrobnější administrátorská příručka pro vedení klubu — aktuálně je technická.

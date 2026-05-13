@@ -32,7 +32,7 @@ WordPress 6.x · PHP · MySQL · Bootstrap 5.3.3 · HTML5 (`<dialog>` pro lightb
 | Připomínka | Reakce |
 |------------|--------|
 | **Vlastní implementace vs. ACF/CPT UI** | Vědomé rozhodnutí — portovaná optimalizovaná výseč z doporučených pluginů místo plné integrace s balastem. Stabilní WP core API. |
-| **Kalendářový modul** | Řešen funkčním ekvivalentem: interaktivní banner s nadcházejícími zápasy + filtry tým/sezóna/stav. Plnohodnotný kalendář jako rozšíření. |
+| **Kalendářový modul** | Řešen funkčním ekvivalentem: interaktivní banner s nadcházejícími zápasy + filtry tým/sezóna/stav. Pro klubový web prezentující pouze zápasy je aktuální řešení plně dostačující; plnohodnotný gridový kalendář by dával smysl až s rozšířením o další typy událostí (klubové akce, prodej lístků). |
 | **Lazy loading na LCP banneru** | Oprávněná připomínka. V další verzi vyřeším výjimkou pro hero sekci, nebo přechodem na nativní `wp_get_attachment_image` (WP 5.5+). |
 | **Sdílená taxonomie napříč CPT** | Designové rozhodnutí. Konzistenci dat by zajistila validační vrstva v `save_post` hooku. |
 | **AJAX filtry** | Aktuální GET implementace je vědomá volba (SEO, sdílitelná URL). AJAX doplnitelný přes `wp_ajax` endpoint + History API. |
@@ -43,10 +43,10 @@ WordPress 6.x · PHP · MySQL · Bootstrap 5.3.3 · HTML5 (`<dialog>` pro lightb
 ## Možná rozšíření
 
 - AJAX filtry s History API
-- Plnohodnotný gridový kalendář přes FullCalendar.js a WP REST API
 - Cache plugin LiteSpeed Cache
-- SEO plugin Yoast / Rank Math (sitemap, breadcrumbs, structured data)
-- Google Analytics 4 přes `wp_head` hook nebo Site Kit by Google
+- SEO plugin (např. Yoast nebo Rank Math) — sitemap, breadcrumbs, structured data
+- Google Analytics 4 přes `wp_head` hook
+- Plnohodnotný gridový kalendář (přes FullCalendar.js) — pouze pokud by web prezentoval i další typy událostí mimo zápasy
 
 ---
 

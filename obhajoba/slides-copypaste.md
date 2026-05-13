@@ -40,17 +40,18 @@ Splnění zadání
 | 4 | Filtrování dle sezóny / týmu | ✅ GET parametry |
 | 5 | Kalendářový modul | 🔄 funkční ekvivalent: banner + filtry |
 | 6 | Galerie s lightboxem | ✅ |
-| 7 | Optimalizace (cache, lazy, WebP) | ⚠️ částečně |
-| 8 | SEO a analytika | ⚠️ plán |
+| 7 | Optimalizace (lazy, WebP, minifikace) | ⚠️ částečně |
+| 8 | SEO | ⚠️ jen alt atributy + meta tagy v kódu |
+| 8b | Analytika (GA4) | ⚠️ plánováno, nestihnuto |
 | 9 | Hosting + HTTPS | ✅ |
 | 10 | Uživatelské role | ✅ vlastní RBAC |
 
 ### SPEAKER NOTES
-Pojďme po sekcích posudku. První oblast — splnění zadání. Splněno: vlastní téma v Bootstrapu 5, šest custom post types (o tři navíc oproti zadání), čtyři taxonomie, filtrování, lightbox galerie, role, hosting a HTTPS.
+Začnu shrnutím splnění zadání. Splněno: vlastní téma v Bootstrapu 5, šest vlastních typů obsahu — což jsou tři navíc oproti zadání — čtyři taxonomie, filtrování, lightbox galerie, role, hosting a HTTPS.
 
-Bod 5 zadání — kalendářový modul — vyřešen funkčním ekvivalentem ve dvou částech. Na homepage je interaktivní banner s nadcházejícími zápasy ve vizuálních kartách — to pokrývá vizuální zobrazení. Na stránce Zápasy jsou filtry podle týmu, sezóny a stavu — to pokrývá kategorické a časové filtrování. Společně plní stejnou UX funkci jako dedikovaný kalendář, ale bez závislosti na pluginu třetí strany. Plnohodnotný gridový kalendář by se dal doplnit přes knihovnu FullCalendar.js napojenou na WordPress REST API.
+Bod 5 zadání — kalendářový modul — je vyřešen funkčním ekvivalentem ve dvou částech. Na homepage je interaktivní banner s nadcházejícími zápasy ve vizuálních kartách. Na stránce Zápasy jsou filtry podle týmu, sezóny a stavu. Aktuální řešení je pro klubový web plně dostačující — klub na webu prezentuje pouze zápasy. Plnohodnotný gridový kalendář by dával smysl až ve chvíli, kdy by web prezentoval i další události — klubové akce, prodej lístků.
 
-Body 7 a 8 — cache plugin a SEO plugin — jsou aktuálně řešeny částečně, na úrovni kódu (minifikace, WebP, meta tagy). Pro produkci je plán LiteSpeed Cache plus Yoast nebo Rank Math.
+Body 7 a 8 — optimalizace a SEO — jsou aktuálně řešeny jen na úrovni kódu: minifikace, WebP, lazy loading, alt atributy a meta tagy v hlavičce. Cache plugin a SEO plugin jsou v plánu pro produkční nasazení.
 
 ---
 
@@ -75,15 +76,15 @@ Většina funkcionality vychází z principů doporučených pluginů — portov
 Tři důvody: porozumění WP API · nezávislost na breaking changes · obhajitelnost
 
 ### SPEAKER NOTES
-Druhá oblast — kvalita praktické části a vlastní přínos. Oba posudky jako hlavní přínos uvádějí, že nepoužívám doporučené pluginy a vše implementuji vlastním PHP kódem.
+Klíčovým technickým přínosem práce je přístup ke správě obsahu vlastním kódem místo plné integrace doporučených pluginů.
 
 Práce má dva samostatné deployment artefakty: šablonu tj-slavoj-myto a vlastní WordPress plugin slavoj-custom-fields. Šablona řeší prezentační logiku, plugin řeší správu obsahu — admin meta boxy, validace, role.
 
-Klíčové rozhodnutí — jak jsem k vlastnímu pluginu došel. Většina funkcionality vychází z principů doporučených pluginů ACF, CPT UI, FacetWP a User Role Editor. Místo plné integrace jsem prošel jejich logiku a portoval do vlastního pluginu jen optimalizovanou výseč — pouze ty části, které projekt skutečně potřebuje. Tím jsem se vyhnul balastu, který by plné pluginy přinášely: stovky řádků pro UI builder, který nevyužívám, lokalizace pro desítky jazyků, advanced fields bez uplatnění v tomto projektu.
+Většina funkcionality vychází z principů doporučených pluginů ACF, CPT UI, FacetWP a User Role Editor. Místo plné integrace jsem prošel jejich logiku a portoval do vlastního pluginu jen optimalizovanou výseč — pouze ty části, které projekt skutečně potřebuje. Tím jsem se vyhnul balastu, který by plné pluginy přinášely: stovky řádků pro UI builder, který nevyužívám, lokalizace pro desítky jazyků a advanced fields bez uplatnění v tomto projektu.
 
-Tři důvody pro tento přístup. Za prvé, hlubší porozumění WordPress API — abych mohl něco optimalizovat, musel jsem nejdřív pochopit, jak to funguje. Za druhé, nezávislost na breaking changes externích pluginů. ACF mělo breaking changes v meta API mezi verzemi 5 a 6, naproti tomu WordPress core funkce register_post_type a register_meta jsou stabilní víc než deset let. Za třetí, obhajitelnost — mohu vysvětlit každý řádek kódu, ne pouze klik v administraci.
+Pro tento přístup jsem měl tři důvody. Za prvé, hlubší porozumění WordPress API — abych mohl něco optimalizovat, musel jsem nejdřív pochopit, jak to funguje. Za druhé, nezávislost na breaking changes externích pluginů. ACF mělo breaking changes v meta API mezi verzemi 5 a 6, naproti tomu WordPress core funkce register_post_type a register_meta jsou stabilní víc než deset let. Za třetí, obhajitelnost — mohu vysvětlit každý řádek kódu, ne pouze klik v administraci.
 
-Výhody a nevýhody. Výhody: lepší výkon (žádné nevyužité features), transparentnost, žádná závislost na třetích stranách. Nevýhody: víc kódu k údržbě, žádný UI builder pro netechnické adminy. Pro klubový web s nízkou frekvencí změn převažují výhody.
+Výhody tohoto přístupu: lepší výkon, transparentnost a žádná závislost na třetích stranách. Nevýhody: víc kódu k údržbě a žádný UI builder pro netechnické adminy. Pro klubový web s nízkou frekvencí změn převažují výhody.
 
 ---
 
@@ -103,9 +104,9 @@ Klíčový designový rys: sdílená taxonomie napříč CPT
 Konzistenci dat by zajistil save_post hook s validací.
 
 ### SPEAKER NOTES
-Datový model — šest typů obsahu, čtyři taxonomie. Sezóna je taxonomie, ne meta pole, protože je sdílená napříč zápasy, týmy a galeriemi. Kategorie týmu funguje stejně.
+Datový model je postavený na šesti vlastních typech obsahu a čtyřech taxonomiích. Sezóna je taxonomie, ne meta pole, protože je sdílená napříč zápasy, týmy a galeriemi. Kategorie týmu funguje stejně.
 
-Klíčový designový rys — sdílená taxonomie napříč CPT. Kategorie „Stará garda" se prakticky používá jen u galerií, ale technicky je dostupná i pro zápasy. Filtrování ve frontendu běží přes WP_Query s tax_query, takže zápas omylem přiřazený ke Staré gardě se v UI mimo její archiv nezobrazí. Data v databázi by ale byla nekonzistentní. Správné řešení je validační vrstva v save_post hooku, která pro CPT zapas povolí jen kategorie A-mužstvo až Minipřípravka, a Starou gardu jen pro CPT galerie.
+Sdílení taxonomií napříč CPT je vědomé designové rozhodnutí. Kategorie „Stará garda" se prakticky používá jen u galerií, ale technicky je dostupná i pro zápasy. Filtrování ve frontendu běží přes WP_Query s tax_query, takže zápas omylem přiřazený ke Staré gardě se v UI mimo její archiv nezobrazí. Data v databázi by ale byla nekonzistentní. Správné řešení je validační vrstva v save_post hooku, která pro CPT zapas povolí jen reálné kategorie A-mužstvo až Minipřípravka.
 
 ---
 
@@ -143,7 +144,7 @@ Dokumentace
 • Příručka administrátora
 
 ### SPEAKER NOTES
-Třetí a čtvrtá oblast — dokumentace a jazyk. Dokumentace má čtyřicet stran, oponent ji hodnotí jako vynikající. Obsahuje analýzu původního řešení, srovnávací tabulky pluginy versus vlastní implementace, ER diagram datového modelu, popis nasazení obou artefaktů — šablony i pluginu slavoj-custom-fields, testovací scénáře a příručku administrátora. Shoda s externími zdroji je nula procent.
+Dokumentace má čtyřicet stran a oponent ji hodnotí jako vynikající. Obsahuje analýzu původního řešení, srovnávací tabulky pluginy versus vlastní implementace, ER diagram datového modelu, popis nasazení obou artefaktů — šablony i pluginu slavoj-custom-fields — testovací scénáře a příručku administrátora. Shoda s externími zdroji je nula procent.
 
 ---
 
@@ -160,18 +161,18 @@ Slabá místa a rozšíření
 | Cache plugin | uznávám | LiteSpeed Cache |
 | SEO plugin | uznávám — jen alt atributy a meta tagy v kódu | Yoast / Rank Math |
 | GA4 (analytika) | plánováno, časově nestihnuto | wp_head hook nebo Site Kit |
-| Plnohodnotný kalendář | rozšíření | FullCalendar.js + REST API |
+| Plnohodnotný kalendář | aktuální řešení dostačující | FullCalendar.js pouze při rozšíření na další typy událostí |
 
 ### SPEAKER NOTES
-K oblastem, kde projekt má slabší body — chci je sám zmínit, protože je znám.
+Závěrem chci sám zmínit body, které v práci považuji za slabší.
 
-Lazy loading — toto je oprávněná připomínka oponenta. Implementoval jsem ho přes str_replace na všechny img tagy, včetně LCP obrázku v hero sekci. To zhorší Largest Contentful Paint a Core Web Vitals. V další verzi bych to řešil výjimkou pro hero sekci, nebo lépe přechodem na nativní wp_get_attachment_image z WordPress 5.5+, který první obrázek na stránce vyloučí automaticky a navíc přidá fetchpriority=high.
+Lazy loading je oprávněná připomínka oponenta. Implementoval jsem ho přes str_replace na všechny img tagy, včetně LCP obrázku v hero sekci. To zhoršuje Largest Contentful Paint a Core Web Vitals. V další verzi bych ho řešil výjimkou pro hero sekci, nebo lépe přechodem na nativní wp_get_attachment_image z WordPress 5.5+, který první obrázek na stránce vyloučí automaticky a navíc přidá fetchpriority=high.
 
-AJAX filtry — toto je vědomá volba. Aktuální GET implementace je SEO-friendly, indexovatelná, URL sdílitelná. AJAX by ale byl legitimní upgrade — endpoint wp_ajax_filter_zapasy v pluginu, fetch na admin-ajax.php, HTML fragment přes get_template_part, History API kvůli sdílitelnosti URL.
+AJAX filtry jsou vědomá volba. Aktuální GET implementace je SEO-friendly, indexovatelná a sdílitelná odkazem. AJAX by ale byl legitimní upgrade — endpoint wp_ajax_filter_zapasy v pluginu, fetch na admin-ajax.php, HTML fragment přes get_template_part a History API kvůli sdílitelnosti URL.
 
-SEO plugin uznávám jako mezeru — řešil jsem pouze alt atributy u obrázků a meta tagy přímo v header.php. Dedikovaný plugin Yoast nebo Rank Math by přidal sitemap, breadcrumbs a structured data. Google Analytics 4 byla plánována do odevzdání, časově se nestihla — napojení je triviální přes wp_head hook nebo plugin Site Kit by Google. Cache plugin také chybí — pro produkci doplním LiteSpeed Cache.
+SEO plugin uznávám jako mezeru — řešil jsem pouze alt atributy u obrázků a meta tagy v hlavičce. Dedikovaný plugin Yoast nebo Rank Math by přidal sitemap, breadcrumbs a structured data. Google Analytics 4 byla plánována do odevzdání, časově se nestihla — napojení je triviální přes wp_head hook. Cache plugin také chybí — pro produkci doplním LiteSpeed Cache.
 
-Plnohodnotný kalendář by se dal udělat přes FullCalendar.js a WordPress REST API — to je legitimní rozšíření, na kterém bych pracoval jako první po obhajobě.
+Plnohodnotný gridový kalendář považuji v tomto kontextu za overkill. Pro klub, jehož web prezentuje jen zápasy, je banner s nadcházejícími zápasy a filtry tým/sezóna/stav plně dostačující. Knihovnu jako FullCalendar.js bych přidával až ve chvíli, kdy by web prezentoval i jiné události — klubové akce, prodej lístků.
 
 ---
 

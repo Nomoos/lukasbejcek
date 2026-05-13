@@ -108,7 +108,7 @@ marp obhajoba/prezentace.md --html --output obhajoba/prezentace.html
 2. **3 kategorie reakcí na výtky:**
    - **PŘIJMOUT** (Lazy LCP, cache, SEO plugin) — „toto je oprávněná připomínka; v další verzi bych…"
    - **VYSVĚTLIT** (sdílená taxonomie, AJAX vs. GET) — „toto je vědomá volba s kompromisy…"
-   - **OBHÁJIT** (vlastní implementace, kalendář reframe) — „rozhodnutí je vědomé, důvody jsou…"
+   - **OBHÁJIT** (vlastní implementace = optimalizovaná výseč pluginů, kalendář = aktuální banner + filtry dostačující) — „rozhodnutí je vědomé, důvody jsou…"
 3. **NEŘÍKAT „Pan Bělský/Háka se ptá".** Odpovědi jsou v autonomní argumentaci. V Q&A se odkážeš: „Jak jsem zmínil v prezentaci…"
 4. **Kontrast** — bílé pozadí, tmavý text. Učebna má horší světlo než aula.
 
