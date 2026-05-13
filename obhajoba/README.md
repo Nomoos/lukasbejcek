@@ -10,6 +10,7 @@
 
 | Soubor | Použití | Komu |
 |--------|---------|------|
+| **`PRUVODCE-FINALIZACE.md`** | **ZAČNI TADY** — krok za krokem od textů ke Google Slides | Autor (postup) |
 | **`PREZENTACE-OBHAJOBA.md`** | Master plán prezentace — slide po slidu s detailním mluveným textem, mapování otázek, časový rozpočet | Autor (příprava) |
 | **`prezentace.md`** | Marp source — generování prezentace do PPTX/HTML pro Google Slides | Autor (export) |
 | **`slides-copypaste.md`** | Slide-po-slide text pro manuální tvorbu v Google Slides | Autor (sazba) |
@@ -17,7 +18,8 @@
 | **`STRUCNY-PREHLED.md`** | 1 strana A4 — krátký handout pro komisi | **KOMISI** (4× výtisk) |
 | **`HANDOUT-OBHAJOBA.md`** | Detailní odpovědi na 6+ otázek z posudků | Autor (interní příprava) — **NE komisi** |
 | **`POSUDKY.md`** | Plný přepis posudků oponenta i vedoucího | Reference |
-| **`REVIEW-PREZENTACE.md`** | Strukturální review plánu prezentace | Reference |
+| **`REVIEW-PREZENTACE.md`** | Strukturální review (historie, problémy vyřešeny) | Reference |
+| **`REVIEW-KONZISTENCE.md`** | Konzistenční audit (historie, problémy vyřešeny) | Reference |
 
 ---
 

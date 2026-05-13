@@ -5,7 +5,15 @@
 **Předmět review:** `PREZENTACE-OBHAJOBA.md` — finální plán 8 slidů
 **Cíl review:** identifikovat strukturální slabiny a navrhnout konkrétní úpravy
 
-> **Verdikt:** Plán je obsahově silný (odpovědi na všech 6 otázek vetknuté, reframe kalendáře, vlastní plugin jako deployment artefakt), ale **strukturálně má 5 problémů**, které brzdí dramaturgii a oslabují celkový dojem. Doporučení: jednoznačná přeskupení (žádný slide nepřepisovat, jen 3 z nich přesunout/sloučit).
+> ## ✅ STATUS: VYŘEŠENO
+>
+> Strukturální problémy identifikované v tomto review byly z velké části vyřešeny pozdějšími rozhodnutími autora — demo se přesunulo do Q&A, tón obhajoby přerámován do 3 kategorií reakcí (přijmout / vysvětlit / obhájit), narrativ kalendáře přitvrzen na YAGNI postoj (commit `f512a7f`).
+>
+> Tento dokument je ponechán jako **historická reference**. Aktuální plán viz [`PREZENTACE-OBHAJOBA.md`](./PREZENTACE-OBHAJOBA.md), postup dokončení viz [`PRUVODCE-FINALIZACE.md`](./PRUVODCE-FINALIZACE.md).
+
+---
+
+> **Původní verdikt:** Plán je obsahově silný (odpovědi na všech 6 otázek vetknuté, reframe kalendáře, vlastní plugin jako deployment artefakt), ale **strukturálně má 5 problémů**, které brzdí dramaturgii a oslabují celkový dojem. Doporučení: jednoznačná přeskupení (žádný slide nepřepisovat, jen 3 z nich přesunout/sloučit).
 
 ---
 

@@ -3,7 +3,15 @@
 **Datum:** 2026-05-13
 **Předmět:** Kontrola 6 souborů na vzájemnou konzistenci, defenzivní tón a zmínky věcí, které nebyly implementovány.
 
-> **Verdikt:** **Obsah ZATÍM NENÍ připraven pro Google Slides.** Hlavní blocker: `HANDOUT-OBHAJOBA.md` má **starý narrativ** („vlastní implementace místo pluginů"), který je v rozporu s aktualizovanými 4 soubory („portovaná optimalizovaná výseč"). Pokud Lukáš trénuje Q&A z HANDOUTu, v ústní obhajobě by formulačně skočil mezi dvě verze. **Doba úprav: ~45 min, pak READY.**
+> ## ✅ STATUS: VYŘEŠENO
+>
+> Všechny identifikované nekonzistence byly opraveny v commit `f512a7f`. Obsah je READY pro export do Google Slides. Pro postup viz [`PRUVODCE-FINALIZACE.md`](./PRUVODCE-FINALIZACE.md).
+>
+> Tento dokument je ponechán jako **historická reference** pro audit trail — co se kontrolovalo a co se opravilo.
+
+---
+
+> **Původní verdikt (před opravami):** **Obsah ZATÍM NENÍ připraven pro Google Slides.** Hlavní blocker: `HANDOUT-OBHAJOBA.md` má **starý narrativ** („vlastní implementace místo pluginů"), který je v rozporu s aktualizovanými 4 soubory („portovaná optimalizovaná výseč"). Pokud Lukáš trénuje Q&A z HANDOUTu, v ústní obhajobě by formulačně skočil mezi dvě verze. **Doba úprav: ~45 min, pak READY.**
 
 ---
 
